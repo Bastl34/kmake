@@ -1,37 +1,38 @@
-# Variables
+# imports
+import:
+- 'lib2.yml'
+
+# variables
 variables:
     PROJECT_NAME: Example
     PROJECT_VERSION: 1.0.0
 
-# Build stages
+# workspace settings
 workspace:
     - app
     - lib1
-    #- lib2
+    - lib2
+    - lib2.1
 
-# Main App
+# main App
 app:
     type: source
     defaultProject: true
 
     sources:
-        - main.cpp
-        - main.h
+        - cpp/main.cpp
+        - cpp/main.h
     dependencies:
-        - libs
+        - lib1
+        - lib2
+        - lib2.1
     hooks:
         beforePrepare: 'echo before prepare'
         afterPrepare: 'echo after prepare'
 
-# Libs 1
-libs1:
+# Lib 1
+lib1:
     type: source
     outputType: static
 
-    sources: ['lib1/*.cpp', 'lib2/*.h']
-
-
-# Libs 2
-libs2:
-    type: lib
-    outputType: dynamic
+    sources: ['cpp/lib1/*.cpp', 'cpp/lib1/*.h']

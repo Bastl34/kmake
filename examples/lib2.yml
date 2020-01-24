@@ -1,0 +1,10 @@
+# imports
+import:
+- 'lib2.1.yml'
+
+# Lib 2
+lib2:
+    type: lib
+    outputType: dynamic
+
+    sources: ['cpp/lib2/*.cpp', 'cpp/lib2/*.h']
