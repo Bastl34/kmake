@@ -2,5 +2,9 @@ node_modules
 
 package-lock.json
 
+#xcode
 *.xcuserstate
 xcuserdata
+
+#visual studio
+.vs
