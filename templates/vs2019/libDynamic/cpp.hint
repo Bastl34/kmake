@@ -1,0 +1,2 @@
+#define LIBDYNAMIC_API __declspec(dllexport)
+#define LIBDYNAMIC_API __declspec(dllimport)
