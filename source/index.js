@@ -1,5 +1,8 @@
 const fs = require('fs');
 const path = require('path');
+const yaml = require('js-yaml');
+
+const readlineSync = require('readline-sync');
 
 const config = require('./config');
 const ymlLoader = require('./ymlLoader');
@@ -15,6 +18,9 @@ if (process.argv.length < 5)
 let yamlPath = process.argv[2];
 let template = process.argv[3];
 let output = process.argv[4];
+
+//DEBUG
+const useInputCache = true;
 
 // ******************** find yaml ********************
 let fileStat;
@@ -68,8 +74,8 @@ try
 }
 catch(e)
 {
-    console.log(e);
     console.error('error while creating output dir: ' + outputPath);
+    console.log(e);
     process.exit();
 }
 
@@ -81,13 +87,75 @@ try
 {
     options = ymlLoader(yamlPath);
 
-    console.log(options);
+    //console.log(options);
 } catch (e)
 {
     console.error(e);
     process.exit();
 }
 
+
+// ******************** get inputs ********************
+
+if ('inputs' in options)
+{
+    try
+    {
+        //save input cache
+        let inputCachePath = yamlPath + '.input.cache';
+
+        let inputCache = {};
+
+        if (fs.existsSync(inputCachePath))
+            inputCache = importOptions = ymlLoader(inputCachePath);
+
+        if (!useInputCache)
+        {
+            options.inputs.forEach(inputVar =>
+            {
+                let nameStr = inputVar + ': ';
+                if (inputVar in inputCache)
+                    nameStr = inputVar + ' (' + inputCache[inputVar] + '): ';
+
+                //read value
+                let value = readlineSync.question(nameStr);
+
+                if (!value && inputVar in inputCache)
+                    value = inputCache[inputVar];
+
+                if (value)
+                {
+                    options.inputs[inputVar] = value;
+                    inputCache[inputVar] = value;
+                }
+
+                console.log(' --> ' + value);
+            });
+        }
+        else
+        {
+            options.inputs.forEach(inputVar =>
+            {
+                //read value from cache
+                let value = null;
+                if (inputVar in inputCache)
+                    value = inputCache[inputVar];
+
+                console.log(inputVar + ': ' + value);
+            });
+        }
+
+        //saving input data
+        let dump = yaml.safeDump(inputCache);
+        fs.writeFileSync(inputCachePath, dump);
+    }
+    catch(e)
+    {
+        console.error('error reading input variables ');
+        console.log(e);
+        process.exit();
+    }
+}
 
 
 // ******************** make ********************

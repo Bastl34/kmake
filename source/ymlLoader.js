@@ -4,19 +4,17 @@ const path = require('path');
 
 function ymlLoader(ymlPath)
 {
-    console.log(ymlPath)
-
     const fileContent = fs.readFileSync(ymlPath, 'utf8');
     const parsed = yaml.safeLoad(fileContent);
 
     let content = parsed;
 
     //load imports
-    if ('import' in parsed)
+    if ('imports' in parsed)
     {
         let parentYmlPath = path.dirname(ymlPath)
 
-        let imports = parsed.import;
+        let imports = parsed.imports;
         imports.forEach(importFile =>
         {
             let importPath = parentYmlPath + '/' + importFile;
@@ -26,7 +24,6 @@ function ymlLoader(ymlPath)
             importOptions = ymlLoader(importPath);
 
             content = {...content, ...importOptions};
-            
         });
     }
 
