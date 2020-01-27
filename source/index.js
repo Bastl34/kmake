@@ -191,7 +191,7 @@ Helper.recursiveReplace(options, (key, object) =>
             outputPath: outputPath,
         };
 
-        make(options);
+        await make(options);
     }
     catch (e)
     {

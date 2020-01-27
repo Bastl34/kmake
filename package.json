@@ -3,11 +3,15 @@
     "version": "0.0.1",
     "description": "build tool for c++ projects (node js based)",
     "main": "index.js",
+    "scripts": {
+        "dev-mac": "npm i && nodemon source/index.js examples xcodeMac out"
+    },
     "dependencies": {
         "js-yaml": "^3.13.1",
         "glob": "^7.1.6",
         "readline-sync": "^1.4.10",
-        "recursive-copy": "^2.0.10"
+        "recursive-copy": "^2.0.10",
+        "replace-in-file": "^5.0.2"
     },
     "keywords": []
 }
