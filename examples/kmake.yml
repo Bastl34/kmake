@@ -13,15 +13,23 @@ inputs:
 
 # workspace settings
 workspace:
-    - app
-    - lib1
-    - lib2
-    - lib2.1
+    name: '${PROJECT_NAME}'
+    content:
+        - app
+        - lib1
+        - lib2
+        - lib2.1
 
 # main App
 app:
     type: source
-    defaultProject: true
+    outputType: main
+    name: '${PROJECT_NAME}'
+
+    defines:
+        - APP_NAME: '${PROJECT_NAME}'
+        - DEBUG_APP
+        - TEST_APP
 
     sources:
         - cpp/main.cpp
@@ -36,6 +44,7 @@ app:
 
 # Lib 1
 lib1:
+    name: lib1
     type: source
     outputType: static
 

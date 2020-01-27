@@ -6,7 +6,8 @@
     "dependencies": {
         "js-yaml": "^3.13.1",
         "glob": "^7.1.6",
-        "readline-sync": "^1.4.10"
+        "readline-sync": "^1.4.10",
+        "recursive-copy": "^2.0.10"
     },
     "keywords": []
 }

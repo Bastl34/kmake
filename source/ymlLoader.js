@@ -7,7 +7,8 @@ function ymlLoader(ymlPath)
     const fileContent = fs.readFileSync(ymlPath, 'utf8');
     const parsed = yaml.safeLoad(fileContent);
 
-    let content = parsed;
+    let content = {...parsed};
+    delete content.imports;
 
     //load imports
     if ('imports' in parsed)

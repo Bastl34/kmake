@@ -4,6 +4,7 @@ imports:
 
 # Lib 2
 lib2:
+    name: lib2
     type: lib
     outputType: dynamic
 

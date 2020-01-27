@@ -1,11 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
-
 const readlineSync = require('readline-sync');
 
-const config = require('./config');
+const Helper = require('./helper/helper');
+
+const Globals = require('./globals');
 const ymlLoader = require('./ymlLoader');
+const make = require('./make');
 
 const kmakeRoot = fs.realpathSync(__dirname + '/..');
 
@@ -43,7 +45,7 @@ if (!fileStat || !fileStat.isFile())
 }
 
 // ******************** find template ********************
-let templatePath = kmakeRoot + '/' + config.TEMPLATE_DIR +  '/' + template;
+let templatePath = kmakeRoot + '/' + Globals.TEMPLATE_DIR +  '/' + template;
 if(path.isAbsolute(template))
     templatePath = template;
 
@@ -157,8 +159,46 @@ if ('inputs' in options)
     }
 }
 
+// ******************** process variables ********************
+
+Helper.recursiveReplace(options, (key, object) =>
+{
+    if (typeof object === "string")
+    {
+        for(let varName in options.variables)
+        {
+            let replacement = '\\${' + varName + '}';
+            let regex = new RegExp(replacement, 'g');
+            object = object.replace(regex, options.variables[varName]);
+        }
+    }
+
+    return object;
+});
+
 
 // ******************** make ********************
+
+(async () =>
+{
+    try
+    {
+        options.build =
+        {
+            template: template,
+            templatePath: templatePath,
+            output: output,
+            outputPath: outputPath,
+        };
+
+        make(options);
+    }
+    catch (e)
+    {
+        console.log("make failed");
+        console.log(e);
+    }
+})()
 
 /*
 console.log('yaml: ' + yamlPath);
