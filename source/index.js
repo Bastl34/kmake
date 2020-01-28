@@ -1,9 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const yaml = require('js-yaml');
+const glob = require('glob');
 const readlineSync = require('readline-sync');
 
 const Helper = require('./helper/helper');
+const FileHelper = require('./helper/fileHelper');
 
 const Globals = require('./globals');
 const ymlLoader = require('./ymlLoader');
@@ -23,6 +25,7 @@ let output = process.argv[4];
 
 //DEBUG
 const useInputCache = true;
+const cleanOutputDir = true;
 
 // ******************** find yaml ********************
 let fileStat;
@@ -176,6 +179,29 @@ Helper.recursiveReplace(options, (key, object) =>
     return object;
 });
 
+// ******************** resolve source files ********************
+
+for(let itemKey in options)
+{
+    let item = options[itemKey];
+    if ('sources' in item)
+    {
+        let sources = [];
+
+        let workingDir = item.workingDir;
+
+        item.sources.forEach(file =>
+        {
+            let filePath = workingDir + '/' + file;
+            let files = glob.sync(filePath);
+            sources = [...sources, ...files];
+        })
+
+        item.sources = sources;
+
+    }
+}
+
 
 // ******************** make ********************
 
@@ -189,6 +215,7 @@ Helper.recursiveReplace(options, (key, object) =>
             templatePath: templatePath,
             output: output,
             outputPath: outputPath,
+            cleanOutputDir: cleanOutputDir
         };
 
         await make(options);

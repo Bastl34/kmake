@@ -1,11 +1,12 @@
 # imports
 imports:
-- 'lib2.1.yml'
+- 'cpp/lib2.1/lib2.1.yml'
 
 # Lib 2
 lib2:
     name: lib2
-    type: lib
+    type: project
     outputType: dynamic
+    projectType: source
 
     sources: ['cpp/lib2/*.cpp', 'cpp/lib2/*.h']

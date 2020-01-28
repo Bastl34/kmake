@@ -1,7 +1,7 @@
 # kmake
 
 ## Requrements
-* node.js
+* node.js >=12
 
 ## Usage
 * `npm i -g kmake`

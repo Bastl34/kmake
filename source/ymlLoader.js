@@ -10,6 +10,8 @@ function ymlLoader(ymlPath)
     let content = {...parsed};
     delete content.imports;
 
+    content = addWorkingDir(content, path.dirname(ymlPath))
+
     //load imports
     if ('imports' in parsed)
     {
@@ -29,6 +31,22 @@ function ymlLoader(ymlPath)
     }
 
     return content
+}
+
+function addWorkingDir(options, path)
+{
+    //add working dir only for type=project
+    if (options)
+    {
+        for(let key in options)
+        {
+            let item = options[key];
+            if (item instanceof Object && 'type' in item && item.type == 'project' && !item.workingDir)
+                item.workingDir = path;
+        }
+    }
+
+    return options;
 }
 
 module.exports = ymlLoader;

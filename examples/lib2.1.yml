@@ -1,8 +1,0 @@
-
-# Lib 2.1
-lib2.1:
-    name: lib2.1
-    type: lib
-    outputType: static
-
-    sources: ['cpp/lib2.1/*.cpp', 'cpp/lib2.1/*.h']

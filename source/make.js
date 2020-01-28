@@ -17,6 +17,10 @@ async function make(options)
     //run validate
     await validate(options);
 
+    //clear output dir if needed
+    if (options.build.cleanOutputDir && fs.existsSync(options.build.outputPath))
+        fs.rmdirSync(options.build.outputPath, {recursive: true});
+
     //create output directory
     if (!fs.existsSync(options.build.outputPath))
         fs.mkdirSync(options.build.outputPath);
@@ -50,7 +54,7 @@ async function makeXcode(options)
         let project = options[projectName];
 
         let sourcePath = options.build.templatePath + '/' + project.outputType + '.xcodeproj';
-        let destPath = options.build.outputPath + '/' + project.name + '.xcodeproj';
+        let destPath = options.build.outputPath + '/' + projectName + '.xcodeproj';
 
         let results = await copy(sourcePath, destPath, {overwrite: true});
         console.log(results.length + ' files copied');
@@ -69,17 +73,13 @@ async function makeXcode(options)
         let projectName = options.workspace.content[i];
         let project = options[projectName];
 
-        fileRefStr += '   <FileRef location = "group:' + project.name + '.xcodeproj"></FileRef>\n'
+        fileRefStr += '   <FileRef location = "group:' + projectName + '.xcodeproj"></FileRef>\n'
     }
 
     let workspaceContentFilePath = destPath + '/contents.xcworkspacedata';
 
     results = await replace({files: workspaceContentFilePath, from: '<!--FileRef-->', to: fileRefStr.trim()});
     console.log(results.length + ' files changed');
-
-    /*
-<FileRef location = "group:app.xcodeproj"></FileRef>
-    */
 }
 
 module.exports = make;

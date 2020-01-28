@@ -1,0 +1,9 @@
+
+# Lib 2.1
+lib2.1:
+    name: lib2.1
+    type: project
+    outputType: static
+    projectType: source
+
+    sources: ['*.cpp', '*.h']
