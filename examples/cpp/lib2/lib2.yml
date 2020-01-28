@@ -1,6 +1,6 @@
 # imports
 imports:
-- 'cpp/lib2.1/lib2.1.yml'
+- '../lib2.1/lib2.1.yml'
 
 # Lib 2
 lib2:

@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const makeXcode = require('./projectMaker/xcode');
 
@@ -16,12 +17,12 @@ async function make(options)
     await validate(options);
 
     //clear output dir if needed
-    if (options.build.cleanOutputDir && fs.existsSync(options.build.outputPath))
-        fs.rmdirSync(options.build.outputPath, {recursive: true});
+    if (options.build.cleanOutputDir && fs.existsSync(path.normalize(options.build.outputPath)))
+        fs.rmdirSync(path.normalize(options.build.outputPath), {recursive: true});
 
     //create output directory
-    if (!fs.existsSync(options.build.outputPath))
-        fs.mkdirSync(options.build.outputPath);
+    if (!fs.existsSync(path.normalize(options.build.outputPath)))
+        fs.mkdirSync(path.normalize(options.build.outputPath));
 
     //create project files
     if (options.build.template == 'xcodeMac')

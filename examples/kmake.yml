@@ -1,6 +1,7 @@
 # imports
 imports:
-- 'lib2.yml'
+- 'cpp/lib1/lib1.yml'
+- 'cpp/lib2/lib2.yml'
 
 # variables
 variables:
@@ -42,12 +43,3 @@ app:
     hooks:
         beforePrepare: 'echo before prepare'
         afterPrepare: 'echo after prepare'
-
-# Lib 1
-lib1:
-    name: lib1
-    type: project
-    outputType: static
-    projectType: source
-
-    sources: ['cpp/lib1/*.cpp', 'cpp/lib1/*.h']

@@ -64,6 +64,7 @@ async function makeXcode(options)
         if (project.type == 'project' && project.projectType == 'source')
         {
             let soucesList = [];
+            let directoryList = {};
 
             project.sources.forEach(file =>
             {
@@ -74,17 +75,33 @@ async function makeXcode(options)
 
                 //TODO: path relative to source (if possible)
 
-                let obj =
+
+                //dirs
+                let directory = path.dirname(file);
+
+                if (project.workingDir && project.workingDir.length > 0)
+                    directory = directory.substr(project.workingDir.length+1);
+
+                if (directory)
+                    directoryList[directory] = true;
+                
+                //file
+                let sourceObj =
                 {
                     name: path.basename(file),
-                    path: path.dirname(file),
+                    path: file,
+                    dir: directory,
                     uid1: Helper.randomString(24,"0123456789ABCDEF", false),
                     uid2: Helper.randomString(24,"0123456789ABCDEF", false),
                     type: type
                 };
 
-                console.log(obj);
+                soucesList.push(sourceObj);
             });
+
+            //make array out of directory list
+            directoryList = Object.keys(directoryList);
+            console.log(directoryList);
         }
     }
 }
