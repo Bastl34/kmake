@@ -9,4 +9,4 @@ lib2:
     outputType: dynamic
     projectType: source
 
-    sources: ['cpp/lib2/*.cpp', 'cpp/lib2/*.h']
+    sources: ['*.cpp', '*.h']

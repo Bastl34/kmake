@@ -4,6 +4,7 @@ const copy = require('recursive-copy');
 const replace = require('replace-in-file');
 
 const Helper = require('../helper/helper');
+const FileHelper = require('../helper/fileHelper');
 
 const Globals = require('../globals');
 
@@ -55,6 +56,7 @@ async function makeXcode(options)
     results = await replace({files: workspaceContentFilePath, from: '<!--FileRef-->', to: fileRefStr.trim()});
     console.log(results.length + ' files changed');
 
+
     // ******************** apply source files ********************
     for(let i in options.workspace.content)
     {
@@ -66,15 +68,13 @@ async function makeXcode(options)
             let soucesList = [];
             let directoryList = {};
 
+            // ***** files
             project.sources.forEach(file =>
             {
                 let type = 'unknown';
                 let ext = path.extname(file);
                 if (ext in XCODE_FILETYPE_MAP)
                     type = XCODE_FILETYPE_MAP[ext];
-
-                //TODO: path relative to source (if possible)
-
 
                 //dirs
                 let directory = path.dirname(file);
@@ -91,7 +91,7 @@ async function makeXcode(options)
                     name: path.basename(file),
                     path: file,
                     dir: directory,
-                    uid1: Helper.randomString(24,"0123456789ABCDEF", false),
+                    uid: Helper.randomString(24,"0123456789ABCDEF", false),
                     uid2: Helper.randomString(24,"0123456789ABCDEF", false),
                     type: type
                 };
@@ -101,7 +101,49 @@ async function makeXcode(options)
 
             //make array out of directory list
             directoryList = Object.keys(directoryList);
-            console.log(directoryList);
+
+            // ***** direcotires
+            directoryList.forEach(dir =>
+            {
+                //file
+                let sourceObj =
+                {
+                    name: path.basename(dir),
+                    path: dir,
+                    uid: Helper.randomString(24,"0123456789ABCDEF", false),
+                };                
+            });
+
+            //sort
+            soucesList.sort();
+            directoryList.sort();
+
+
+            //create xcode project file strings
+			let sourceFileContent = "";
+			let sourceFileReferenceContent = "";
+			let compileFiles = "";
+
+			soucesList.forEach(file =>
+			{
+                //get the relative path from output dir to source 
+                let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(file.path)) + '/' + file.name;
+
+				sourceFileContent += '		'+file.uid2+' /* '+file.name+' in Sources */ = {isa = PBXBuildFile; fileRef = '+file.uid+' /* '+file.name+' */; };\n';
+				sourceFileReferenceContent += '		'+file.uid+' /* '+file.name+' */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = '+file.type+'; name = '+file.name+'; path = '+relativePath+'; sourceTree = "<group>"; };\n';
+
+				//only source files
+				if (file.type.indexOf('sourcecode') != -1)
+                    compileFiles += '				'+file.uid2+' /* '+file.name+' in Sources */,\n';
+            });
+
+            let projectFilePath = options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj';
+
+            results = await replace({files: projectFilePath, from: '/*SOURCE_FILE_REFERENCE*/', to: sourceFileReferenceContent.trim()});
+            results = await replace({files: projectFilePath, from: '/*SOURCE_FILE*/', to: sourceFileContent.trim()});
+            results = await replace({files: projectFilePath, from: '/*COMPILE_FILES*/', to: compileFiles.trim()});
+            
+            console.log(sourceFileReferenceContent);
         }
     }
 }

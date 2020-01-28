@@ -2,6 +2,8 @@ const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
 
+const FileHelper = require('./helper/fileHelper');
+
 function ymlLoader(ymlPath)
 {
     const fileContent = fs.readFileSync(ymlPath, 'utf8');
@@ -33,7 +35,7 @@ function ymlLoader(ymlPath)
     return content
 }
 
-function addWorkingDir(options, path)
+function addWorkingDir(options, dir)
 {
     //add working dir only for type=project
     if (options)
@@ -42,7 +44,7 @@ function addWorkingDir(options, path)
         {
             let item = options[key];
             if (item instanceof Object && 'type' in item && item.type == 'project' && !item.workingDir)
-                item.workingDir = path;
+                item.workingDir = FileHelper.normalize(dir);
         }
     }
 

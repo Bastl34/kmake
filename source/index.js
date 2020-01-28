@@ -19,7 +19,7 @@ if (process.argv.length < 5)
     process.exit();
 }
 
-let yamlPath = process.argv[2];
+let projectPath = process.argv[2];
 let template = process.argv[3];
 let output = process.argv[4];
 
@@ -29,15 +29,15 @@ const cleanOutputDir = true;
 
 // ******************** find yaml ********************
 let fileStat;
-try { fileStat = fs.statSync(yamlPath) }
+try { fileStat = fs.statSync(projectPath) }
 catch(e) {}
 
 if (!fileStat || !fileStat.isFile())
 {
-    yamlPath += '/kmake.yml' ;
+    projectPath += '/kmake.yml' ;
 
     fileStat = null;
-    try { fileStat = fs.statSync(yamlPath) }
+    try { fileStat = fs.statSync(projectPath) }
     catch(e) {}
 
     if (!fileStat || !fileStat.isFile())
@@ -90,7 +90,7 @@ let options = {};
 
 try
 {
-    options = ymlLoader(yamlPath);
+    options = ymlLoader(projectPath);
 
     //console.log(options);
 } catch (e)
@@ -107,7 +107,7 @@ if ('inputs' in options)
     try
     {
         //save input cache
-        let inputCachePath = yamlPath + '.input.cache';
+        let inputCachePath = projectPath + '.input.cache';
 
         let inputCache = {};
 
@@ -194,6 +194,8 @@ for(let itemKey in options)
         {
             let filePath = workingDir + '/' + file;
             let files = glob.sync(filePath);
+
+            files = files.map(file => { return FileHelper.normalize(file); })
             sources = [...sources, ...files];
         })
 
@@ -211,9 +213,11 @@ for(let itemKey in options)
         options.build =
         {
             template: template,
-            templatePath: templatePath,
+            templatePath: FileHelper.normalize(templatePath),
+            project: projectPath,
+            projectPath: FileHelper.normalize(kmakeRoot + '/' + projectPath),
             output: output,
-            outputPath: outputPath,
+            outputPath: FileHelper.normalize(outputPath),
             cleanOutputDir: cleanOutputDir
         };
 

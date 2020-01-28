@@ -1,7 +1,7 @@
 # imports
 imports:
-- 'cpp/lib1/lib1.yml'
-- 'cpp/lib2/lib2.yml'
+- 'lib/lib1/lib1.yml'
+- 'lib/lib2/lib2.yml'
 
 # variables
 variables:
@@ -34,8 +34,9 @@ app:
         - DEBUG_APP
         - TEST_APP
     sources:
-        - cpp/main.cpp
-        - cpp/main.h
+        - source/main.cpp
+        - source/main.h
+        - source/stuff/**/*.*
     dependencies:
         - lib1
         - lib2

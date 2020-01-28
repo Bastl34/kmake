@@ -19,6 +19,21 @@ let Helper =
         });
 
         return fileList;
+    },
+
+    normalize(item)
+    {
+        return path.normalize(item).replace(/\\/g,'/');
+    },
+
+    resolve(item)
+    {
+        return path.resolve(item).replace(/\\/g,'/');
+    },
+
+    relative(from, to)
+    {
+        return path.relative(from, to).replace(/\\/g,'/');
     }
 
 }
