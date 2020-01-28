@@ -1,8 +1,6 @@
 const fs = require('fs');
-const copy = require('recursive-copy');
-const replace = require('replace-in-file');
 
-const Globals = require('./globals');
+const makeXcode = require('./projectMaker/xcode');
 
 async function make(options)
 {
@@ -43,43 +41,6 @@ async function validate(options)
             return Promise.reject();
         }
     };
-}
-
-async function makeXcode(options)
-{
-    // ******************** copy projects ********************
-    for(let i in options.workspace.content)
-    {
-        let projectName = options.workspace.content[i];
-        let project = options[projectName];
-
-        let sourcePath = options.build.templatePath + '/' + project.outputType + '.xcodeproj';
-        let destPath = options.build.outputPath + '/' + projectName + '.xcodeproj';
-
-        let results = await copy(sourcePath, destPath, {overwrite: true});
-        console.log(results.length + ' files copied');
-    };
-
-    // ******************** generate .xcworkspace ********************
-    let sourcePath = options.build.templatePath + '/workspace.xcworkspace';
-    let destPath = options.build.outputPath + '/' + options.workspace.name + '.xcworkspace';
-
-    let results = await copy(sourcePath, destPath, {overwrite: true});
-    console.log(results.length + ' files copied');
-
-    let fileRefStr = '';
-    for(let i in options.workspace.content)
-    {
-        let projectName = options.workspace.content[i];
-        let project = options[projectName];
-
-        fileRefStr += '   <FileRef location = "group:' + projectName + '.xcodeproj"></FileRef>\n'
-    }
-
-    let workspaceContentFilePath = destPath + '/contents.xcworkspacedata';
-
-    results = await replace({files: workspaceContentFilePath, from: '<!--FileRef-->', to: fileRefStr.trim()});
-    console.log(results.length + ' files changed');
 }
 
 module.exports = make;

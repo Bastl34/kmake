@@ -4,7 +4,7 @@
     "description": "build tool for c++ projects (node js based)",
     "main": "index.js",
     "scripts": {
-        "dev-mac": "npm i && nodemon source/index.js examples xcodeMac out"
+        "dev-mac": "npm i && nodemon source/index.js examples xcodeMac examples/out"
     },
     "dependencies": {
         "js-yaml": "^3.13.1",

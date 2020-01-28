@@ -198,7 +198,6 @@ for(let itemKey in options)
         })
 
         item.sources = sources;
-
     }
 }
 
