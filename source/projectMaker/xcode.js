@@ -168,31 +168,31 @@ async function makeXcode(options)
             });
 
             // ********** create xcode project file strings
-			let sourceFileContent = "";
-			let sourceFileReferenceContent = "";
-			let compileFiles = "";
+            let sourceFileContent = "";
+            let sourceFileReferenceContent = "";
+            let compileFiles = "";
 
-			soucesList.forEach(file =>
-			{
+            soucesList.forEach(file =>
+            {
                 //get the relative path from output dir to source
                 let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(file.path)) + '/' + file.name;
 
-				sourceFileContent += '		'+file.uid2+' /* '+file.name+' in Sources */ = {isa = PBXBuildFile; fileRef = '+file.uid+' /* '+file.name+' */; };\n';
-				sourceFileReferenceContent += '		'+file.uid+' /* '+file.name+' */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = '+file.type+'; name = '+file.name+'; path = '+relativePath+'; sourceTree = "<group>"; };\n';
+                sourceFileContent += '		'+file.uid2+' /* '+file.name+' in Sources */ = {isa = PBXBuildFile; fileRef = '+file.uid+' /* '+file.name+' */; };\n';
+                sourceFileReferenceContent += '		'+file.uid+' /* '+file.name+' */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = '+file.type+'; name = '+file.name+'; path = '+relativePath+'; sourceTree = "<group>"; };\n';
 
-				//only source files
-				if (file.type.indexOf('sourcecode') != -1)
+                //only source files
+                if (file.type.indexOf('sourcecode') != -1)
                     compileFiles += '				'+file.uid2+' /* '+file.name+' in Sources */,\n';
             });
 
             // ********** source groups folders
-			let sourceDirectories = '';
+            let sourceDirectories = '';
             directoryList.forEach(directory =>
-			{
-				//get containing dirs
-				let containingDirs = [];
+            {
+                //get containing dirs
+                let containingDirs = [];
                 directoryList.forEach(innerDir =>
-				{
+                {
                     if (FileHelper.isSubdirectory(directory.path, innerDir.path))
                         containingDirs.push(innerDir);
                 });
@@ -200,15 +200,15 @@ async function makeXcode(options)
                 //get containing files
                 let containingFiles = [];
                 soucesList.forEach(innerFile =>
-				{
+                {
                     if (FileHelper.isSubdirectory(directory.path, innerFile.pathRelative))
                         containingFiles.push(innerFile);
                 });
 
-				//add to SOURCE_DIRECTORIES
-				sourceDirectories += "		"+directory.uid+" /* "+directory.name+" */ = {\n";
-				sourceDirectories += "			isa = PBXGroup;\n";
-				sourceDirectories += "			children = (\n";
+                //add to SOURCE_DIRECTORIES
+                sourceDirectories += "		"+directory.uid+" /* "+directory.name+" */ = {\n";
+                sourceDirectories += "			isa = PBXGroup;\n";
+                sourceDirectories += "			children = (\n";
 
                 containingDirs.forEach(cDir =>
                 {
@@ -220,10 +220,10 @@ async function makeXcode(options)
                     sourceDirectories += "				"+cFile.uid+" /* "+cFile.name+" */,\n";
                 });
 
-				sourceDirectories += "			);\n";
-				sourceDirectories += "			name = "+directory.name+";\n";
-				sourceDirectories += "			sourceTree = \"<group>\";\n";
-				sourceDirectories += "		};\n";
+                sourceDirectories += "			);\n";
+                sourceDirectories += "			name = "+directory.name+";\n";
+                sourceDirectories += "			sourceTree = \"<group>\";\n";
+                sourceDirectories += "		};\n";
             });
 
             // ********** root source files/directories
