@@ -23,7 +23,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		6BA632BD23DA085D008F13A0 /* app */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6BA632BD23DA085D008F13A0 /* PROJET_NAME */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = PROJECT_NAME; sourceTree = BUILT_PRODUCTS_DIR; };
 		/*SOURCE_FILE_REFERENCE*/
 /* End PBXFileReference section */
 
@@ -41,7 +41,7 @@
 		6BA632B423DA085D008F13A0 = {
 			isa = PBXGroup;
 			children = (
-				6BA632BF23DA085D008F13A0 /* app */,
+				/*SOURCE_ROOT*/
 				6BA632BE23DA085D008F13A0 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -49,25 +49,20 @@
 		6BA632BE23DA085D008F13A0 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6BA632BD23DA085D008F13A0 /* app */,
+				6BA632BD23DA085D008F13A0 /* PROJECT_NAME */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		6BA632BF23DA085D008F13A0 /* app */ = {
-			isa = PBXGroup;
-			children = (
-				6BA632C023DA085D008F13A0 /* main.cpp */,
-			);
-			path = app;
-			sourceTree = "<group>";
-		};
+
+		/*SOURCE_DIRECTORIES*/
+
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6BA632BC23DA085D008F13A0 /* app */ = {
+		6BA632BC23DA085D008F13A0 /* PROJECT_NAME */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 6BA632C423DA085D008F13A0 /* Build configuration list for PBXNativeTarget "app" */;
+			buildConfigurationList = 6BA632C423DA085D008F13A0 /* Build configuration list for PBXNativeTarget "PROJECT_NAME" */;
 			buildPhases = (
 				6BA632B923DA085D008F13A0 /* Sources */,
 				6BA632BA23DA085D008F13A0 /* Frameworks */,
@@ -77,9 +72,9 @@
 			);
 			dependencies = (
 			);
-			name = app;
-			productName = app;
-			productReference = 6BA632BD23DA085D008F13A0 /* app */;
+			name = PROJECT_NAME;
+			productName = PROJECT_NAME;
+			productReference = 6BA632BD23DA085D008F13A0 /* PROJECT_NAME */;
 			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
@@ -96,7 +91,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 6BA632B823DA085D008F13A0 /* Build configuration list for PBXProject "app" */;
+			buildConfigurationList = 6BA632B823DA085D008F13A0 /* Build configuration list for PBXProject "PROJECT_NAME" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -109,7 +104,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6BA632BC23DA085D008F13A0 /* app */,
+				6BA632BC23DA085D008F13A0 /* PROJECT_NAME */,
 			);
 		};
 /* End PBXProject section */
@@ -166,10 +161,6 @@
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -181,6 +172,29 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
+
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					/*DEFINES_DEBUG*/
+				);
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/*LIB_PATHS_DEBUG*/
+				);
+				HEADER_SEARCH_PATHS = (
+					/*INCLUDES_DEBUG*/
+				);
+				LIBRARY_SEARCH_PATHS = (
+					 /*LIB_PATHS_DEBUG*/
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					/*CPP_FLAGS_DEBUG*/
+				);
+				OTHER_LDFLAGS = (
+					/*LINKER_FLAGS_DEBUG*/
+				);
 			};
 			name = Debug;
 		};
@@ -232,6 +246,28 @@
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
+
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					/*DEFINES_RELEASE*/
+				);
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					/*LIB_PATHS_RELEASE*/
+				);
+				HEADER_SEARCH_PATHS = (
+					/*INCLUDES_RELEASE*/
+				);
+				LIBRARY_SEARCH_PATHS = (
+					 /*LIB_PATHS_RELEASE*/
+				);
+				OTHER_CPLUSPLUSFLAGS = (
+					"$(OTHER_CFLAGS)",
+					/*CPP_FLAGS_RELEASE*/
+				);
+				OTHER_LDFLAGS = (
+					/*LINKER_FLAGS_RELEASE*/
+				);
 			};
 			name = Release;
 		};
@@ -254,7 +290,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		6BA632B823DA085D008F13A0 /* Build configuration list for PBXProject "app" */ = {
+		6BA632B823DA085D008F13A0 /* Build configuration list for PBXProject "PROJECT_NAME" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6BA632C223DA085D008F13A0 /* Debug */,
@@ -263,7 +299,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		6BA632C423DA085D008F13A0 /* Build configuration list for PBXNativeTarget "app" */ = {
+		6BA632C423DA085D008F13A0 /* Build configuration list for PBXNativeTarget "PROJECT_NAME" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				6BA632C523DA085D008F13A0 /* Debug */,

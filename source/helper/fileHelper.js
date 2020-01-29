@@ -21,6 +21,49 @@ let Helper =
         return fileList;
     },
 
+    countDirectoryLevels(itemPath)
+    {
+        if (!itemPath)
+            return 0;
+
+        //return itemPath.split("/").length - 1;
+        return itemPath.split("/").length;
+    },
+
+    isSubdirectory: function(outerDirPath, subDirPath)
+    {
+        outerDirPath = outerDirPath.replace(/\\/g,'/');
+        subDirPath = subDirPath.replace(/\\/g,'/');
+
+        //if the paths are the same or the sub dir path is smaller -> it's not a subdir
+        if (outerDirPath == subDirPath || subDirPath.length < outerDirPath.length)
+            return false;
+
+        let outerDirLevels = Helper.countDirectoryLevels(outerDirPath);
+        let subDirLevels = Helper.countDirectoryLevels(subDirPath);
+
+        if (subDirPath.indexOf(outerDirPath) == 0 && subDirLevels == outerDirLevels+1)
+            return true;
+
+        return false;
+    },
+
+    getAllParentDirectoryPaths: function(dir, includeSelf = false)
+    {
+        let parentDirectoryPaths = [];
+
+        do
+        {
+            dir = path.dirname(dir);
+
+            if (dir != '.')
+                parentDirectoryPaths.push(dir);
+        }
+        while(dir != '.')
+
+        return parentDirectoryPaths;
+    },
+
     normalize(item)
     {
         return path.normalize(item).replace(/\\/g,'/');

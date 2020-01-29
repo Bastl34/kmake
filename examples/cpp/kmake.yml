@@ -31,7 +31,7 @@ app:
 
     defines:
         - APP_NAME: '${PROJECT_NAME}'
-        - DEBUG_APP
+        - DEBUG_APP: 1
         - TEST_APP
     sources:
         - source/main.cpp
