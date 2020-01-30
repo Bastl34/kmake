@@ -33,6 +33,26 @@ app:
         - APP_NAME: '${PROJECT_NAME}'
         - DEBUG_APP: 1
         - TEST_APP
+    includes:
+        - './'
+        - vs*:
+            win32:
+                release:
+                    - 'c:/win32Release'
+                debug:
+                    - 'c:/win32Debug'
+            x64:
+                release:
+                    - 'c:/win64Release'
+                debug:
+                    - 'c:/win64Debug'
+        - xcodeMac:
+            x86_64:
+                release:
+                    - '/MacRelease'
+                debug:
+                    - '/MacDebug'
+
     sources:
         - source/main.cpp
         - source/main.h
@@ -42,5 +62,5 @@ app:
         - lib2
         - lib2.1
     hooks:
-        beforePrepare: 'echo before prepare'
-        afterPrepare: 'echo after prepare'
+        - beforePrepare: 'echo before prepare'
+        - afterPrepare: 'echo after prepare'
