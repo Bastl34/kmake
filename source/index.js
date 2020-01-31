@@ -9,6 +9,7 @@ const FileHelper = require('./helper/fileHelper');
 
 const Globals = require('./globals');
 const ymlLoader = require('./ymlLoader');
+const platformResolver = require('./platformResolver');
 const make = require('./make');
 
 const kmakeRoot = fs.realpathSync(__dirname + '/..');
@@ -48,6 +49,15 @@ if (!fileStat || !fileStat.isFile())
 }
 
 // ******************** find template ********************
+template = template.toLocaleLowerCase();
+if (!(template in Globals.TEMPLATES))
+{
+    console.error('template: ' + template + ' not found');
+    process.exit();
+}
+
+template = Globals.TEMPLATES[template];
+
 let templatePath = kmakeRoot + '/' + Globals.TEMPLATE_DIR +  '/' + template;
 if(path.isAbsolute(template))
     templatePath = template;
@@ -91,14 +101,24 @@ let options = {};
 try
 {
     options = ymlLoader(projectPath);
-
-    //console.log(options);
 } catch (e)
 {
     console.error(e);
     process.exit();
 }
 
+// ******************** build settings ********************
+options.build =
+{
+    template: template,
+    templatePath: FileHelper.normalize(templatePath),
+    project: projectPath,
+    projectPath: FileHelper.normalize(kmakeRoot + '/' + projectPath),
+    output: output,
+    outputPath: FileHelper.normalize(outputPath),
+    useInputCache: useInputCache,
+    cleanOutputDir: cleanOutputDir
+};
 
 // ******************** get inputs ********************
 
@@ -116,8 +136,10 @@ if ('inputs' in options)
 
         if (!useInputCache)
         {
-            options.inputs.forEach(inputVar =>
+            for(let key in options.inputs)
             {
+                let inputVar = options.inputs[key];
+
                 let nameStr = inputVar + ': ';
                 if (inputVar in inputCache)
                     nameStr = inputVar + ' (' + inputCache[inputVar] + '): ';
@@ -135,19 +157,21 @@ if ('inputs' in options)
                 }
 
                 console.log(' --> ' + value);
-            });
+            }
         }
         else
         {
-            options.inputs.forEach(inputVar =>
+            for(let key in options.inputs)
             {
+                let inputVar = options.inputs[key];
+
                 //read value from cache
                 let value = null;
                 if (inputVar in inputCache)
                     value = inputCache[inputVar];
 
                 console.log(inputVar + ': ' + value);
-            });
+            }
         }
 
         //saving input data
@@ -179,6 +203,9 @@ Helper.recursiveReplace(options, (key, object) =>
     return object;
 });
 
+// ******************** resolve platforms/architectures ********************
+options = platformResolver(options);
+
 // ******************** resolve source files ********************
 
 for(let itemKey in options)
@@ -190,22 +217,19 @@ for(let itemKey in options)
 
         let workingDir = item.workingDir;
 
-        item.sources.forEach(file =>
+        for(let key in item.sources)
         {
+            let file = item.sources[key];
             let filePath = workingDir + '/' + file;
             let files = glob.sync(filePath);
 
             files = files.map(file => { return FileHelper.normalize(file); })
             sources = [...sources, ...files];
-        })
+        }
 
         item.sources = sources;
     }
 }
-
-// ******************** resolve architectures ********************
-
-//TODO
 
 
 // ******************** make ********************
@@ -214,17 +238,6 @@ for(let itemKey in options)
 {
     try
     {
-        options.build =
-        {
-            template: template,
-            templatePath: FileHelper.normalize(templatePath),
-            project: projectPath,
-            projectPath: FileHelper.normalize(kmakeRoot + '/' + projectPath),
-            output: output,
-            outputPath: FileHelper.normalize(outputPath),
-            cleanOutputDir: cleanOutputDir
-        };
-
         await make(options);
     }
     catch (e)

@@ -33,24 +33,25 @@ app:
         - APP_NAME: '${PROJECT_NAME}'
         - DEBUG_APP: 1
         - TEST_APP
-    includes:
+
+    includePaths:
         - './'
-        - vs*:
-            win32:
-                release:
+        - 'platform:vs*':
+            arch:win32:
+                config:release:
                     - 'c:/win32Release'
-                debug:
+                config:debug:
                     - 'c:/win32Debug'
-            x64:
-                release:
+            arch:x64:
+                config:release:
                     - 'c:/win64Release'
-                debug:
+                config:debug:
                     - 'c:/win64Debug'
-        - xcodeMac:
-            x86_64:
-                release:
+        - 'platform:xcodeMac':
+            arch:x86_64:
+                config:release:
                     - '/MacRelease'
-                debug:
+                config:debug:
                     - '/MacDebug'
 
     sources:

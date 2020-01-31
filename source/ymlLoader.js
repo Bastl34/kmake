@@ -6,7 +6,11 @@ const FileHelper = require('./helper/fileHelper');
 
 function ymlLoader(ymlPath)
 {
-    const fileContent = fs.readFileSync(ymlPath, 'utf8');
+    let fileContent = fs.readFileSync(ymlPath, 'utf8');
+
+    if (!fileContent)
+        fileContent = {}
+
     const parsed = yaml.safeLoad(fileContent);
 
     let content = {...parsed};

@@ -9,3 +9,12 @@
 
 ## Dev
 * `npm run dev-mac`
+
+## Plaftorm settings
+you can define platform settings for:
+* `defines`
+* `includePaths`
+* `dependencies`
+* `hooks`
+* `buildFlags`
+* `linkerFlags`

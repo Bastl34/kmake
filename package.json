@@ -11,7 +11,8 @@
         "glob": "^7.1.6",
         "readline-sync": "^1.4.10",
         "recursive-copy": "^2.0.10",
-        "replace-in-file": "^5.0.2"
+        "replace-in-file": "^5.0.2",
+        "micromatch": "^4.0.2"
     },
     "keywords": []
 }

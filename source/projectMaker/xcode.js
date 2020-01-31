@@ -87,7 +87,7 @@ async function makeXcode(options)
             let defines = {release: [], debug: []};
             let libDirs = {release: [], debug: []};
             let linkerFlags = {release: [], debug: []};
-            let cppFlags = {release: [], debug: []};
+            let cppFlags = {release: [], debug: []}; // "cppFlags" --> "buildFlags"
 
             // ********** files
             project.sources.forEach(file =>
