@@ -14,6 +14,9 @@ let globals =
         "xcodemac": "xcodeMac"
     },
 
+    //all supported platforms
+    //if platform is not supported -> not matching plafroms from kmake.yml are not applied
+    //if you want to add a new platform/arch add it here
     PLATFORMS:
     {
         "xcodeMac": ["x86_64"],
@@ -23,7 +26,9 @@ let globals =
         "ios": ["armv7", "arm64", "i386", "x86_64"],
     },
 
-    CONFIGURATIONS: ["debug", "release"]
+    CONFIGURATIONS: ["debug", "release"],
+
+    PLATFORM_RESOLVER: ["defines", "includePaths", "dependencies"],
 };
 
 module.exports = globals;

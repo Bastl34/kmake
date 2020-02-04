@@ -33,6 +33,7 @@ app:
         - APP_NAME: '${PROJECT_NAME}'
         - DEBUG_APP: 1
         - TEST_APP
+        - TEST_DEFINE
 
     includePaths:
         - './'
@@ -51,8 +52,15 @@ app:
             arch:x86_64:
                 config:release:
                     - '/MacRelease'
+                    - '/MacRelease2'
                 config:debug:
                     - '/MacDebug'
+                    - '/MacDebug2'
+            arch:x86:
+                config:release:
+                    - '/MacRelease2'
+                config:debug:
+                    - '/MacDebug2'
 
     sources:
         - source/main.cpp

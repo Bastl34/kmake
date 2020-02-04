@@ -204,7 +204,10 @@ Helper.recursiveReplace(options, (key, object) =>
 });
 
 // ******************** resolve platforms/architectures ********************
-options = platformResolver(options);
+//console.log(options);
+//console.log("===================")
+options = platformResolver(options, options.build);
+console.log(options.app.defines);
 
 // ******************** resolve source files ********************
 
