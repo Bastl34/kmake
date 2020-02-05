@@ -19,7 +19,7 @@ workspace:
         - app
         - dep1
         - dep2
-        - dep2.1
+        - dep21
 
 # main App
 app:
@@ -69,7 +69,7 @@ app:
     dependencies:
         - dep1
         - dep2
-        - dep2.1
+        - dep21
     hooks:
         - beforePrepare: 'echo before prepare'
         - afterPrepare: 'echo after prepare'

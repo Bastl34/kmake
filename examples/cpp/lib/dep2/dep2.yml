@@ -1,6 +1,6 @@
 # imports
 imports:
-- '../dep2.1/dep2.1.yml'
+- '../dep21/dep21.yml'
 
 # dep 2
 dep2:
@@ -12,4 +12,4 @@ dep2:
     sources: ['*.cpp', '*.h']
 
     dependencies:
-        - dep2.1
+        - dep21
