@@ -101,7 +101,7 @@ async function makeXcode(options)
 
                 let filePathRelative = file;
                 if (project.workingDir && project.workingDir.length > 0)
-                filePathRelative = filePathRelative.substr(project.workingDir.length+1);
+                    filePathRelative = filePathRelative.substr(project.workingDir.length+1);
 
                 if (directory)
                 {
@@ -275,6 +275,7 @@ async function applyPlatformData(projectName, project, options)
             let includesArray = ('includePaths' in project) ? project['includePaths'][platform][config] : [];
             includesArray.forEach(item =>
             {
+                item = FileHelper.relative(options.build.outputPath, item);
                 includePathsContent += '					"' + item + '",\n';
             });
 
@@ -287,11 +288,12 @@ async function applyPlatformData(projectName, project, options)
                 definesContent += '					' + getDefineEntry(item) + ',\n';
             });
 
-            //include
+            //libPaths
             let libPathsContent = "";
             let libsPathsArray = ('libPaths' in project) ? project['libPaths'][platform][config] : [];
             libsPathsArray.forEach(item =>
             {
+                item = FileHelper.relative(options.build.outputPath, item);
                 libPathsContent += '					"' + item + '",\n';
             });
 

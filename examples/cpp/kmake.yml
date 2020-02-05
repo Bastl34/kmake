@@ -1,7 +1,7 @@
 # imports
 imports:
-- 'lib/lib1/lib1.yml'
-- 'lib/lib2/lib2.yml'
+- 'lib/dep1/dep1.yml'
+- 'lib/dep2/dep2.yml'
 
 # variables
 variables:
@@ -17,9 +17,9 @@ workspace:
     name: '${PROJECT_NAME}'
     content:
         - app
-        - lib1
-        - lib2
-        - lib2.1
+        - dep1
+        - dep2
+        - dep2.1
 
 # main App
 app:
@@ -67,9 +67,9 @@ app:
         - source/main.h
         - source/stuff/**/*.*
     dependencies:
-        - lib1
-        - lib2
-        - lib2.1
+        - dep1
+        - dep2
+        - dep2.1
     hooks:
         - beforePrepare: 'echo before prepare'
         - afterPrepare: 'echo after prepare'

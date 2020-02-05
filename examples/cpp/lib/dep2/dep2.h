@@ -2,4 +2,4 @@
 
 #include <iostream>
 
-void lib2Func();
+void dep2Func();

@@ -210,6 +210,39 @@ Helper.recursiveReplace(options, (key, object) =>
     return object;
 });
 
+// ******************** add dependencie paths to project's  ********************
+
+Logging.info('appending dependencies to includePaths and libPaths ...');
+let depenencyItems = ['includePaths', 'libPaths'];
+
+for(let optionKey in options)
+{
+    let project = options[optionKey];
+
+    if ('dependencies' in project)
+    {
+        for(let dependencyKey in project.dependencies)
+        {
+            let dependency = project.dependencies[dependencyKey];
+
+            if (dependency in options && 'workingDir' in options[dependency])
+            {
+                depenencyItems.forEach(depenencyItem =>
+                {
+                    if (!(depenencyItem in project))
+                        project[depenencyItem] = [];
+
+                    let relativePath = FileHelper.relative(project.workingDir, options[dependency].workingDir);
+
+                    project[depenencyItem].push(relativePath)
+                });
+            }
+        }
+    }
+}
+
+console.log(options.app.libPaths)
+
 // ******************** resolve platforms/architectures ********************
 Logging.info('resolving platform specific settings...');
 options = platformResolver(options, options.build);
@@ -236,6 +269,35 @@ for(let itemKey in options)
         }
 
         item.sources = sources;
+    }
+}
+
+// ******************** resolve platform specific paths ********************
+Logging.info('resolving platform/arch/config specific paths...');
+
+let resolvingItems = ['includePaths', 'libPaths'];
+
+for(let optionKey in options)
+{
+    let option = options[optionKey];
+
+    for(let propKey in option)
+    {
+        let property = option[propKey];
+
+        if (resolvingItems.indexOf(propKey) != -1)
+        {
+            Helper.recursiveReplace(property, (key, object) =>
+            {
+                if (typeof object === "string")
+                {
+                    let filePath = option.workingDir + '/' + object;
+                    object = FileHelper.normalize(filePath);
+                }
+
+                return object;
+            });
+        }
     }
 }
 
@@ -301,18 +363,3 @@ async function runHooks(options, type)
         Logging.log(e);
     }
 })()
-
-/*
-console.log('yaml: ' + yamlPath);
-console.log('template: ' + template);
-console.log('outputPath: ' + outputPath);
-
-try
-{
-    const options = yaml.safeLoad(fs.readFileSync(yamlPath, 'utf8'));
-} catch (e)
-{
-    console.error(e);
-    process.exit();
-}
-*/

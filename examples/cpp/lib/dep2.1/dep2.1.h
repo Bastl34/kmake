@@ -2,4 +2,4 @@
 
 #include <iostream>
 
-void lib1Func();
+void dep21Func();

@@ -1,7 +1,7 @@
 
-# Lib 2.1
-lib2.1:
-    name: lib2.1
+# Dep 2.1
+dep2.1:
+    name: dep2.1
     type: project
     outputType: static
     projectType: source

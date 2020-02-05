@@ -1,12 +1,15 @@
 # imports
 imports:
-- '../lib2.1/lib2.1.yml'
+- '../dep2.1/dep2.1.yml'
 
-# Lib 2
-lib2:
-    name: lib2
+# dep 2
+dep2:
+    name: dep2
     type: project
     outputType: dynamic
     projectType: source
 
     sources: ['*.cpp', '*.h']
+
+    dependencies:
+        - dep2.1
