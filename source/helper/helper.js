@@ -46,7 +46,17 @@ let Helper =
 
         throw "randomString max retries reached";
         return null;
-     }
+     },
+
+     swapObjectKeyValue(keys)
+     {
+         let newKeys = {};
+
+         for(let key in keys)
+             newKeys[keys[key]] = key;
+
+         return newKeys;
+     },
 }
 
 

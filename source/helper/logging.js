@@ -9,7 +9,7 @@ let Logging =
 
     info: function(...args)
     {
-        console.log(...args);
+        console.log(colors.cyan(...args));
     },
 
     notice: function(...args)

@@ -29,10 +29,9 @@ async function make(options)
 
     //create project files
     if (options.build.template == 'xcodeMac')
-        res = await makeXcode(options);
+        return await makeXcode(options);
 
-    if (res)
-        Logging.rainbow("project generation was successful");
+    return false;
 }
 
 async function validate(options)

@@ -4,6 +4,9 @@ const yaml = require('js-yaml');
 const glob = require('glob');
 const readlineSync = require('readline-sync');
 
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
+
 const Helper = require('./helper/helper');
 const FileHelper = require('./helper/fileHelper');
 const Logging = require('./helper/logging');
@@ -14,6 +17,8 @@ const platformResolver = require('./platformResolver');
 const make = require('./make');
 
 const kmakeRoot = fs.realpathSync(__dirname + '/..');
+
+const HOOKS_SWAPPED = Helper.swapObjectKeyValue(Globals.HOOKS);
 
 if (process.argv.length < 5)
 {
@@ -98,7 +103,7 @@ catch(e)
 // ******************** load yaml ********************
 
 let options = {};
-
+Logging.info('loading build settings...');
 try
 {
     options = ymlLoader(projectPath);
@@ -122,7 +127,7 @@ options.build =
 };
 
 // ******************** get inputs ********************
-
+Logging.info('getting input data...');
 if ('inputs' in options)
 {
     try
@@ -189,6 +194,7 @@ if ('inputs' in options)
 
 // ******************** process variables ********************
 
+Logging.info('replacing variables...');
 Helper.recursiveReplace(options, (key, object) =>
 {
     if (typeof object === "string")
@@ -205,10 +211,11 @@ Helper.recursiveReplace(options, (key, object) =>
 });
 
 // ******************** resolve platforms/architectures ********************
+Logging.info('resolving platform specific settings...');
 options = platformResolver(options, options.build);
 
 // ******************** resolve source files ********************
-
+Logging.info('resolving source files...');
 for(let itemKey in options)
 {
     let item = options[itemKey];
@@ -232,6 +239,45 @@ for(let itemKey in options)
     }
 }
 
+// ******************** hooks ********************
+
+async function runHooks(options, type)
+{
+    Logging.info('running ' + HOOKS_SWAPPED[type] + ' hooks...');
+
+    for(let itemKey in options)
+    {
+        let item = options[itemKey];
+        if ('hooks' in item)
+        {
+            let hooks = item['hooks']
+
+            for(let hookI in hooks)
+            {
+                let hook = hooks[hookI];
+                let name = Object.keys(hook)[0];
+
+                if (name == HOOKS_SWAPPED[type])
+                {
+                    let command = hook[name];
+                    let workingDir = path.resolve(item.workingDir)
+
+                    try
+                    {
+                        const { stdout, stderr } = await exec(command, {cwd: workingDir});
+                        Logging.log(stdout.trim());
+                        if (stderr && stderr.trim())
+                            Logging.error(stderr.trim());
+                    }
+                    catch(e)
+                    {
+                        Logging.error(itemKey + ': ' + HOOKS_SWAPPED[type] + ' hook failed');
+                    }
+                }
+            }
+        }
+    }
+}
 
 // ******************** make ********************
 
@@ -239,13 +285,20 @@ for(let itemKey in options)
 {
     try
     {
-        await make(options);
+        await runHooks(options, Globals.HOOKS.beforePrepare);
+
+        Logging.info('generating project...');
+        let res = await make(options);
+        if (res)
+            Logging.rainbow("project generation was successful");
+
+        await runHooks(options, Globals.HOOKS.afterPrepare);
 
     }
     catch (e)
     {
-        logging.error("make failed");
-        logging.log(e);
+        Logging.error("make failed");
+        Logging.log(e);
     }
 })()
 

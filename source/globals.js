@@ -8,6 +8,12 @@ let globals =
         dynamic: 3
     },
 
+    HOOKS:
+    {
+        beforePrepare: 0,
+        afterPrepare: 1
+    },
+
     TEMPLATES:
     {
         "mac": "xcodeMac",
