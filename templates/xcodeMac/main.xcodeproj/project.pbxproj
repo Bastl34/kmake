@@ -190,7 +190,7 @@
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
-					/*CPP_FLAGS_DEBUG*/
+					/*BUILD_FLAGS_DEBUG*/
 				);
 				OTHER_LDFLAGS = (
 					/*LINKER_FLAGS_DEBUG*/
@@ -263,7 +263,7 @@
 				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
-					/*CPP_FLAGS_RELEASE*/
+					/*BUILD_FLAGS_RELEASE*/
 				);
 				OTHER_LDFLAGS = (
 					/*LINKER_FLAGS_RELEASE*/

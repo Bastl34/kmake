@@ -28,7 +28,7 @@ let globals =
 
     CONFIGURATIONS: ["debug", "release"],
 
-    PLATFORM_RESOLVER: ["defines", "includePaths", "dependencies"],
+    PLATFORM_RESOLVER: ["defines", "includePaths", "libPaths", "dependencies", "buildFlags", "linkerFlags"],
 };
 
 module.exports = globals;

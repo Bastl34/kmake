@@ -172,7 +172,7 @@ function resolveConfiguration(options, build)
                 let config = keyName.substr('config:'.length)
 
                 if (Object.keys(newContent).indexOf(config) != -1)
-                    newContent[config].push(option[keyName])
+                    newContent[config] = [...newContent[config],...option[keyName]]
 
                 configItemFound = true;
             }
@@ -185,14 +185,34 @@ function resolveConfiguration(options, build)
     return newContent;
 }
 
-function resolveGenerics(options)
+function resolveGenerics(archs)
 {
-    let allGenerics = []
+    for(let archKey in archs)
+    {
+        let archObj = archs[archKey];
 
-    //TODO
-    //console.log(options);
+        if (archKey != 'generic')
+        {
+            for(let configKey in archObj)
+            {
+                let configObj = archObj[configKey];
 
-    return options;
+                if (configKey != 'generic')
+                {
+                    let archGenerics = archs.generic;
+                    let configGenerics = archObj.generic;
+
+                    archObj[configKey] = [...archGenerics, ...configGenerics, ...configObj];
+                }
+            }
+
+            delete archObj.generic;
+        }
+    }
+
+    delete archs.generic;
+
+    return archs;
 }
 
 module.exports = platformResolver;

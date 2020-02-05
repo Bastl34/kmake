@@ -83,12 +83,6 @@ async function makeXcode(options)
             let soucesList = [];
             let directoryList = {};
 
-            let includeDirs = {release: [], debug: []};
-            let defines = {release: [], debug: []};
-            let libDirs = {release: [], debug: []};
-            let linkerFlags = {release: [], debug: []};
-            let cppFlags = {release: [], debug: []}; // "cppFlags" --> "buildFlags"
-
             // ********** files
             project.sources.forEach(file =>
             {
@@ -240,9 +234,8 @@ async function makeXcode(options)
             });
 
             // ********** build configurations
-            includeDirs.release.push("../asdasd")
-            includeDirs.release.push("../asd")
 
+            /*
             //include
             includeDirs.releaseContent = "";
             includeDirs.release.forEach(item => { includeDirs.releaseContent += '					' + item + ',\n';  });
@@ -264,12 +257,12 @@ async function makeXcode(options)
             libDirs.debugContent = "";
             libDirs.debug.forEach(item => { libDirs.debugContent += '					' + item + ',\n';  });
 
-            //cppFlags
-            cppFlags.releaseContent = "";
-            cppFlags.release.forEach(item => { cppFlags.releaseContent += '					"' + item + '",\n';  });
+            //buildFlags
+            buildFlags.releaseContent = "";
+            buildFlags.release.forEach(item => { buildFlags.releaseContent += '					"' + item + '",\n';  });
 
-            cppFlags.debugContent = "";
-            cppFlags.debug.forEach(item => { cppFlags.debugContent += '					"' + item + '",\n';  });
+            buildFlags.debugContent = "";
+            buildFlags.debug.forEach(item => { buildFlags.debugContent += '					"' + item + '",\n';  });
 
             //linkerFlags
             linkerFlags.releaseContent = "";
@@ -277,6 +270,7 @@ async function makeXcode(options)
 
             linkerFlags.debugContent = "";
             linkerFlags.debug.forEach(item => { linkerFlags.debugContent += '					"' + item + '",\n';  });
+            */
 
             // ********** replacements
             let projectFilePath = options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj';
@@ -291,17 +285,86 @@ async function makeXcode(options)
             results = await replace({files: projectFilePath, from: '/*SOURCE_DIRECTORIES*/', to: sourceDirectories.trim()});
             results = await replace({files: projectFilePath, from: '/*SOURCE_ROOT*/', to: sourceRoot.trim()});
 
-            results = await replace({files: projectFilePath, from: '/*DEFINES_RELEASE*/', to: defines.releaseContent.trim()});
-            results = await replace({files: projectFilePath, from: '/*LIB_PATHS_RELEASE*/', to: libDirs.releaseContent.trim()});
-            results = await replace({files: projectFilePath, from: '/*INCLUDES_RELEASE*/', to: includeDirs.releaseContent.trim()});
-            results = await replace({files: projectFilePath, from: '/*CPP_FLAGS_RELEASE*/', to: cppFlags.releaseContent.trim()});
-            results = await replace({files: projectFilePath, from: '/*LINKER_FLAGS_RELEASE*/', to: linkerFlags.releaseContent.trim()});
+            
+            //results = await replace({files: projectFilePath, from: '/*DEFINES_RELEASE*/', to: defines.releaseContent.trim()});
+            //results = await replace({files: projectFilePath, from: '/*LIB_PATHS_RELEASE*/', to: libDirs.releaseContent.trim()});
+            //results = await replace({files: projectFilePath, from: '/*INCLUDES_RELEASE*/', to: includeDirs.releaseContent.trim()});
+            //results = await replace({files: projectFilePath, from: '/*BUILD_FLAGS_RELEASE*/', to: buildFlags.releaseContent.trim()});
+            //results = await replace({files: projectFilePath, from: '/*LINKER_FLAGS_RELEASE*/', to: linkerFlags.releaseContent.trim()});
+//
+            //results = await replace({files: projectFilePath, from: '/*DEFINES_DEBUG*/', to: defines.debugContent.trim()});
+            //results = await replace({files: projectFilePath, from: '/*LIB_PATHS_DEBUG*/', to: libDirs.debugContent.trim()});
+            //results = await replace({files: projectFilePath, from: '/*INCLUDES_DEBUG*/', to: includeDirs.debugContent.trim()});
+            //results = await replace({files: projectFilePath, from: '/*BUILD_FLAGS_DEBUG*/', to: buildFlags.releaseContent.trim()});
+            //results = await replace({files: projectFilePath, from: '/*LINKER_FLAGS_DEBUG*/', to: linkerFlags.releaseContent.trim()});
 
-            results = await replace({files: projectFilePath, from: '/*DEFINES_DEBUG*/', to: defines.debugContent.trim()});
-            results = await replace({files: projectFilePath, from: '/*LIB_PATHS_DEBUG*/', to: libDirs.debugContent.trim()});
-            results = await replace({files: projectFilePath, from: '/*INCLUDES_DEBUG*/', to: includeDirs.debugContent.trim()});
-            results = await replace({files: projectFilePath, from: '/*CPP_FLAGS_DEBUG*/', to: cppFlags.releaseContent.trim()});
-            results = await replace({files: projectFilePath, from: '/*LINKER_FLAGS_DEBUG*/', to: linkerFlags.releaseContent.trim()});
+            await applyPlatformData(projectName, project, options)
+        }
+    }
+}
+
+async function applyPlatformData(projectName, project, options)
+{
+    let projectFilePath = options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj';
+
+    //Globals.PLATFORMS[options.build.template].forEach(platform =>
+    for(let platformI in Globals.PLATFORMS[options.build.template])
+    {
+        let platform = Globals.PLATFORMS[options.build.template][platformI];
+
+        //Globals.CONFIGURATIONS.forEach(config =>
+        for(let configI in Globals.CONFIGURATIONS)
+        {
+            let config = Globals.CONFIGURATIONS[configI];
+            let configKey = config.toUpperCase()
+
+            //include
+            let includePathsContent = "";
+            let includesArray = ('includePaths' in project) ? project['includePaths'][platform][config] : [];
+            includesArray.forEach(item =>
+            {
+                includePathsContent += '					"' + item + '",\n';
+            });
+
+
+            //defines
+            let definesContent = "";
+            let definesArray = ('defines' in project) ? project['defines'][platform][config] : [];
+            definesArray.forEach(item =>
+            {
+                definesContent += '					' + getDefineEntry(item) + ',\n';
+            });
+
+            //include
+            let libPathsContent = "";
+            let libsPathsArray = ('libPaths' in project) ? project['libPaths'][platform][config] : [];
+            libsPathsArray.forEach(item =>
+            {
+                libPathsContent += '					"' + item + '",\n';
+            });
+
+            //buildFlags
+            let buildFlagsContent = "";
+            let buildFlagsArray = ('buildFlags' in project) ? project['buildFlags'][platform][config] : [];
+            buildFlagsArray.forEach(item =>
+            {
+                buildFlagsContent += '					"' + item + '",\n';
+            });
+
+            //linkerFlags
+            let linkerFlagsContent = "";
+            let linkerFlagsArray = ('linkerFlags' in project) ? project['linkerFlags'][platform][config] : [];
+            linkerFlagsArray.forEach(item =>
+            {
+                linkerFlagsContent += '					"' + item + '",\n';
+            });
+
+            //apply
+            let results = await replace({files: projectFilePath, from: `/*DEFINES_${configKey}*/`, to: definesContent.trim()});
+            results = await replace({files: projectFilePath, from: new RegExp(`/\\*LIB_PATHS_${configKey}\\*/`, 'g'), to: libPathsContent.trim()});
+            results = await replace({files: projectFilePath, from: `/*INCLUDES_${configKey}*/`, to: includePathsContent.trim()});
+            results = await replace({files: projectFilePath, from: `/*BUILD_FLAGS_${configKey}*/`, to: buildFlagsContent.trim()});
+            results = await replace({files: projectFilePath, from: `/*LINKER_FLAGS_${configKey}*/`, to: linkerFlagsContent.trim()});
         }
     }
 }
