@@ -1,5 +1,5 @@
 let _RANDOM_STR_MAP = {};
-const _RANDOM_STR_MAX_TRIES = 10;
+const _RANDOM_STR_MAX_RETRIES = 10;
 
 let Helper =
 {
@@ -24,7 +24,7 @@ let Helper =
     {
         let charactersLength = characters.length;
 
-        let tries = 0;
+        let retries = 0;
         do
         {
             let result = '';
@@ -40,11 +40,11 @@ let Helper =
                 return result;
             }
 
-            ++tries
+            ++retries
         }
-        while (tries < _RANDOM_STR_MAX_TRIES)
+        while (retries < _RANDOM_STR_MAX_RETRIES)
 
-        throw "randomString max tries reached";
+        throw "randomString max retries reached";
         return null;
      }
 }

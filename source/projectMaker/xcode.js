@@ -5,6 +5,7 @@ const replace = require('replace-in-file');
 
 const Helper = require('../helper/helper');
 const FileHelper = require('../helper/fileHelper');
+const Logging = require('../helper/logging');
 
 const Globals = require('../globals');
 
@@ -29,10 +30,10 @@ function getDefineEntry(item)
     {
         let name = Object.keys(item)[0];
         let isStr = typeof item[name] === 'string'
-        return name + "=" + (isStr ? '\'\\"' + item[name] + '\\"\'' : item[name])
+        return '"'+name + "=" + (isStr ? '\\"' + item[name] + '\\"' : item[name]) + '"';
     }
 
-    return item
+    return '"'+item+'"';
 }
 
 async function makeXcode(options)
@@ -47,7 +48,7 @@ async function makeXcode(options)
         let destPath = options.build.outputPath + '/' + projectName + '.xcodeproj';
 
         let results = await copy(sourcePath, destPath, {overwrite: true});
-        console.log(results.length + ' files copied');
+        Logging.log(results.length + ' files copied');
     };
 
     // ******************** generate .xcworkspace ********************
@@ -55,7 +56,7 @@ async function makeXcode(options)
     let destPath = options.build.outputPath + '/' + options.workspace.name + '.xcworkspace';
 
     let results = await copy(sourcePath, destPath, {overwrite: true});
-    console.log(results.length + ' files copied');
+    Logging.log(results.length + ' files copied');
 
     let fileRefStr = '';
     for(let i in options.workspace.content)
@@ -69,7 +70,7 @@ async function makeXcode(options)
     let workspaceContentFilePath = destPath + '/contents.xcworkspacedata';
 
     results = await replace({files: workspaceContentFilePath, from: '<!--FileRef-->', to: fileRefStr.trim()});
-    console.log(results.length + ' files changed');
+    Logging.log(results.length + ' files changed');
 
 
     // ******************** generate projects ********************
@@ -250,6 +251,8 @@ async function makeXcode(options)
             await applyPlatformData(projectName, project, options)
         }
     }
+
+    return true;
 }
 
 async function applyPlatformData(projectName, project, options)

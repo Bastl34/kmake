@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const Logging = require('./helper/logging');
 
 const makeXcode = require('./projectMaker/xcode');
 
@@ -9,7 +10,7 @@ async function make(options)
     let workspace = options.workspace || null;
     if (!workspace || !('content' in workspace) || !(workspace.content instanceof Array) || workspace.content.length == 0)
     {
-        console.error('workspace not found or empty');
+        Logging.error('workspace not found or empty');
         return ;
     }
 
@@ -24,9 +25,14 @@ async function make(options)
     if (!fs.existsSync(path.normalize(options.build.outputPath)))
         fs.mkdirSync(path.normalize(options.build.outputPath));
 
+    let res = false;
+
     //create project files
     if (options.build.template == 'xcodeMac')
-        return await makeXcode(options);
+        res = await makeXcode(options);
+
+    if (res)
+        Logging.rainbow("project generation was successful");
 }
 
 async function validate(options)
@@ -38,7 +44,7 @@ async function validate(options)
 
         if (!(projectName in options))
         {
-            console.error('project ' + projectName + ' not found');
+            Logging.error('project ' + projectName + ' not found');
             return Promise.reject();
         }
     };

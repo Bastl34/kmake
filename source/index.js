@@ -6,6 +6,7 @@ const readlineSync = require('readline-sync');
 
 const Helper = require('./helper/helper');
 const FileHelper = require('./helper/fileHelper');
+const Logging = require('./helper/logging');
 
 const Globals = require('./globals');
 const ymlLoader = require('./ymlLoader');
@@ -16,7 +17,7 @@ const kmakeRoot = fs.realpathSync(__dirname + '/..');
 
 if (process.argv.length < 5)
 {
-    console.log('kmake project.yml template outputdir');
+    Logging.info('kmake project.yml template outputdir');
     process.exit();
 }
 
@@ -43,7 +44,7 @@ if (!fileStat || !fileStat.isFile())
 
     if (!fileStat || !fileStat.isFile())
     {
-        console.error('yaml not found');
+        Logging.error('yaml not found');
         process.exit();
     }
 }
@@ -52,7 +53,7 @@ if (!fileStat || !fileStat.isFile())
 template = template.toLocaleLowerCase();
 if (!(template in Globals.TEMPLATES))
 {
-    console.error('template: ' + template + ' not found');
+    Logging.error('template: ' + template + ' not found');
     process.exit();
 }
 
@@ -67,13 +68,13 @@ try
     let fileStat = fs.statSync(templatePath);
     if (!fileStat.isDirectory())
     {
-        console.error('template: ' + template + ' not found');
+        Logging.error('template: ' + template + ' not found');
         process.exit();
     }
 }
 catch(e)
 {
-    console.error('template: ' + template + ' not found');
+    Logging.error('template: ' + template + ' not found');
     process.exit();
 }
 
@@ -89,8 +90,8 @@ try
 }
 catch(e)
 {
-    console.error('error while creating output dir: ' + outputPath);
-    console.log(e);
+    Logging.error('error while creating output dir: ' + outputPath);
+    Logging.log(e);
     process.exit();
 }
 
@@ -103,7 +104,7 @@ try
     options = ymlLoader(projectPath);
 } catch (e)
 {
-    console.error(e);
+    Logging.error(e);
     process.exit();
 }
 
@@ -156,7 +157,7 @@ if ('inputs' in options)
                     inputCache[inputVar] = value;
                 }
 
-                console.log(' --> ' + value);
+                Logging.log(' --> ' + value);
             }
         }
         else
@@ -170,7 +171,7 @@ if ('inputs' in options)
                 if (inputVar in inputCache)
                     value = inputCache[inputVar];
 
-                console.log(inputVar + ': ' + value);
+                    Logging.log(inputVar + ': ' + value);
             }
         }
 
@@ -180,8 +181,8 @@ if ('inputs' in options)
     }
     catch(e)
     {
-        console.error('error reading input variables ');
-        console.log(e);
+        Logging.error('error reading input variables ');
+        Logging.log(e);
         process.exit();
     }
 }
@@ -239,11 +240,12 @@ for(let itemKey in options)
     try
     {
         await make(options);
+
     }
     catch (e)
     {
-        console.log("make failed");
-        console.log(e);
+        logging.error("make failed");
+        logging.log(e);
     }
 })()
 
