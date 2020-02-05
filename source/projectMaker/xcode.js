@@ -233,45 +233,6 @@ async function makeXcode(options)
                     sourceRoot += "				"+file.uid+" /* "+file.name+" */,\n";
             });
 
-            // ********** build configurations
-
-            /*
-            //include
-            includeDirs.releaseContent = "";
-            includeDirs.release.forEach(item => { includeDirs.releaseContent += '					' + item + ',\n';  });
-
-            includeDirs.debugContent = "";
-            includeDirs.debug.forEach(item => { includeDirs.debugContent += '					' + item + ',\n';  });
-
-            //defines
-            defines.releaseContent = "";
-            defines.release.forEach(item => { defines.releaseContent += '					' + getDefineEntry(item) + ',\n';  });
-
-            defines.debugContent = "";
-            defines.debug.forEach(item => { defines.debugContent += '					' + getDefineEntry(item) + ',\n';  });
-
-            //include
-            libDirs.releaseContent = "";
-            libDirs.release.forEach(item => { libDirs.releaseContent += '					' + item + ',\n';  });
-
-            libDirs.debugContent = "";
-            libDirs.debug.forEach(item => { libDirs.debugContent += '					' + item + ',\n';  });
-
-            //buildFlags
-            buildFlags.releaseContent = "";
-            buildFlags.release.forEach(item => { buildFlags.releaseContent += '					"' + item + '",\n';  });
-
-            buildFlags.debugContent = "";
-            buildFlags.debug.forEach(item => { buildFlags.debugContent += '					"' + item + '",\n';  });
-
-            //linkerFlags
-            linkerFlags.releaseContent = "";
-            linkerFlags.release.forEach(item => { linkerFlags.releaseContent += '					"' + item + '",\n';  });
-
-            linkerFlags.debugContent = "";
-            linkerFlags.debug.forEach(item => { linkerFlags.debugContent += '					"' + item + '",\n';  });
-            */
-
             // ********** replacements
             let projectFilePath = options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj';
             let workspaceContentPath = options.build.outputPath + '/' + projectName + '.xcodeproj/project.xcworkspace/contents.xcworkspacedata';
@@ -285,19 +246,7 @@ async function makeXcode(options)
             results = await replace({files: projectFilePath, from: '/*SOURCE_DIRECTORIES*/', to: sourceDirectories.trim()});
             results = await replace({files: projectFilePath, from: '/*SOURCE_ROOT*/', to: sourceRoot.trim()});
 
-            
-            //results = await replace({files: projectFilePath, from: '/*DEFINES_RELEASE*/', to: defines.releaseContent.trim()});
-            //results = await replace({files: projectFilePath, from: '/*LIB_PATHS_RELEASE*/', to: libDirs.releaseContent.trim()});
-            //results = await replace({files: projectFilePath, from: '/*INCLUDES_RELEASE*/', to: includeDirs.releaseContent.trim()});
-            //results = await replace({files: projectFilePath, from: '/*BUILD_FLAGS_RELEASE*/', to: buildFlags.releaseContent.trim()});
-            //results = await replace({files: projectFilePath, from: '/*LINKER_FLAGS_RELEASE*/', to: linkerFlags.releaseContent.trim()});
-//
-            //results = await replace({files: projectFilePath, from: '/*DEFINES_DEBUG*/', to: defines.debugContent.trim()});
-            //results = await replace({files: projectFilePath, from: '/*LIB_PATHS_DEBUG*/', to: libDirs.debugContent.trim()});
-            //results = await replace({files: projectFilePath, from: '/*INCLUDES_DEBUG*/', to: includeDirs.debugContent.trim()});
-            //results = await replace({files: projectFilePath, from: '/*BUILD_FLAGS_DEBUG*/', to: buildFlags.releaseContent.trim()});
-            //results = await replace({files: projectFilePath, from: '/*LINKER_FLAGS_DEBUG*/', to: linkerFlags.releaseContent.trim()});
-
+            // ********** platform specific data
             await applyPlatformData(projectName, project, options)
         }
     }
