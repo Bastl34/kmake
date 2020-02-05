@@ -20,6 +20,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				/*LIBRARIES_BUILD*/
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -31,6 +32,7 @@
 			children = (
 				/*SOURCE_ROOT*/
 				6BA632D123DA08CC008F13A0 /* Products */,
+				6BFA080723EB71FB000E3722 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -40,6 +42,14 @@
 				6BA632D023DA08CC008F13A0 /* PROJECT_NAME.a */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		6BFA080723EB71FB000E3722 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				/*LIBRARIES_LIST*/
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 

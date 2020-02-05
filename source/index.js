@@ -210,9 +210,9 @@ Helper.recursiveReplace(options, (key, object) =>
     return object;
 });
 
-// ******************** add dependencie paths to project's  ********************
+// ******************** add workspace dependencie paths to project's  ********************
 
-Logging.info('appending dependencies to includePaths and libPaths ...');
+Logging.info('appending workspace dependencies to includePaths and libPaths ...');
 let depenencyItems = ['includePaths', 'libPaths'];
 
 for(let optionKey in options)

@@ -9,7 +9,7 @@ const Logging = require('../helper/logging');
 
 const Globals = require('../globals');
 
-const XCODE_FILETYPE_MAP =
+const XCODE_SOURCE_FILETYPE_MAP =
 {
     ".cpp": "sourcecode.cpp.cpp",
     ".hpp": "sourcecode.cpp.hpp",
@@ -18,8 +18,23 @@ const XCODE_FILETYPE_MAP =
     ".mm": "sourcecode.cpp.objcpp",
     ".cpp": "sourcecode.cpp.cpp",
 
+    ".cpp": "sourcecode.cpp.cpp",
+    ".cpp": "sourcecode.cpp.cpp",
+
     "unknown": "text"
 };
+
+const XCODE_BIN_FILETYPE_MAP =
+{
+    ".a": "archive.ar",
+    ".dylib": "compiled.mach-o.dylib",
+
+    "unknown": "text"
+};
+
+//6BFA080123EB71EB000E3721 /* libdep2.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libdep2.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
+//6BFA080523EB71ED000E3721 /* libdep21.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libdep21.a; sourceTree = BUILT_PRODUCTS_DIR; };
+//6BFA080A23EB897A000E3721 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../../../Users/bastiankarge/Downloads/SDL2.framework; sourceTree = "<group>"; };
 
 function getDefineEntry(item)
 {
@@ -89,8 +104,8 @@ async function makeXcode(options)
             {
                 let type = 'unknown';
                 let ext = path.extname(file);
-                if (ext in XCODE_FILETYPE_MAP)
-                    type = XCODE_FILETYPE_MAP[ext];
+                if (ext in XCODE_SOURCE_FILETYPE_MAP)
+                    type = XCODE_SOURCE_FILETYPE_MAP[ext];
 
                 //dirs
                 let directory = path.dirname(file);
@@ -163,9 +178,10 @@ async function makeXcode(options)
             });
 
             // ********** create xcode project file strings
-            let sourceFileContent = "";
-            let sourceFileReferenceContent = "";
-            let compileFiles = "";
+            let sourceFileContent = '';
+            let sourceFileReferenceContent = '';
+            let compileFiles = '';
+            let libFiles = '';
 
             soucesList.forEach(file =>
             {
@@ -179,6 +195,35 @@ async function makeXcode(options)
                 if (file.type.indexOf('sourcecode') != -1)
                     compileFiles += '				'+file.uid2+' /* '+file.name+' in Sources */,\n';
             });
+
+            // ********** libs
+            //use x86_64 release
+            let libs = [];
+            if ('dependencies' in project && 'x86_64' in project.dependencies)
+                libs = project.dependencies['x86_64']['release']
+
+            //libs.forEach(lib =>
+            //{
+            //    let isWorkspaceLib = (lib in options && 'workingDir' in options[lib]);
+//
+            //    let name = path.basename(file),
+            //    path: file,
+            //    pathRelative: filePathRelative,
+            //    dir: directory,
+            //    uid: Helper.randomString(24,"0123456789ABCDEF", false),
+            //    uid2: Helper.randomString(24,"0123456789ABCDEF", false),
+            //    type: type
+//
+            //    //get the relative path from output dir to source
+            //    let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(file.path)) + '/' + file.name;
+//
+            //    sourceFileContent += '		'+file.uid2+' /* '+file.name+' in Sources */ = {isa = PBXBuildFile; fileRef = '+file.uid+' /* '+file.name+' */; };\n';
+            //    sourceFileReferenceContent += '		'+file.uid+' /* '+file.name+' */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = '+file.fileType+'; name = '+file.name+'; path = '+relativePath+'; sourceTree = "<group>"; };\n';
+//
+            //    //only source files
+            //    if (file.type.indexOf('sourcecode') != -1)
+            //        compileFiles += '				'+file.uid2+' /* '+file.name+' in Sources */,\n';
+            //});
 
             // ********** source groups folders
             let sourceDirectories = '';

@@ -20,6 +20,17 @@
 			);
 			runOnlyForDeploymentPostprocessing = 1;
 		};
+		6BFA080423EB71EB000E3721 /* Embed Libraries */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				/*EMBED_LIBRARIES*/
+			);
+			name = "Embed Libraries";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				/*LIBRARIES_BUILD*/
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -43,7 +55,16 @@
 			children = (
 				/*SOURCE_ROOT*/
 				6BA632BE23DA085D008F13A0 /* Products */,
+				6BFA07FE23EB71E9000E3721 /* Frameworks */,
 			);
+			sourceTree = "<group>";
+		};
+		6BFA07FE23EB71E9000E3721 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				/*LIBRARIES_LIST*/
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		6BA632BE23DA085D008F13A0 /* Products */ = {
@@ -67,6 +88,7 @@
 				6BA632B923DA085D008F13A0 /* Sources */,
 				6BA632BA23DA085D008F13A0 /* Frameworks */,
 				6BA632BB23DA085D008F13A0 /* CopyFiles */,
+				6BFA080423EB71EB000E3721 /* Embed Libraries */,
 			);
 			buildRules = (
 			);
