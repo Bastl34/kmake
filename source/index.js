@@ -241,8 +241,6 @@ for(let optionKey in options)
     }
 }
 
-console.log(options.app.libPaths)
-
 // ******************** resolve platforms/architectures ********************
 Logging.info('resolving platform specific settings...');
 options = platformResolver(options, options.build);
