@@ -28,13 +28,19 @@ const XCODE_BIN_FILETYPE_MAP =
 {
     ".a": "archive.ar",
     ".dylib": "compiled.mach-o.dylib",
+    ".framework": "wrapper.framework",
 
     "unknown": "text"
 };
 
-//6BFA080123EB71EB000E3721 /* libdep2.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; path = libdep2.dylib; sourceTree = BUILT_PRODUCTS_DIR; };
-//6BFA080523EB71ED000E3721 /* libdep21.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libdep21.a; sourceTree = BUILT_PRODUCTS_DIR; };
-//6BFA080A23EB897A000E3721 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../../../Users/bastiankarge/Downloads/SDL2.framework; sourceTree = "<group>"; };
+const FILE_ENDING_BY_OUTPUT_TYPE =
+{
+    "static": ".a",
+    "dynamic": ".dylib",
+    "framework": ".framework",
+
+    "unknown": "text"
+};
 
 function getDefineEntry(item)
 {
@@ -96,8 +102,59 @@ async function makeXcode(options)
 
         if (project.type == 'project' && project.projectType == 'source')
         {
+            let libsList = [];
             let soucesList = [];
             let directoryList = {};
+
+            // ********** libs
+
+            //use x86_64 release
+            let libs = [];
+            if ('dependencies' in project && 'x86_64' in project.dependencies)
+                libs = project.dependencies['x86_64']['release'];
+            
+            libs.forEach(lib =>
+            {
+                let isWorkspaceLib = (lib in options && 'workingDir' in options[lib]);
+
+                //output name/filename by outputType 
+                if (isWorkspaceLib)
+                {
+                    if (!('outputType' in options[lib]))
+                    {
+                        Logging.error('no outputType found for '+lib);
+                        return false;
+                    }
+
+                    let outputType = options[lib].outputType;
+                    if (!(outputType in FILE_ENDING_BY_OUTPUT_TYPE))
+                    {
+                        Logging.error('outputType: ' + outputType +  ' not supported for '+lib);
+                        return false;
+                    }
+
+                    file = lib + FILE_ENDING_BY_OUTPUT_TYPE[outputType];
+                }
+                
+                let type = 'unknown';
+                let ext = path.extname(file);
+                if (ext in XCODE_BIN_FILETYPE_MAP)
+                    type = XCODE_BIN_FILETYPE_MAP[ext];
+
+                //lib
+                let libsObj =
+                {
+                    name: path.basename(file),
+                    isWorkspaceLib: isWorkspaceLib,
+                    path: file,
+                    uid: Helper.randomString(24,"0123456789ABCDEF", false),
+                    uid2: Helper.randomString(24,"0123456789ABCDEF", false),
+                    uid3: Helper.randomString(24,"0123456789ABCDEF", false),
+                    type: type
+                };
+
+                libsList.push(libsObj);
+            });
 
             // ********** files
             project.sources.forEach(file =>
@@ -181,7 +238,9 @@ async function makeXcode(options)
             let sourceFileContent = '';
             let sourceFileReferenceContent = '';
             let compileFiles = '';
-            let libFiles = '';
+            let libList = '';
+            let libBuildList = '';
+            let libEmbedList = '';
 
             soucesList.forEach(file =>
             {
@@ -197,33 +256,45 @@ async function makeXcode(options)
             });
 
             // ********** libs
-            //use x86_64 release
-            let libs = [];
-            if ('dependencies' in project && 'x86_64' in project.dependencies)
-                libs = project.dependencies['x86_64']['release']
+            libsList.forEach(lib =>
+            {
+                //get the relative path from output dir to source
+                let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(lib.path)) + '/' + lib.name;
+                if (lib.isWorkspaceLib)
+                    relativePath = lib.name;
 
-            //libs.forEach(lib =>
-            //{
-            //    let isWorkspaceLib = (lib in options && 'workingDir' in options[lib]);
-//
-            //    let name = path.basename(file),
-            //    path: file,
-            //    pathRelative: filePathRelative,
-            //    dir: directory,
-            //    uid: Helper.randomString(24,"0123456789ABCDEF", false),
-            //    uid2: Helper.randomString(24,"0123456789ABCDEF", false),
-            //    type: type
-//
-            //    //get the relative path from output dir to source
-            //    let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(file.path)) + '/' + file.name;
-//
-            //    sourceFileContent += '		'+file.uid2+' /* '+file.name+' in Sources */ = {isa = PBXBuildFile; fileRef = '+file.uid+' /* '+file.name+' */; };\n';
-            //    sourceFileReferenceContent += '		'+file.uid+' /* '+file.name+' */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = '+file.fileType+'; name = '+file.name+'; path = '+relativePath+'; sourceTree = "<group>"; };\n';
-//
-            //    //only source files
-            //    if (file.type.indexOf('sourcecode') != -1)
-            //        compileFiles += '				'+file.uid2+' /* '+file.name+' in Sources */,\n';
-            //});
+                sourceFileContent += '		'+lib.uid2+' /* '+lib.name+' in Frameworks */ = {isa = PBXBuildFile; fileRef = '+lib.uid+' /* '+lib.name+' */; };\n';
+
+                //add to embed
+                if (lib.name.indexOf('dylib') != -1)
+                    sourceFileContent += '		'+lib.uid3+' /* '+lib.name+' in Embed Libraries */ = {isa = PBXBuildFile; fileRef = '+lib.uid+' /* '+lib.name+' */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };\n';
+
+                let fileTypeStr = '';
+                if (lib.name.indexOf('framework') != -1)
+                    fileTypeStr = 'lastKnownFileType = ' + lib.type;
+                else
+                    fileTypeStr = 'explicitFileType = ' + lib.type;
+
+                let sourceTree = '';
+                if (lib.isWorkspaceLib)
+                    sourceTree = 'BUILT_PRODUCTS_DIR';
+                else
+                    sourceTree = '"<group>"';
+
+                sourceFileReferenceContent += '		'+lib.uid+' /* '+lib.name+' */ = {isa = PBXFileReference; '+fileTypeStr+'; name = '+lib.name+'; path = '+relativePath+'; sourceTree = ' + sourceTree + '; };\n';
+                
+
+                //add to "framework" group
+                libList += '				'+lib.uid+' /* '+lib.name+' in Frameworks */,\n';
+
+                //add to build step
+                libBuildList += '				'+lib.uid2+' /* '+lib.name+' in Frameworks */,\n';
+
+                //add to embed
+                if (lib.name.indexOf('dylib') != -1)
+                    libEmbedList += '				'+lib.uid3+' /* '+lib.name+' in Embed Libraries */,\n';
+            });
+
 
             // ********** source groups folders
             let sourceDirectories = '';
@@ -291,6 +362,9 @@ async function makeXcode(options)
             results = await replace({files: projectFilePath, from: '/*COMPILE_FILES*/', to: compileFiles.trim()});
             results = await replace({files: projectFilePath, from: '/*SOURCE_DIRECTORIES*/', to: sourceDirectories.trim()});
             results = await replace({files: projectFilePath, from: '/*SOURCE_ROOT*/', to: sourceRoot.trim()});
+            results = await replace({files: projectFilePath, from: '/*LIBRARIES_LIST*/', to: libList.trim()});
+            results = await replace({files: projectFilePath, from: '/*LIBRARIES_BUILD*/', to: libBuildList.trim()});
+            results = await replace({files: projectFilePath, from: '/*EMBED_LIBRARIES*/', to: libEmbedList.trim()});
 
             // ********** platform specific data
             await applyPlatformData(projectName, project, options)
