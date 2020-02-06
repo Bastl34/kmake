@@ -238,6 +238,7 @@ async function makeXcode(options)
             let sourceFileContent = '';
             let sourceFileReferenceContent = '';
             let compileFiles = '';
+            let headerFiles = '';
             let libList = '';
             let libBuildList = '';
             let libEmbedList = '';
@@ -251,8 +252,12 @@ async function makeXcode(options)
                 sourceFileReferenceContent += '		'+file.uid+' /* '+file.name+' */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = '+file.type+'; name = '+file.name+'; path = '+relativePath+'; sourceTree = "<group>"; };\n';
 
                 //only source files
-                if (file.type.indexOf('sourcecode') != -1)
+                if (file.type.indexOf('sourcecode') != -1 && file.type.indexOf('.h') == -1)
                     compileFiles += '				'+file.uid2+' /* '+file.name+' in Sources */,\n';
+
+                //only header files
+                if (file.type.indexOf('.h') != -1)
+                    headerFiles += '				'+file.uid2+' /* '+file.name+' in Sources */,\n';
             });
 
             // ********** libs
@@ -360,6 +365,7 @@ async function makeXcode(options)
             results = await replace({files: projectFilePath, from: '/*SOURCE_FILE_REFERENCE*/', to: sourceFileReferenceContent.trim()});
             results = await replace({files: projectFilePath, from: '/*SOURCE_FILE*/', to: sourceFileContent.trim()});
             results = await replace({files: projectFilePath, from: '/*COMPILE_FILES*/', to: compileFiles.trim()});
+            results = await replace({files: projectFilePath, from: '/*HEADER_FILES*/', to: headerFiles.trim()});
             results = await replace({files: projectFilePath, from: '/*SOURCE_DIRECTORIES*/', to: sourceDirectories.trim()});
             results = await replace({files: projectFilePath, from: '/*SOURCE_ROOT*/', to: sourceRoot.trim()});
             results = await replace({files: projectFilePath, from: '/*LIBRARIES_LIST*/', to: libList.trim()});

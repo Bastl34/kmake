@@ -60,7 +60,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				/*COMPILE_FILES*/
+				/*HEADER_FILES*/
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,6 +121,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				/*COMPILE_FILES*/
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
