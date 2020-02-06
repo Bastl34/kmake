@@ -1,6 +1,6 @@
 #include "dep2.h"
 
-#include <dep2.1.h>
+#include <dep21.h>
 
 void dep2Func()
 {
