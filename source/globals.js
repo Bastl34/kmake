@@ -16,8 +16,8 @@ let globals =
 
     TEMPLATES:
     {
-        "mac": "xcodeMac",
-        "xcodemac": "xcodeMac"
+        'mac': 'xcodeMac',
+        'xcodemac': 'xcodeMac'
     },
 
     //all supported platforms
@@ -25,16 +25,21 @@ let globals =
     //if you want to add a new platform/arch add it here
     PLATFORMS:
     {
-        "xcodeMac": ["x86_64"],
-        "vs2019": ["win32", "x64"],
-        "makefile": ["x86", "x86_64", "arm", "arm64"],
-        "android": ["armeabi-v7a", "arm64-v8a", "x86", "x86_64"],
-        "ios": ["armv7", "arm64", "i386", "x86_64"],
+        'xcodeMac': ['x86_64'],
+        'vs2019': ['win32', 'x64'],
+        'makefile': ['x86', 'x86_64', 'arm', 'arm64'],
+        'android': ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'],
+        'ios': ['armv7', 'arm64', 'i386', 'x86_64'],
     },
 
-    CONFIGURATIONS: ["debug", "release"],
+    CONFIGURATIONS: ['debug', 'release'],
 
-    PLATFORM_RESOLVER: ["defines", "includePaths", "libPaths", "dependencies", "buildFlags", "linkerFlags"],
+    PLATFORM_RESOLVER: ['defines', 'includePaths', 'libPaths', 'dependencies', 'buildFlags', 'linkerFlags'],
+
+    DEFAULT_BUILD_SETTINGS:
+    {
+        MACOSX_DEPLOYMENT_TARGET: '10.14'
+    }
 };
 
 module.exports = globals;

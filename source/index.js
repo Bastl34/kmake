@@ -210,6 +210,29 @@ Helper.recursiveReplace(options, (key, object) =>
     return object;
 });
 
+// ******************** apply workspace settings to each project ********************
+
+Logging.info('processing workspace settings...');
+for(let i in options.workspace.content)
+{
+    let project = options.workspace.content[i];
+
+    for(let settingsKey in options.workspace.settings)
+    {
+        if (!(project in options))
+            continue;
+
+        if (!('settings' in options[project]))
+            options[project].settings = {};
+        
+        //apply only if there is no project specific overwrite
+        if (!(settingsKey in options[project].settings))
+            options[project].settings[settingsKey] = options.workspace.settings[settingsKey]
+    }
+}
+
+
+
 // ******************** add workspace dependencie paths to project's  ********************
 
 Logging.info('appending workspace dependencies to includePaths and libPaths ...');

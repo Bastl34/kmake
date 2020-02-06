@@ -11,35 +11,35 @@ const Globals = require('../globals');
 
 const XCODE_SOURCE_FILETYPE_MAP =
 {
-    ".cpp": "sourcecode.cpp.cpp",
-    ".hpp": "sourcecode.cpp.hpp",
-    ".h": "sourcecode.c.h",
-    ".c": "sourcecode.c.c",
-    ".mm": "sourcecode.cpp.objcpp",
-    ".cpp": "sourcecode.cpp.cpp",
+    '.cpp': 'sourcecode.cpp.cpp',
+    '.hpp': 'sourcecode.cpp.hpp',
+    '.h': 'sourcecode.c.h',
+    '.c': 'sourcecode.c.c',
+    '.mm': 'sourcecode.cpp.objcpp',
+    '.cpp': 'sourcecode.cpp.cpp',
 
-    ".cpp": "sourcecode.cpp.cpp",
-    ".cpp": "sourcecode.cpp.cpp",
+    '.cpp': 'sourcecode.cpp.cpp',
+    '.cpp': 'sourcecode.cpp.cpp',
 
-    "unknown": "text"
+    'unknown': 'text'
 };
 
 const XCODE_BIN_FILETYPE_MAP =
 {
-    ".a": "archive.ar",
-    ".dylib": "compiled.mach-o.dylib",
-    ".framework": "wrapper.framework",
+    '.a': 'archive.ar',
+    '.dylib': 'compiled.mach-o.dylib',
+    '.framework': 'wrapper.framework',
 
-    "unknown": "text"
+    'unknown': 'text'
 };
 
 const FILE_ENDING_BY_OUTPUT_TYPE =
 {
-    "static": ".a",
-    "dynamic": ".dylib",
-    "framework": ".framework",
+    'static': '.a',
+    'dynamic': '.dylib',
+    'framework': '.framework',
 
-    "unknown": "text"
+    'unknown': 'text'
 };
 
 function getDefineEntry(item)
@@ -147,9 +147,9 @@ async function makeXcode(options)
                     name: path.basename(file),
                     isWorkspaceLib: isWorkspaceLib,
                     path: file,
-                    uid: Helper.randomString(24,"0123456789ABCDEF", false),
-                    uid2: Helper.randomString(24,"0123456789ABCDEF", false),
-                    uid3: Helper.randomString(24,"0123456789ABCDEF", false),
+                    uid: Helper.randomString(24,'0123456789ABCDEF', false),
+                    uid2: Helper.randomString(24,'0123456789ABCDEF', false),
+                    uid3: Helper.randomString(24,'0123456789ABCDEF', false),
                     type: type
                 };
 
@@ -191,8 +191,8 @@ async function makeXcode(options)
                     path: file,
                     pathRelative: filePathRelative,
                     dir: directory,
-                    uid: Helper.randomString(24,"0123456789ABCDEF", false),
-                    uid2: Helper.randomString(24,"0123456789ABCDEF", false),
+                    uid: Helper.randomString(24,'0123456789ABCDEF', false),
+                    uid2: Helper.randomString(24,'0123456789ABCDEF', false),
                     type: type
                 };
 
@@ -211,7 +211,7 @@ async function makeXcode(options)
                 {
                     name: path.basename(dir),
                     path: dir,
-                    uid: Helper.randomString(24,"0123456789ABCDEF", false),
+                    uid: Helper.randomString(24,'0123456789ABCDEF', false),
                 };
 
                 directoryObjectList.push(sourceObj);
@@ -322,24 +322,24 @@ async function makeXcode(options)
                 });
 
                 //add to SOURCE_DIRECTORIES
-                sourceDirectories += "		"+directory.uid+" /* "+directory.name+" */ = {\n";
-                sourceDirectories += "			isa = PBXGroup;\n";
-                sourceDirectories += "			children = (\n";
+                sourceDirectories += '		'+directory.uid+' /* '+directory.name+' */ = {\n';
+                sourceDirectories += '			isa = PBXGroup;\n';
+                sourceDirectories += '			children = (\n';
 
                 containingDirs.forEach(cDir =>
                 {
-                    sourceDirectories += "				"+cDir.uid+" /* "+cDir.name+" */,\n";
+                    sourceDirectories += '				'+cDir.uid+' /* '+cDir.name+' */,\n';
                 });
 
                 containingFiles.forEach(cFile =>
                 {
-                    sourceDirectories += "				"+cFile.uid+" /* "+cFile.name+" */,\n";
+                    sourceDirectories += '				'+cFile.uid+' /* '+cFile.name+' */,\n';
                 });
 
-                sourceDirectories += "			);\n";
-                sourceDirectories += "			name = "+directory.name+";\n";
-                sourceDirectories += "			sourceTree = \"<group>\";\n";
-                sourceDirectories += "		};\n";
+                sourceDirectories += '			);\n';
+                sourceDirectories += '			name = '+directory.name+';\n';
+                sourceDirectories += '			sourceTree = "<group>";\n';
+                sourceDirectories += '		};\n';
             });
 
             // ********** root source files/directories
@@ -347,12 +347,12 @@ async function makeXcode(options)
             directoryList.forEach(directory =>
             {
                 if (FileHelper.countDirectoryLevels(directory.path) == 1)
-                    sourceRoot += "				"+directory.uid+" /* "+directory.name+" */,\n";
+                    sourceRoot += '				'+directory.uid+' /* '+directory.name+' */,\n';
             });
             soucesList.forEach(file =>
             {
                 if (FileHelper.countDirectoryLevels(file.pathRelative) == 1)
-                    sourceRoot += "				"+file.uid+" /* "+file.name+" */,\n";
+                    sourceRoot += '				'+file.uid+' /* '+file.name+' */,\n';
             });
 
             // ********** replacements
@@ -373,7 +373,10 @@ async function makeXcode(options)
             results = await replace({files: projectFilePath, from: '/*EMBED_LIBRARIES*/', to: libEmbedList.trim()});
 
             // ********** platform specific data
-            await applyPlatformData(projectName, project, options)
+            await applyPlatformData(projectName, project, options);
+
+            // ********** apply settings
+            await applyProjectSettings(projectName, project, options)
         }
     }
 
@@ -396,7 +399,7 @@ async function applyPlatformData(projectName, project, options)
             let configKey = config.toUpperCase()
 
             //include
-            let includePathsContent = "";
+            let includePathsContent = '';
             let includesArray = ('includePaths' in project) ? project['includePaths'][platform][config] : [];
             includesArray.forEach(item =>
             {
@@ -406,7 +409,7 @@ async function applyPlatformData(projectName, project, options)
 
 
             //defines
-            let definesContent = "";
+            let definesContent = '';
             let definesArray = ('defines' in project) ? project['defines'][platform][config] : [];
             definesArray.forEach(item =>
             {
@@ -414,7 +417,7 @@ async function applyPlatformData(projectName, project, options)
             });
 
             //libPaths
-            let libPathsContent = "";
+            let libPathsContent = '';
             let libsPathsArray = ('libPaths' in project) ? project['libPaths'][platform][config] : [];
             libsPathsArray.forEach(item =>
             {
@@ -423,7 +426,7 @@ async function applyPlatformData(projectName, project, options)
             });
 
             //buildFlags
-            let buildFlagsContent = "";
+            let buildFlagsContent = '';
             let buildFlagsArray = ('buildFlags' in project) ? project['buildFlags'][platform][config] : [];
             buildFlagsArray.forEach(item =>
             {
@@ -431,7 +434,7 @@ async function applyPlatformData(projectName, project, options)
             });
 
             //linkerFlags
-            let linkerFlagsContent = "";
+            let linkerFlagsContent = '';
             let linkerFlagsArray = ('linkerFlags' in project) ? project['linkerFlags'][platform][config] : [];
             linkerFlagsArray.forEach(item =>
             {
@@ -446,6 +449,27 @@ async function applyPlatformData(projectName, project, options)
             results = await replace({files: projectFilePath, from: `/*LINKER_FLAGS_${configKey}*/`, to: linkerFlagsContent.trim()});
         }
     }
+}
+
+async function applyProjectSettings(projectName, project, options)
+{
+    let files = [];
+
+    files.push(options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj')
+    files.push(options.build.outputPath + '/' + projectName + '.xcodeproj/project.xcworkspace/contents.xcworkspacedata');
+
+    files.map(file => path.resolve(file));
+
+    for(let settingsKey in Globals.DEFAULT_BUILD_SETTINGS)
+    {
+        let val = Globals.DEFAULT_BUILD_SETTINGS[settingsKey];
+        if ('settings' in project && settingsKey in project.settings)
+            val = project.settings[settingsKey];
+
+        results = await replace({files: files, from: new RegExp(`/\\*${settingsKey}\\*/`, 'g'), to: val.trim()});
+    }
+
+    return true;
 }
 
 module.exports = makeXcode;

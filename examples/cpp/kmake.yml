@@ -7,7 +7,7 @@ imports:
 variables:
     PROJECT_NAME: Example
     PROJECT_VERSION: 1.0.0
-    MAC_OS_TARGET: '10.14'
+    MAC_OS_TARGET: '10.11'
 
 inputs:
     - COMPANY_NAME
@@ -16,6 +16,10 @@ inputs:
 # workspace settings
 workspace:
     name: '${PROJECT_NAME}'
+
+    settings:
+        MACOSX_DEPLOYMENT_TARGET: '${MAC_OS_TARGET}'
+
     content:
         - app
         - dep1
@@ -31,7 +35,7 @@ app:
     projectType: source
 
     settings:
-        MACOS_DEPLOYMENT_TARGET: '${MAC_OS_TARGET}'
+        MACOSX_DEPLOYMENT_TARGET: '10.12'
 
     defines:
         - APP_NAME: '${PROJECT_NAME}'
