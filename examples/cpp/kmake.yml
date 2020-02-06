@@ -7,6 +7,7 @@ imports:
 variables:
     PROJECT_NAME: Example
     PROJECT_VERSION: 1.0.0
+    MAC_OS_TARGET: '10.14'
 
 inputs:
     - COMPANY_NAME
@@ -28,6 +29,9 @@ app:
     type: project
     outputType: main
     projectType: source
+
+    settings:
+        MACOS_DEPLOYMENT_TARGET: '${MAC_OS_TARGET}'
 
     defines:
         - APP_NAME: '${PROJECT_NAME}'
@@ -71,5 +75,5 @@ app:
         - dep2
         - dep21
     hooks:
-        - beforePrepare: 'echo before prepare'
-        - afterPrepare: 'echo after prepare'
+        beforePrepare: 'echo ECHOING before prepare'
+        afterPrepare: 'echo ECHOING after prepare'

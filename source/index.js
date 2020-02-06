@@ -176,7 +176,7 @@ if ('inputs' in options)
                 if (inputVar in inputCache)
                     value = inputCache[inputVar];
 
-                    Logging.log(inputVar + ': ' + value);
+                Logging.log(inputVar + ': ' + value);
             }
         }
 
@@ -312,14 +312,13 @@ async function runHooks(options, type)
         {
             let hooks = item['hooks']
 
-            for(let hookI in hooks)
+            for(let hookName in hooks)
             {
-                let hook = hooks[hookI];
-                let name = Object.keys(hook)[0];
+                let hook = hooks[hookName];
 
-                if (name == HOOKS_SWAPPED[type])
+                if (hookName == HOOKS_SWAPPED[type])
                 {
-                    let command = hook[name];
+                    let command = hook;
                     let workingDir = path.resolve(item.workingDir)
 
                     try
@@ -338,6 +337,8 @@ async function runHooks(options, type)
         }
     }
 }
+
+//console.log(options);
 
 // ******************** make ********************
 
