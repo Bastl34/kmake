@@ -38,12 +38,15 @@ let globals =
 
     DEFAULT_BUILD_SETTINGS:
     {
+        //xcode settings
         MACOSX_DEPLOYMENT_TARGET: '10.14',
         GCC_C_LANGUAGE_STANDARD: 'gnu11',
         CLANG_CXX_LIBRARY: 'libc++',
         CLANG_CXX_LANGUAGE_STANDARD: 'gnu++14',
         ORGANIZATIONNAME: 'Test Org',
         PRODUCT_BUNDLE_IDENTIFIER: 'test.test.test',
+        NS_HUMAN_READABLE_COPYRIGHT: 'Copyright',
+        BUNDLE_VERSION: '1.0.0'
     }
 };
 

@@ -469,6 +469,10 @@ async function applyProjectSettings(projectName, project, options)
     files.push(options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj')
     files.push(options.build.outputPath + '/' + projectName + '.xcodeproj/project.xcworkspace/contents.xcworkspacedata');
 
+    let plist = options.build.outputPath + '/' + projectName + '/Info.plist';
+    if (fs.existsSync(plist))
+        files.push(plist);
+
     files.map(file => path.resolve(file));
 
     for(let settingsKey in Globals.DEFAULT_BUILD_SETTINGS)
