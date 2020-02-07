@@ -38,7 +38,10 @@ let globals =
 
     DEFAULT_BUILD_SETTINGS:
     {
-        MACOSX_DEPLOYMENT_TARGET: '10.14'
+        MACOSX_DEPLOYMENT_TARGET: '10.14',
+        GCC_C_LANGUAGE_STANDARD: 'gnu11',
+        CLANG_CXX_LIBRARY: 'libc++',
+        CLANG_CXX_LANGUAGE_STANDARD: 'gnu++14',
     }
 };
 
