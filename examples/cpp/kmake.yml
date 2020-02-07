@@ -6,8 +6,11 @@ imports:
 # variables
 variables:
     PROJECT_NAME: Example
+    ORGANIZATION: Example Corp
     PROJECT_VERSION: 1.0.0
     MAC_OS_TARGET: '10.11'
+    PACKAGE_NAME: 'test.test.test'
+    COPYRIGHT: 'Copyright by Tester'
 
 inputs:
     - COMPANY_NAME
@@ -19,6 +22,8 @@ workspace:
 
     settings:
         MACOSX_DEPLOYMENT_TARGET: '${MAC_OS_TARGET}'
+        PRODUCT_BUNDLE_IDENTIFIER: '${PACKAGE_NAME}'
+        ORGANIZATIONNAME: '${ORGANIZATION}'
 
     content:
         - app
@@ -31,7 +36,7 @@ app:
     name: '${PROJECT_NAME}'
 
     type: project
-    outputType: main
+    outputType: app #main
     projectType: source
 
     settings:

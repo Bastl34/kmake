@@ -42,6 +42,8 @@ let globals =
         GCC_C_LANGUAGE_STANDARD: 'gnu11',
         CLANG_CXX_LIBRARY: 'libc++',
         CLANG_CXX_LANGUAGE_STANDARD: 'gnu++14',
+        ORGANIZATIONNAME: 'Test Org',
+        PRODUCT_BUNDLE_IDENTIFIER: 'test.test.test',
     }
 };
 

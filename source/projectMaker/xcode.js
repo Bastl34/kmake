@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs');
 
 const copy = require('recursive-copy');
 const replace = require('replace-in-file');
@@ -70,6 +71,16 @@ async function makeXcode(options)
 
         let results = await copy(sourcePath, destPath, {overwrite: true});
         Logging.log(results.length + ' files copied');
+
+        //check and copy extra dependencies
+        if (fs.existsSync(options.build.templatePath + '/' + project.outputType))
+        {
+            sourcePath = options.build.templatePath + '/' + project.outputType;
+            destPath = options.build.outputPath + '/' + project.outputType;
+
+            let results = await copy(sourcePath, destPath, {overwrite: true});
+            Logging.log(results.length + ' files copied');
+        }
     };
 
     // ******************** generate .xcworkspace ********************
@@ -112,12 +123,12 @@ async function makeXcode(options)
             let libs = [];
             if ('dependencies' in project && 'x86_64' in project.dependencies)
                 libs = project.dependencies['x86_64']['release'];
-            
+
             libs.forEach(lib =>
             {
                 let isWorkspaceLib = (lib in options && 'workingDir' in options[lib]);
 
-                //output name/filename by outputType 
+                //output name/filename by outputType
                 if (isWorkspaceLib)
                 {
                     if (!('outputType' in options[lib]))
@@ -135,7 +146,7 @@ async function makeXcode(options)
 
                     file = lib + FILE_ENDING_BY_OUTPUT_TYPE[outputType];
                 }
-                
+
                 let type = 'unknown';
                 let ext = path.extname(file);
                 if (ext in XCODE_BIN_FILETYPE_MAP)
@@ -287,7 +298,7 @@ async function makeXcode(options)
                     sourceTree = '"<group>"';
 
                 sourceFileReferenceContent += '		'+lib.uid+' /* '+lib.name+' */ = {isa = PBXFileReference; '+fileTypeStr+'; name = '+lib.name+'; path = '+relativePath+'; sourceTree = ' + sourceTree + '; };\n';
-                
+
 
                 //add to "framework" group
                 libList += '				'+lib.uid+' /* '+lib.name+' in Frameworks */,\n';
