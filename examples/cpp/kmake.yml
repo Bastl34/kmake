@@ -37,6 +37,7 @@ app:
 
     type: project
     outputType: app #main
+    #outputType: framework
     projectType: source
 
     settings:
