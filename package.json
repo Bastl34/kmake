@@ -13,7 +13,8 @@
         "recursive-copy": "^2.0.10",
         "replace-in-file": "^5.0.2",
         "micromatch": "^4.0.2",
-        "colors": "^1.4.0"
+        "colors": "^1.4.0",
+        "jimp": "^0.9.3"
     },
     "keywords": []
 }
