@@ -138,7 +138,7 @@ if ('inputs' in options)
         let inputCache = {};
 
         if (fs.existsSync(inputCachePath))
-            inputCache = importOptions = ymlLoader(inputCachePath);
+            inputCache = ymlLoader(inputCachePath);
 
         if (!useInputCache)
         {

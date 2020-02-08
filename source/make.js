@@ -11,11 +11,15 @@ async function make(options)
     if (!workspace || !('content' in workspace) || !(workspace.content instanceof Array) || workspace.content.length == 0)
     {
         Logging.error('workspace not found or empty');
-        return ;
+        return false;
     }
 
     //run validate
-    await validate(options);
+    if (!validate(options))
+    {
+        Logging.error('validation failed');
+        return false;
+    }
 
     //clear output dir if needed
     if (options.build.cleanOutputDir && fs.existsSync(path.normalize(options.build.outputPath)))
@@ -29,12 +33,12 @@ async function make(options)
 
     //create project files
     if (options.build.template == 'xcodeMac')
-        return await makeXcode(options);
+        res = await makeXcode(options);
 
-    return false;
+    return res;
 }
 
-async function validate(options)
+function validate(options)
 {
     // check projects
     for(let i in options.workspace.content)
@@ -44,9 +48,11 @@ async function validate(options)
         if (!(projectName in options))
         {
             Logging.error('project ' + projectName + ' not found');
-            return Promise.reject();
+            return false;
         }
-    };
+    }
+
+    return true;
 }
 
 module.exports = make;

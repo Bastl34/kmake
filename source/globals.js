@@ -29,7 +29,7 @@ let globals =
         'vs2019': ['win32', 'x64'],
         'makefile': ['x86', 'x86_64', 'arm', 'arm64'],
         'android': ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'],
-        'ios': ['armv7', 'arm64', 'i386', 'x86_64'],
+        'ios': ['armv7', 'arm64', 'i386', 'x86_64']
     },
 
     CONFIGURATIONS: ['debug', 'release'],

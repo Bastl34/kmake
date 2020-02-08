@@ -2,40 +2,40 @@ const colors = require('colors');
 
 let Logging =
 {
-    log: function(...args)
+    log(...args)
     {
         console.log(...args);
     },
 
-    info: function(...args)
+    info(...args)
     {
         console.log(colors.cyan(...args));
     },
 
-    notice: function(...args)
+    notice(...args)
     {
         console.log(colors.cyan(...args));
     },
 
-    success: function(...args)
+    success(...args)
     {
         console.log(colors.green(...args));
     },
 
-    error: function(...args)
+    error(...args)
     {
         console.log(colors.red(...args));
     },
 
-    warning: function(...args)
+    warning(...args)
     {
         console.log(colors.yellow(...args));
     },
 
-    rainbow: function(...args)
+    rainbow(...args)
     {
         console.log(colors.rainbow(...args));
-    },
+    }
 }
 
 

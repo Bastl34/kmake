@@ -3,7 +3,7 @@ const _RANDOM_STR_MAX_RETRIES = 10;
 
 let Helper =
 {
-    recursiveReplace: function (o, fn)
+    recursiveReplace(o, fn)
     {
         for (let i in o)
         {
@@ -20,7 +20,7 @@ let Helper =
         }
     },
 
-    randomString: function(length, characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', allowSame = true)
+    randomString(length, characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789', allowSame = true)
     {
         let charactersLength = characters.length;
 
@@ -44,8 +44,7 @@ let Helper =
         }
         while (retries < _RANDOM_STR_MAX_RETRIES)
 
-        throw "randomString max retries reached";
-        return null;
+        throw Error("randomString max retries reached");
      },
 
      swapObjectKeyValue(keys)
@@ -56,7 +55,7 @@ let Helper =
              newKeys[keys[key]] = key;
 
          return newKeys;
-     },
+     }
 }
 
 

@@ -30,7 +30,7 @@ function ymlLoader(ymlPath)
             if(path.isAbsolute(importFile))
                 importPath = importFile;
 
-            importOptions = ymlLoader(importPath);
+            let importOptions = ymlLoader(importPath);
 
             content = {...content, ...importOptions};
         });

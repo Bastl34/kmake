@@ -1,16 +1,12 @@
-const yaml = require('js-yaml');
-const fs = require('fs');
-const path = require('path');
 const micromatch = require('micromatch');
 
 const Globals = require('./globals');
-const FileHelper = require('./helper/fileHelper');
 
 const platformKeys = Object.keys(Globals.PLATFORMS);
 
-function platformResolver(options, buildOptions, level=0)
+function platformResolver(options, buildOptions, level = 0)
 {
-    let isArray = (options instanceof Array);
+    let isArray = options instanceof Array;
     let newOptions = isArray ? [] : {};
 
     for(let optionKey in options)
@@ -22,7 +18,7 @@ function platformResolver(options, buildOptions, level=0)
         //resolve on level 1
         if (level == 1)
         {
-            let hasResolvableKey = (Globals.PLATFORM_RESOLVER.indexOf(optionKey) != -1);
+            let hasResolvableKey = Globals.PLATFORM_RESOLVER.indexOf(optionKey) != -1;
 
             if (hasResolvableKey)
                 newOption = resolvePlatform(option, buildOptions)
@@ -68,7 +64,7 @@ function resolvePlatform(options, build)
 
         let platformItemFound = false;
         let keys = Object.keys(option);
-        for(let i=0;i<keys.length;++i)
+        for(let i = 0;i < keys.length;++i)
         {
             let keyName = keys[i];
 
@@ -116,7 +112,7 @@ function resolveArchitecture(options, build)
 
         let archItemFound = false;
         let keys = Object.keys(option);
-        for(let i=0;i<keys.length;++i)
+        for(let i = 0;i < keys.length;++i)
         {
             let keyName = keys[i];
 
@@ -138,13 +134,13 @@ function resolveArchitecture(options, build)
     for(let arch in newContent)
     {
         if (arch != 'generic')
-            newContent[arch] = resolveConfiguration(newContent[arch], build);
+            newContent[arch] = resolveConfiguration(newContent[arch]);
     }
 
     return newContent;
 }
 
-function resolveConfiguration(options, build)
+function resolveConfiguration(options)
 {
     let newContent = {generic: []};
     Globals.CONFIGURATIONS.forEach(config => { newContent[config] = [] })
@@ -163,7 +159,7 @@ function resolveConfiguration(options, build)
 
         let configItemFound = false;
         let keys = Object.keys(option);
-        for(let i=0;i<keys.length;++i)
+        for(let i = 0;i < keys.length;++i)
         {
             let keyName = keys[i];
 
@@ -172,7 +168,7 @@ function resolveConfiguration(options, build)
                 let config = keyName.substr('config:'.length)
 
                 if (Object.keys(newContent).indexOf(config) != -1)
-                    newContent[config] = [...newContent[config],...option[keyName]]
+                    newContent[config] = [...newContent[config], ...option[keyName]];
 
                 configItemFound = true;
             }

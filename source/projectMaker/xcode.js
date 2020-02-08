@@ -17,10 +17,9 @@ const XCODE_SOURCE_FILETYPE_MAP =
     '.h': 'sourcecode.c.h',
     '.c': 'sourcecode.c.c',
     '.mm': 'sourcecode.cpp.objcpp',
-    '.cpp': 'sourcecode.cpp.cpp',
+    '.m': 'sourcecode.c.objc',
 
-    '.cpp': 'sourcecode.cpp.cpp',
-    '.cpp': 'sourcecode.cpp.cpp',
+    '.swift': 'sourcecode.swift',
 
     'unknown': 'text'
 };
@@ -52,10 +51,10 @@ function getDefineEntry(item)
     {
         let name = Object.keys(item)[0];
         let isStr = typeof item[name] === 'string'
-        return '"'+name + "=" + (isStr ? '\\"' + item[name] + '\\"' : item[name]) + '"';
+        return '"' + name + "=" + (isStr ? '\\"' + item[name] + '\\"' : item[name]) + '"';
     }
 
-    return '"'+item+'"';
+    return '"' + item + '"';
 }
 
 async function makeXcode(options)
@@ -81,7 +80,7 @@ async function makeXcode(options)
             let results = await copy(sourcePath, destPath, {overwrite: true});
             Logging.log(results.length + ' files copied');
         }
-    };
+    }
 
     // ******************** generate .xcworkspace ********************
     let sourcePath = options.build.templatePath + '/workspace.xcworkspace';
@@ -94,7 +93,6 @@ async function makeXcode(options)
     for(let i in options.workspace.content)
     {
         let projectName = options.workspace.content[i];
-        let project = options[projectName];
 
         fileRefStr += '   <FileRef location = "group:' + projectName + '.xcodeproj"></FileRef>\n'
     }
@@ -124,8 +122,10 @@ async function makeXcode(options)
             if ('dependencies' in project && 'x86_64' in project.dependencies)
                 libs = project.dependencies['x86_64']['release'];
 
-            libs.forEach(lib =>
+            for(let libKey in libs)
             {
+                let lib = libs[libKey];
+
                 let isWorkspaceLib = (lib in options && 'workingDir' in options[lib]);
 
                 //output name/filename by outputType
@@ -133,39 +133,39 @@ async function makeXcode(options)
                 {
                     if (!('outputType' in options[lib]))
                     {
-                        Logging.error('no outputType found for '+lib);
+                        Logging.error('no outputType found for ' + lib);
                         return false;
                     }
 
                     let outputType = options[lib].outputType;
                     if (!(outputType in FILE_ENDING_BY_OUTPUT_TYPE))
                     {
-                        Logging.error('outputType: ' + outputType +  ' not supported for '+lib);
+                        Logging.error('outputType: ' + outputType +  ' not supported for ' + lib);
                         return false;
                     }
 
-                    file = lib + FILE_ENDING_BY_OUTPUT_TYPE[outputType];
+                    lib += FILE_ENDING_BY_OUTPUT_TYPE[outputType];
                 }
 
                 let type = 'unknown';
-                let ext = path.extname(file);
+                let ext = path.extname(lib);
                 if (ext in XCODE_BIN_FILETYPE_MAP)
                     type = XCODE_BIN_FILETYPE_MAP[ext];
 
                 //lib
                 let libsObj =
                 {
-                    name: path.basename(file),
+                    name: path.basename(lib),
                     isWorkspaceLib: isWorkspaceLib,
-                    path: file,
-                    uid: Helper.randomString(24,'0123456789ABCDEF', false),
-                    uid2: Helper.randomString(24,'0123456789ABCDEF', false),
-                    uid3: Helper.randomString(24,'0123456789ABCDEF', false),
+                    path: lib,
+                    uid: Helper.randomString(24, '0123456789ABCDEF', false),
+                    uid2: Helper.randomString(24, '0123456789ABCDEF', false),
+                    uid3: Helper.randomString(24, '0123456789ABCDEF', false),
                     type: type
                 };
 
                 libsList.push(libsObj);
-            });
+            }
 
             // ********** files
             project.sources.forEach(file =>
@@ -180,11 +180,11 @@ async function makeXcode(options)
 
                 //get relative paths
                 if (project.workingDir && project.workingDir.length > 0)
-                    directory = directory.substr(project.workingDir.length+1);
+                    directory = directory.substr(project.workingDir.length + 1);
 
                 let filePathRelative = file;
                 if (project.workingDir && project.workingDir.length > 0)
-                    filePathRelative = filePathRelative.substr(project.workingDir.length+1);
+                    filePathRelative = filePathRelative.substr(project.workingDir.length + 1);
 
                 if (directory)
                 {
@@ -202,8 +202,8 @@ async function makeXcode(options)
                     path: file,
                     pathRelative: filePathRelative,
                     dir: directory,
-                    uid: Helper.randomString(24,'0123456789ABCDEF', false),
-                    uid2: Helper.randomString(24,'0123456789ABCDEF', false),
+                    uid: Helper.randomString(24, '0123456789ABCDEF', false),
+                    uid2: Helper.randomString(24, '0123456789ABCDEF', false),
                     type: type
                 };
 
@@ -222,7 +222,7 @@ async function makeXcode(options)
                 {
                     name: path.basename(dir),
                     path: dir,
-                    uid: Helper.randomString(24,'0123456789ABCDEF', false),
+                    uid: Helper.randomString(24, '0123456789ABCDEF', false)
                 };
 
                 directoryObjectList.push(sourceObj);
@@ -259,16 +259,16 @@ async function makeXcode(options)
                 //get the relative path from output dir to source
                 let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(file.path)) + '/' + file.name;
 
-                sourceFileContent += '		'+file.uid2+' /* '+file.name+' in Sources */ = {isa = PBXBuildFile; fileRef = '+file.uid+' /* '+file.name+' */; };\n';
-                sourceFileReferenceContent += '		'+file.uid+' /* '+file.name+' */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = '+file.type+'; name = '+file.name+'; path = '+relativePath+'; sourceTree = "<group>"; };\n';
+                sourceFileContent += '		' + file.uid2 + ' /* ' + file.name + ' in Sources */ = {isa = PBXBuildFile; fileRef = ' + file.uid + ' /* ' + file.name + ' */; };\n';
+                sourceFileReferenceContent += '		' + file.uid + ' /* ' + file.name + ' */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = ' + file.type + '; name = ' + file.name + '; path = ' + relativePath + '; sourceTree = "<group>"; };\n';
 
                 //only source files
                 if (file.type.indexOf('sourcecode') != -1 && file.type.indexOf('.h') == -1)
-                    compileFiles += '				'+file.uid2+' /* '+file.name+' in Sources */,\n';
+                    compileFiles += '				' + file.uid2 + ' /* ' + file.name + ' in Sources */,\n';
 
                 //only header files
                 if (file.type.indexOf('.h') != -1)
-                    headerFiles += '				'+file.uid2+' /* '+file.name+' in Sources */,\n';
+                    headerFiles += '				' + file.uid2 + ' /* ' + file.name + ' in Sources */,\n';
             });
 
             // ********** libs
@@ -279,11 +279,11 @@ async function makeXcode(options)
                 if (lib.isWorkspaceLib)
                     relativePath = lib.name;
 
-                sourceFileContent += '		'+lib.uid2+' /* '+lib.name+' in Frameworks */ = {isa = PBXBuildFile; fileRef = '+lib.uid+' /* '+lib.name+' */; };\n';
+                sourceFileContent += '		' + lib.uid2 + ' /* ' + lib.name + ' in Frameworks */ = {isa = PBXBuildFile; fileRef = ' + lib.uid + ' /* ' + lib.name + ' */; };\n';
 
                 //add to embed
                 if (lib.name.indexOf('dylib') != -1)
-                    sourceFileContent += '		'+lib.uid3+' /* '+lib.name+' in Embed Libraries */ = {isa = PBXBuildFile; fileRef = '+lib.uid+' /* '+lib.name+' */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };\n';
+                    sourceFileContent += '		' + lib.uid3 + ' /* ' + lib.name + ' in Embed Libraries */ = {isa = PBXBuildFile; fileRef = ' + lib.uid + ' /* ' + lib.name + ' */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };\n';
 
                 let fileTypeStr = '';
                 if (lib.name.indexOf('framework') != -1)
@@ -297,18 +297,18 @@ async function makeXcode(options)
                 else
                     sourceTree = '"<group>"';
 
-                sourceFileReferenceContent += '		'+lib.uid+' /* '+lib.name+' */ = {isa = PBXFileReference; '+fileTypeStr+'; name = '+lib.name+'; path = '+relativePath+'; sourceTree = ' + sourceTree + '; };\n';
+                sourceFileReferenceContent += '		' + lib.uid + ' /* ' + lib.name + ' */ = {isa = PBXFileReference; ' + fileTypeStr + '; name = ' + lib.name + '; path = ' + relativePath + '; sourceTree = ' + sourceTree + '; };\n';
 
 
                 //add to "framework" group
-                libList += '				'+lib.uid+' /* '+lib.name+' in Frameworks */,\n';
+                libList += '				' + lib.uid + ' /* ' + lib.name + ' in Frameworks */,\n';
 
                 //add to build step
-                libBuildList += '				'+lib.uid2+' /* '+lib.name+' in Frameworks */,\n';
+                libBuildList += '				' + lib.uid2 + ' /* ' + lib.name + ' in Frameworks */,\n';
 
                 //add to embed
                 if (lib.name.indexOf('dylib') != -1)
-                    libEmbedList += '				'+lib.uid3+' /* '+lib.name+' in Embed Libraries */,\n';
+                    libEmbedList += '				' + lib.uid3 + ' /* ' + lib.name + ' in Embed Libraries */,\n';
             });
 
 
@@ -333,22 +333,22 @@ async function makeXcode(options)
                 });
 
                 //add to SOURCE_DIRECTORIES
-                sourceDirectories += '		'+directory.uid+' /* '+directory.name+' */ = {\n';
+                sourceDirectories += '		' + directory.uid + ' /* ' + directory.name + ' */ = {\n';
                 sourceDirectories += '			isa = PBXGroup;\n';
                 sourceDirectories += '			children = (\n';
 
                 containingDirs.forEach(cDir =>
                 {
-                    sourceDirectories += '				'+cDir.uid+' /* '+cDir.name+' */,\n';
+                    sourceDirectories += '				' + cDir.uid + ' /* ' + cDir.name + ' */,\n';
                 });
 
                 containingFiles.forEach(cFile =>
                 {
-                    sourceDirectories += '				'+cFile.uid+' /* '+cFile.name+' */,\n';
+                    sourceDirectories += '				' + cFile.uid + ' /* ' + cFile.name + ' */,\n';
                 });
 
                 sourceDirectories += '			);\n';
-                sourceDirectories += '			name = '+directory.name+';\n';
+                sourceDirectories += '			name = ' + directory.name + ';\n';
                 sourceDirectories += '			sourceTree = "<group>";\n';
                 sourceDirectories += '		};\n';
             });
@@ -358,12 +358,12 @@ async function makeXcode(options)
             directoryList.forEach(directory =>
             {
                 if (FileHelper.countDirectoryLevels(directory.path) == 1)
-                    sourceRoot += '				'+directory.uid+' /* '+directory.name+' */,\n';
+                    sourceRoot += '				' + directory.uid + ' /* ' + directory.name + ' */,\n';
             });
             soucesList.forEach(file =>
             {
                 if (FileHelper.countDirectoryLevels(file.pathRelative) == 1)
-                    sourceRoot += '				'+file.uid+' /* '+file.name+' */,\n';
+                    sourceRoot += '				' + file.uid + ' /* ' + file.name + ' */,\n';
             });
 
             // ********** replacements
@@ -453,11 +453,11 @@ async function applyPlatformData(projectName, project, options)
             });
 
             //apply
-            let results = await replace({files: projectFilePath, from: `/*DEFINES_${configKey}*/`, to: definesContent.trim()});
-            results = await replace({files: projectFilePath, from: new RegExp(`/\\*LIB_PATHS_${configKey}\\*/`, 'g'), to: libPathsContent.trim()});
-            results = await replace({files: projectFilePath, from: `/*INCLUDES_${configKey}*/`, to: includePathsContent.trim()});
-            results = await replace({files: projectFilePath, from: `/*BUILD_FLAGS_${configKey}*/`, to: buildFlagsContent.trim()});
-            results = await replace({files: projectFilePath, from: `/*LINKER_FLAGS_${configKey}*/`, to: linkerFlagsContent.trim()});
+            await replace({files: projectFilePath, from: `/*DEFINES_${configKey}*/`, to: definesContent.trim()});
+            await replace({files: projectFilePath, from: new RegExp(`/\\*LIB_PATHS_${configKey}\\*/`, 'g'), to: libPathsContent.trim()});
+            await replace({files: projectFilePath, from: `/*INCLUDES_${configKey}*/`, to: includePathsContent.trim()});
+            await replace({files: projectFilePath, from: `/*BUILD_FLAGS_${configKey}*/`, to: buildFlagsContent.trim()});
+            await replace({files: projectFilePath, from: `/*LINKER_FLAGS_${configKey}*/`, to: linkerFlagsContent.trim()});
         }
     }
 }
@@ -481,7 +481,7 @@ async function applyProjectSettings(projectName, project, options)
         if ('settings' in project && settingsKey in project.settings)
             val = project.settings[settingsKey];
 
-        results = await replace({files: files, from: new RegExp(`/\\*${settingsKey}\\*/`, 'g'), to: val.trim()});
+        await replace({files: files, from: new RegExp(`/\\*${settingsKey}\\*/`, 'g'), to: val.trim()});
     }
 
     return true;
