@@ -36,7 +36,7 @@ let Logging =
     {
         console.log(colors.rainbow(...args));
     }
-}
+};
 
 
 module.exports = Logging;

@@ -40,9 +40,9 @@ let Helper =
                 return result;
             }
 
-            ++retries
+            ++retries;
         }
-        while (retries < _RANDOM_STR_MAX_RETRIES)
+        while (retries < _RANDOM_STR_MAX_RETRIES);
 
         throw Error("randomString max retries reached");
     },
@@ -56,7 +56,7 @@ let Helper =
 
         return newKeys;
     }
-}
+};
 
 
 module.exports = Helper;

@@ -50,7 +50,7 @@ function getDefineEntry(item)
     if (item instanceof Object)
     {
         let name = Object.keys(item)[0];
-        let isStr = typeof item[name] === 'string'
+        let isStr = typeof item[name] === 'string';
         return '"' + name + "=" + (isStr ? '\\"' + item[name] + '\\"' : item[name]) + '"';
     }
 
@@ -94,7 +94,7 @@ async function makeXcode(options)
     {
         let projectName = options.workspace.content[i];
 
-        fileRefStr += '   <FileRef location = "group:' + projectName + '.xcodeproj"></FileRef>\n'
+        fileRefStr += '   <FileRef location = "group:' + projectName + '.xcodeproj"></FileRef>\n';
     }
 
     let workspaceContentFilePath = destPath + '/contents.xcworkspacedata';
@@ -192,7 +192,7 @@ async function makeXcode(options)
 
                     //add all subdir's
                     let subDirs = FileHelper.getAllParentDirectoryPaths(directory);
-                    subDirs.forEach(subDir => { directoryList[subDir] = true; })
+                    subDirs.forEach(subDir => { directoryList[subDir] = true; });
                 }
 
                 //file
@@ -387,7 +387,7 @@ async function makeXcode(options)
             await applyPlatformData(projectName, project, options);
 
             // ********** apply settings
-            await applyProjectSettings(projectName, project, options)
+            await applyProjectSettings(projectName, project, options);
         }
     }
 
@@ -407,7 +407,7 @@ async function applyPlatformData(projectName, project, options)
         for(let configI in Globals.CONFIGURATIONS)
         {
             let config = Globals.CONFIGURATIONS[configI];
-            let configKey = config.toUpperCase()
+            let configKey = config.toUpperCase();
 
             //include
             let includePathsContent = '';
@@ -466,7 +466,7 @@ async function applyProjectSettings(projectName, project, options)
 {
     let files = [];
 
-    files.push(options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj')
+    files.push(options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj');
     files.push(options.build.outputPath + '/' + projectName + '.xcodeproj/project.xcworkspace/contents.xcworkspacedata');
 
     let plist = options.build.outputPath + '/' + projectName + '/Info.plist';

@@ -15,7 +15,7 @@ let Helper =
             if (fileStat.isDirectory())
                 Helper.getAllFiles(filePath, fileList);
             else
-                fileList.push(filePath)
+                fileList.push(filePath);
         });
 
         return fileList;
@@ -59,7 +59,7 @@ let Helper =
             if (dir != '.')
                 parentDirectoryPaths.push(dir);
         }
-        while(dir != '.')
+        while(dir != '.');
 
         return parentDirectoryPaths;
     },
@@ -78,8 +78,7 @@ let Helper =
     {
         return path.relative(from, to).replace(/\\/g, '/');
     }
-
-}
+};
 
 
 module.exports = Helper;

@@ -9,19 +9,19 @@ function ymlLoader(ymlPath)
     let fileContent = fs.readFileSync(ymlPath, 'utf8');
 
     if (!fileContent)
-        fileContent = {}
+        fileContent = {};
 
     const parsed = yaml.safeLoad(fileContent);
 
     let content = {...parsed};
     delete content.imports;
 
-    content = addWorkingDir(content, path.dirname(ymlPath))
+    content = addWorkingDir(content, path.dirname(ymlPath));
 
     //load imports
     if ('imports' in parsed)
     {
-        let parentYmlPath = path.dirname(ymlPath)
+        let parentYmlPath = path.dirname(ymlPath);
 
         let imports = parsed.imports;
         imports.forEach(importFile =>
@@ -36,7 +36,7 @@ function ymlLoader(ymlPath)
         });
     }
 
-    return content
+    return content;
 }
 
 function addWorkingDir(options, dir)

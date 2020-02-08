@@ -36,7 +36,7 @@ const cleanOutputDir = true;
 
 // ******************** find yaml ********************
 let fileStat;
-try { fileStat = fs.statSync(projectPath) }
+try { fileStat = fs.statSync(projectPath); }
 catch(e) {}
 
 if (!fileStat || !fileStat.isFile())
@@ -44,7 +44,7 @@ if (!fileStat || !fileStat.isFile())
     projectPath += '/kmake.yml' ;
 
     fileStat = null;
-    try { fileStat = fs.statSync(projectPath) }
+    try { fileStat = fs.statSync(projectPath); }
     catch(e) {}
 
     if (!fileStat || !fileStat.isFile())
@@ -227,7 +227,7 @@ for(let i in options.workspace.content)
         
         //apply only if there is no project specific overwrite
         if (!(settingsKey in options[project].settings))
-            options[project].settings[settingsKey] = options.workspace.settings[settingsKey]
+            options[project].settings[settingsKey] = options.workspace.settings[settingsKey];
     }
 }
 
@@ -257,7 +257,7 @@ for(let optionKey in options)
 
                     let relativePath = FileHelper.relative(project.workingDir, options[dependency].workingDir);
 
-                    project[depenencyItem].push(relativePath)
+                    project[depenencyItem].push(relativePath);
                 });
             }
         }
@@ -285,7 +285,7 @@ for(let itemKey in options)
             let filePath = workingDir + '/' + file;
             let files = glob.sync(filePath);
 
-            files = files.map(file => { return FileHelper.normalize(file); })
+            files = files.map(file => { return FileHelper.normalize(file); });
             sources = [...sources, ...files];
         }
 
@@ -333,7 +333,7 @@ async function runHooks(options, type)
         let item = options[itemKey];
         if ('hooks' in item)
         {
-            let hooks = item['hooks']
+            let hooks = item['hooks'];
 
             for(let hookName in hooks)
             {
@@ -342,7 +342,7 @@ async function runHooks(options, type)
                 if (hookName == HOOKS_SWAPPED[type])
                 {
                     let command = hook;
-                    let workingDir = path.resolve(item.workingDir)
+                    let workingDir = path.resolve(item.workingDir);
 
                     try
                     {
@@ -384,4 +384,4 @@ async function runHooks(options, type)
         Logging.error("make failed");
         Logging.log(e);
     }
-})()
+})();

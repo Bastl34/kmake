@@ -21,9 +21,9 @@ function platformResolver(options, buildOptions, level = 0)
             let hasResolvableKey = Globals.PLATFORM_RESOLVER.indexOf(optionKey) != -1;
 
             if (hasResolvableKey)
-                newOption = resolvePlatform(option, buildOptions)
+                newOption = resolvePlatform(option, buildOptions);
             else
-                newOption = options[optionKey]
+                newOption = options[optionKey];
         }
         //recursive
         else
@@ -31,14 +31,14 @@ function platformResolver(options, buildOptions, level = 0)
             if (option instanceof Object)
                 newOption = platformResolver(option, buildOptions, level + 1);
             else
-                newOption = options[optionKey]
+                newOption = options[optionKey];
         }
 
         //add to array
         if (newOption)
         {
             if (isArray)
-                newOptions.push(newOption)
+                newOptions.push(newOption);
             else
                 newOptions[optionKey] = newOption;
         }
@@ -58,7 +58,7 @@ function resolvePlatform(options, build)
         //check if option is an object -> otherwise add it directly
         if (!(option instanceof Object))
         {
-            newContent.push(option)
+            newContent.push(option);
             continue;
         }
 
@@ -70,7 +70,7 @@ function resolvePlatform(options, build)
 
             if (typeof keyName === 'string' && keyName.indexOf('platform:') == 0)
             {
-                let platform = keyName.substr('platform:'.length)
+                let platform = keyName.substr('platform:'.length);
                 let match = micromatch(platformKeys, platform);
 
                 if (match && match instanceof Array)
@@ -78,14 +78,14 @@ function resolvePlatform(options, build)
 
                 //remove not matching platforms
                 if (match == build.template)
-                    newContent.push(option[keyName])
+                    newContent.push(option[keyName]);
 
                 platformItemFound = true;
             }
         }
 
         if (!platformItemFound)
-            newContent.push(option)
+            newContent.push(option);
     }
 
     newContent = resolveArchitecture(newContent, build);
@@ -97,7 +97,7 @@ function resolvePlatform(options, build)
 function resolveArchitecture(options, build)
 {
     let newContent = {generic: []};
-    Globals.PLATFORMS[build.template].forEach(arch => { newContent[arch] = [] })
+    Globals.PLATFORMS[build.template].forEach(arch => { newContent[arch] = []; });
 
     for(let optionKey in options)
     {
@@ -106,7 +106,7 @@ function resolveArchitecture(options, build)
         //check if option is an object -> otherwise add it directly to gerneic
         if (!(option instanceof Object))
         {
-            newContent.generic.push(option)
+            newContent.generic.push(option);
             continue;
         }
 
@@ -118,7 +118,7 @@ function resolveArchitecture(options, build)
 
             if (typeof keyName === 'string' && keyName.indexOf('arch:') == 0)
             {
-                let arch = keyName.substr('arch:'.length)
+                let arch = keyName.substr('arch:'.length);
 
                 if (Object.keys(newContent).indexOf(arch) != -1)
                     newContent[arch].push(option[keyName]);
@@ -128,7 +128,7 @@ function resolveArchitecture(options, build)
         }
 
         if (!archItemFound)
-            newContent.generic.push(option)
+            newContent.generic.push(option);
     }
 
     for(let arch in newContent)
@@ -143,7 +143,7 @@ function resolveArchitecture(options, build)
 function resolveConfiguration(options)
 {
     let newContent = {generic: []};
-    Globals.CONFIGURATIONS.forEach(config => { newContent[config] = [] })
+    Globals.CONFIGURATIONS.forEach(config => { newContent[config] = []; });
 
     //resolve all
     for(let optionKey in options)
@@ -153,7 +153,7 @@ function resolveConfiguration(options)
         //check if option is an object -> otherwise add it directly to gerneric
         if (!(option instanceof Object))
         {
-            newContent.generic.push(option)
+            newContent.generic.push(option);
             continue;
         }
 
@@ -165,7 +165,7 @@ function resolveConfiguration(options)
 
             if (typeof keyName === 'string' && keyName.indexOf('config:') == 0)
             {
-                let config = keyName.substr('config:'.length)
+                let config = keyName.substr('config:'.length);
 
                 if (Object.keys(newContent).indexOf(config) != -1)
                     newContent[config] = [...newContent[config], ...option[keyName]];
@@ -175,7 +175,7 @@ function resolveConfiguration(options)
         }
 
         if (!configItemFound)
-            newContent.generic.push(option)
+            newContent.generic.push(option);
     }
 
     return newContent;
