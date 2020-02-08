@@ -43,9 +43,9 @@ let globals =
         GCC_C_LANGUAGE_STANDARD: 'gnu11',
         CLANG_CXX_LIBRARY: 'libc++',
         CLANG_CXX_LANGUAGE_STANDARD: 'gnu++14',
-        ORGANIZATIONNAME: 'Test Org',
+        ORGANIZATION_NAME: 'Test Org',
         PRODUCT_BUNDLE_IDENTIFIER: 'test.test.test',
-        NS_HUMAN_READABLE_COPYRIGHT: 'Copyright',
+        HUMAN_READABLE_COPYRIGHT: 'Copyright',
         BUNDLE_VERSION: '1.0.0'
     }
 };
