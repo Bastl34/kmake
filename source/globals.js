@@ -47,6 +47,52 @@ let globals =
         PRODUCT_BUNDLE_IDENTIFIER: 'test.test.test',
         HUMAN_READABLE_COPYRIGHT: 'Copyright',
         BUNDLE_VERSION: '1.0.0'
+    },
+
+    ICON: 'resources/defaultIcon.png',
+
+    XCODE_ICONS:
+    {
+        mac:
+        [
+            {name: '16x16', scale: '1x', size: 16},
+            {name: '16x16', scale: '2x', size: 32},
+            {name: '32x32', scale: '1x', size: 32},
+            {name: '32x32', scale: '2x', size: 64},
+            {name: '128x128', scale: '1x', size: 128},
+            {name: '128x128', scale: '2x', size: 256},
+            {name: '256x256', scale: '1x', size: 256},
+            {name: '256x256', scale: '2x', size: 512},
+            {name: '512x512', scale: '1x', size: 512},
+            {name: '512x512', scale: '2x', size: 1024}
+        ],
+        iphone:
+        [
+            {name: '20x20', scale: '2x', size: 40},
+            {name: '20x20', scale: '3x', size: 60},
+            {name: '29x29', scale: '2x', size: 58},
+            {name: '29x29', scale: '3x', size: 87},
+            {name: '40x40', scale: '2x', size: 80},
+            {name: '40x40', scale: '3x', size: 120},
+            {name: '60x60', scale: '2x', size: 120},
+            {name: '60x60', scale: '3x', size: 180}
+        ],
+        ipad:
+        [
+            {name: '20x20', scale: '1x', size: 20},
+            {name: '20x20', scale: '2x', size: 40},
+            {name: '29x29', scale: '1x', size: 29},
+            {name: '29x29', scale: '2x', size: 58},
+            {name: '40x40', scale: '1x', size: 40},
+            {name: '40x40', scale: '2x', size: 80},
+            {name: '76x76', scale: '1x', size: 76},
+            {name: '76x76', scale: '2x', size: 152},
+            {name: '83.5x83.5', scale: '2x', size: 167}
+        ],
+        'ios-marketing':
+        [
+            {name: '1024x1024', scale: '1x', size: 1024}
+        ]
     }
 };
 

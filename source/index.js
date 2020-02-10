@@ -224,7 +224,7 @@ for(let i in options.workspace.content)
 
         if (!('settings' in options[project]))
             options[project].settings = {};
-        
+
         //apply only if there is no project specific overwrite
         if (!(settingsKey in options[project].settings))
             options[project].settings[settingsKey] = options.workspace.settings[settingsKey];
@@ -373,6 +373,9 @@ async function runHooks(options, type)
 
         Logging.info('generating project...');
         let res = await make(options);
+
+        Logging.log('====================');
+
         if (res)
             Logging.rainbow("project generation was successful");
 

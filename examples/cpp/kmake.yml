@@ -41,6 +41,7 @@ app:
     outputType: app #main
     #outputType: framework
     projectType: source
+    #icon: 'assets/icon/icon.png'
 
     settings:
         MACOSX_DEPLOYMENT_TARGET: '10.12'

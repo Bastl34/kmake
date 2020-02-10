@@ -7,6 +7,7 @@ const replace = require('replace-in-file');
 const Helper = require('../helper/helper');
 const FileHelper = require('../helper/fileHelper');
 const Logging = require('../helper/logging');
+const iconGenerator = require('../helper/iconGenerator');
 
 const Globals = require('../globals');
 
@@ -108,6 +109,8 @@ async function makeXcode(options)
     {
         let projectName = options.workspace.content[i];
         let project = options[projectName];
+
+        Logging.info('========== ' + projectName + ' ==========');
 
         if (project.type == 'project' && project.projectType == 'source')
         {
@@ -384,10 +387,16 @@ async function makeXcode(options)
             results = await replace({files: projectFilePath, from: '/*EMBED_LIBRARIES*/', to: libEmbedList.trim()});
 
             // ********** platform specific data
+            Logging.log("applying platform data...");
             await applyPlatformData(projectName, project, options);
 
             // ********** apply settings
+            Logging.log("applying project settings...");
             await applyProjectSettings(projectName, project, options);
+
+            // ********** apply icon
+            Logging.log("generating icons...");
+            await applyIcon(projectName, project, options);
         }
     }
 
@@ -483,6 +492,59 @@ async function applyProjectSettings(projectName, project, options)
 
         await replace({files: files, from: new RegExp(`/\\*${settingsKey}\\*/`, 'g'), to: val.trim()});
     }
+
+    return true;
+}
+
+async function applyIcon(projectName, project, options)
+{
+    const iconJson = options.build.outputPath + '/' + projectName + '/Assets.xcassets/AppIcon.appiconset/contents.json';
+
+    if (!fs.existsSync(iconJson))
+        return true;
+
+    let iconPath = path.resolve(Globals.ICON);
+    if ('icon' in project)
+    {
+        if (path.isAbsolute(project.icon) && fs.existsSync(project.icon))
+            iconPath = project.icon;
+        else
+            iconPath = path.resolve(path.join(path.dirname(options.build.projectPath), project.icon));
+    }
+
+    if (!fs.existsSync(iconPath))
+    {
+        Logging.error('icon file not found: ', iconPath);
+        throw Error('icon file not found');
+    }
+
+    let iconContent = '';
+
+    for(let idom in Globals.XCODE_ICONS)
+    {
+        for(let i in Globals.XCODE_ICONS[idom])
+        {
+            let iconItem = Globals.XCODE_ICONS[idom][i];
+
+            let outputIcon = 'icon_' + iconItem.name + '_' + iconItem.scale + '.png';
+            let outputIconPath = path.dirname(iconJson) + '/' + outputIcon;
+
+            await iconGenerator(iconPath, outputIconPath, iconItem.size);
+
+            iconContent += `    {\n`;
+            iconContent += `      "size" : "${iconItem.name}",\n`;
+            iconContent += `      "idiom" : "${idom}",\n`;
+            iconContent += `      "filename" : "${outputIcon}",\n`;
+            iconContent += `      "scale" : "${iconItem.scale}"\n`;
+            iconContent += `    },\n`;
+        }
+    }
+
+    //remove last comma
+    if (iconContent.length > 0)
+        iconContent = iconContent.substr(0, iconContent.length - 2);
+
+    await replace({files: iconJson, from: `/*ICONS*/`, to: iconContent.trim()});
 
     return true;
 }
