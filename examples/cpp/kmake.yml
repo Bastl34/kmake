@@ -90,7 +90,7 @@ app:
         - dep2
         - dep21
         - 'platform:xcodeMac':
-            - 'prebuilt/bin/xcodeMac/prebuilt.a'
+            - 'lib/prebuilt/bin/xcodeMac/prebuilt.a'
 
     hooks:
         beforePrepare: 'echo ECHOING before prepare'
