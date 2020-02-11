@@ -128,7 +128,12 @@ function resolveArchitecture(options, build)
         }
 
         if (!archItemFound)
-            newContent.generic.push(option);
+        {
+            if (option instanceof Array)
+                newContent.generic = [...newContent.generic, ...option];
+            else
+                newContent.generic.push(option);
+        }
     }
 
     for(let arch in newContent)
@@ -175,7 +180,12 @@ function resolveConfiguration(options)
         }
 
         if (!configItemFound)
-            newContent.generic.push(option);
+        {
+            if (option instanceof Array)
+                newContent.generic = [...newContent.generic, ...option];
+            else
+                newContent.generic.push(option);
+        }
     }
 
     return newContent;
