@@ -155,12 +155,17 @@ async function makeXcode(options)
                 if (ext in XCODE_BIN_FILETYPE_MAP)
                     type = XCODE_BIN_FILETYPE_MAP[ext];
 
+                let libPathRelative = lib;
+                if (project.workingDir && project.workingDir.length > 0)
+                    libPathRelative = libPathRelative.substr(project.workingDir.length + 1);
+                
                 //lib
                 let libsObj =
                 {
                     name: path.basename(lib),
                     isWorkspaceLib: isWorkspaceLib,
                     path: lib,
+                    pathRelative: libPathRelative ? libPathRelative : null,
                     uid: Helper.randomString(24, '0123456789ABCDEF', false),
                     uid2: Helper.randomString(24, '0123456789ABCDEF', false),
                     uid3: Helper.randomString(24, '0123456789ABCDEF', false),

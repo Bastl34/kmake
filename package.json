@@ -4,7 +4,7 @@
     "description": "build tool for c++ projects (node js based)",
     "main": "index.js",
     "scripts": {
-        "dev-mac": "npm i && nodemon --ignore 'examples/cpp/out' source/index.js examples/cpp xcodeMac examples/cpp/out",
+        "dev-mac": "npm i && nodemon --ignore examples/* source/index.js examples/cpp xcodeMac examples/cpp/out",
         "lint": "eslint source/"
     },
     "dependencies": {

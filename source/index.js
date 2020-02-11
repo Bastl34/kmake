@@ -193,7 +193,6 @@ if ('inputs' in options)
 }
 
 // ******************** process variables ********************
-
 Logging.info('replacing variables...');
 Helper.recursiveReplace(options, (key, object) =>
 {
@@ -211,7 +210,6 @@ Helper.recursiveReplace(options, (key, object) =>
 });
 
 // ******************** apply workspace settings to each project ********************
-
 Logging.info('processing workspace settings...');
 for(let i in options.workspace.content)
 {
@@ -234,7 +232,6 @@ for(let i in options.workspace.content)
 
 
 // ******************** add workspace dependencie paths to project's  ********************
-
 Logging.info('appending workspace dependencies to includePaths and libPaths ...');
 let depenencyItems = ['includePaths', 'libPaths'];
 
@@ -323,7 +320,6 @@ for(let optionKey in options)
 }
 
 // ******************** hooks ********************
-
 async function runHooks(options, type)
 {
     Logging.info('running ' + HOOKS_SWAPPED[type] + ' hooks...');
