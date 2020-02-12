@@ -3,12 +3,6 @@ const os = require('os');
 const Globals = require('./globals');
 const Logging = require('./helper/logging');
 
-const ARG_OPTIONS_DEFAULT =
-{
-    'useInputCache': false,
-    'cleanOutputDir': true
-};
-
 function argParser()
 {
     let args = process.argv.slice(2);
@@ -20,8 +14,8 @@ function argParser()
         output: null
     };
 
-    for(let argKey in ARG_OPTIONS_DEFAULT)
-        obj[argKey] = ARG_OPTIONS_DEFAULT[argKey];
+    for(let argKey in Globals.ARG_OPTIONS_DEFAULT)
+        obj[argKey] = Globals.ARG_OPTIONS_DEFAULT[argKey];
 
     let lastOptionKey = null;
 
@@ -34,7 +28,7 @@ function argParser()
         let optionKeyName = isOptionKey ? arg.substr(2) : null;
 
         //error check
-        if (isOptionKey && !(optionKeyName in ARG_OPTIONS_DEFAULT))
+        if (isOptionKey && !(optionKeyName in Globals.ARG_OPTIONS_DEFAULT))
         {
             Logging.warning('option key not found: ' + optionKeyName);
             optionKeyName = null;
@@ -53,7 +47,7 @@ function argParser()
         }
         else if (lastOptionKey && !isOptionKey)
         {
-            let type = typeof ARG_OPTIONS_DEFAULT[lastOptionKey];
+            let type = typeof Globals.ARG_OPTIONS_DEFAULT[lastOptionKey];
 
             if (type == 'boolean')
             {
@@ -85,8 +79,6 @@ function argParser()
     //use default output dir if not set
     if (!obj.output)
         obj.output = Globals.DEFAULT_OUTPUT_DIR;
-
-    console.log(obj);
 
     //check if something is missing
     if ((!obj.project || !obj.template || !obj.output))

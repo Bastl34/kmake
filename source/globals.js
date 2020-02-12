@@ -32,6 +32,12 @@ let globals =
         'ios': ['armv7', 'arm64', 'i386', 'x86_64']
     },
 
+    ARG_OPTIONS_DEFAULT:
+    {
+        'useInputCache': false,
+        'cleanOutputDir': true
+    },
+
     DEFAULT_TEMPLATE_BY_PLATFORM:
     {
         'darwin': 'xcodeMac',
