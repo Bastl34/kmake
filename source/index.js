@@ -290,6 +290,33 @@ for(let itemKey in options)
     }
 }
 
+// ******************** resolve dependency files ********************
+
+//this is basicly the same as the next part
+//but for dependencies it could ne that they are from worspace -> to an extra check is needed
+Logging.info('resolving dependency files...');
+for(let itemKey in options)
+{
+    let item = options[itemKey];
+    if ('dependencies' in item)
+    {
+        Helper.recursiveReplace(item.dependencies, (key, object) =>
+        {
+            if (typeof object === "string")
+            {
+                //only resolve paths for items in worspace
+                if (options.workspace.content.indexOf(object) == -1)
+                {
+                    let filePath = item.workingDir + '/' + object;
+                    object = FileHelper.normalize(filePath);
+                }
+            }
+        
+            return object;
+        });
+    }
+}
+
 // ******************** resolve platform specific paths ********************
 Logging.info('resolving platform/arch/config specific paths...');
 
@@ -303,6 +330,7 @@ for(let optionKey in options)
     {
         let property = option[propKey];
 
+        //only for resolvingItems items
         if (resolvingItems.indexOf(propKey) != -1)
         {
             Helper.recursiveReplace(property, (key, object) =>

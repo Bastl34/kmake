@@ -129,7 +129,8 @@ async function makeXcode(options)
             {
                 let lib = libs[libKey];
 
-                let isWorkspaceLib = (lib in options && 'workingDir' in options[lib]);
+                //let isWorkspaceLib = (lib in options && 'workingDir' in options[lib]);
+                let isWorkspaceLib = (options.workspace.content.indexOf(lib) != -1 && 'workingDir' in options[lib]);
 
                 //output name/filename by outputType
                 if (isWorkspaceLib)
