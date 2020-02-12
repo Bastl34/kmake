@@ -10,6 +10,7 @@ const exec = util.promisify(require('child_process').exec);
 const Helper = require('./helper/helper');
 const FileHelper = require('./helper/fileHelper');
 const Logging = require('./helper/logging');
+const argParser = require('./argParser');
 
 const Globals = require('./globals');
 const ymlLoader = require('./ymlLoader');
@@ -20,31 +21,20 @@ const kmakeRoot = fs.realpathSync(__dirname + '/..');
 
 const HOOKS_SWAPPED = Helper.swapObjectKeyValue(Globals.HOOKS);
 
-if (process.argv.length < 5)
-{
-    Logging.info('kmake project.yml template outputdir');
-    process.exit();
-}
-
-let projectPath = process.argv[2];
-let template = process.argv[3];
-let output = process.argv[4];
-
-//DEBUG
-const useInputCache = true;
-const cleanOutputDir = true;
+//parse commandline arguments
+let args = argParser();
 
 // ******************** find yaml ********************
 let fileStat;
-try { fileStat = fs.statSync(projectPath); }
+try { fileStat = fs.statSync(args.project); }
 catch(e) {}
 
 if (!fileStat || !fileStat.isFile())
 {
-    projectPath += '/kmake.yml' ;
+    args.project += '/kmake.yml' ;
 
     fileStat = null;
-    try { fileStat = fs.statSync(projectPath); }
+    try { fileStat = fs.statSync(args.project); }
     catch(e) {}
 
     if (!fileStat || !fileStat.isFile())
@@ -55,38 +45,38 @@ if (!fileStat || !fileStat.isFile())
 }
 
 // ******************** find template ********************
-template = template.toLocaleLowerCase();
-if (!(template in Globals.TEMPLATES))
+args.template = args.template.toLocaleLowerCase();
+if (!(args.template in Globals.TEMPLATES))
 {
-    Logging.error('template: ' + template + ' not found');
+    Logging.error('template: ' + args.template + ' not found');
     process.exit();
 }
 
-template = Globals.TEMPLATES[template];
+args.template = Globals.TEMPLATES[args.template];
 
-let templatePath = kmakeRoot + '/' + Globals.TEMPLATE_DIR +  '/' + template;
-if(path.isAbsolute(template))
-    templatePath = template;
+let templatePath = kmakeRoot + '/' + Globals.TEMPLATE_DIR +  '/' + args.template;
+if(path.isAbsolute(args.template))
+    templatePath = args.template;
 
 try
 {
     let fileStat = fs.statSync(templatePath);
     if (!fileStat.isDirectory())
     {
-        Logging.error('template: ' + template + ' not found');
+        Logging.error('template: ' + args.template + ' not found');
         process.exit();
     }
 }
 catch(e)
 {
-    Logging.error('template: ' + template + ' not found');
+    Logging.error('template: ' + args.template + ' not found');
     process.exit();
 }
 
 // ******************** find output ********************
-let outputPath = kmakeRoot + '/' + output;
-if(path.isAbsolute(output))
-    outputPath = output;
+let outputPath = kmakeRoot + '/' + args.output;
+if(path.isAbsolute(args.output))
+    outputPath = args.output;
 
 try
 {
@@ -106,7 +96,7 @@ let options = {};
 Logging.info('loading build settings...');
 try
 {
-    options = ymlLoader(projectPath);
+    options = ymlLoader(args.project);
 } catch (e)
 {
     Logging.error(e);
@@ -116,14 +106,10 @@ try
 // ******************** build settings ********************
 options.build =
 {
-    template: template,
+    ...args,
     templatePath: FileHelper.normalize(templatePath),
-    project: projectPath,
-    projectPath: FileHelper.normalize(kmakeRoot + '/' + projectPath),
-    output: output,
-    outputPath: FileHelper.normalize(outputPath),
-    useInputCache: useInputCache,
-    cleanOutputDir: cleanOutputDir
+    projectPath: FileHelper.normalize(kmakeRoot + '/' + args.project),
+    outputPath: FileHelper.normalize(outputPath)
 };
 
 // ******************** get inputs ********************
@@ -133,14 +119,14 @@ if ('inputs' in options)
     try
     {
         //save input cache
-        let inputCachePath = projectPath + '.input.cache';
+        let inputCachePath = args.project + '.input.cache';
 
         let inputCache = {};
 
         if (fs.existsSync(inputCachePath))
             inputCache = ymlLoader(inputCachePath);
 
-        if (!useInputCache)
+        if (!args.useInputCache)
         {
             for(let key in options.inputs)
             {
@@ -311,7 +297,7 @@ for(let itemKey in options)
                     object = FileHelper.normalize(filePath);
                 }
             }
-        
+
             return object;
         });
     }

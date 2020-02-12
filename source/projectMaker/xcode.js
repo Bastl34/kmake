@@ -159,7 +159,7 @@ async function makeXcode(options)
                 let libPathRelative = lib;
                 if (project.workingDir && project.workingDir.length > 0)
                     libPathRelative = libPathRelative.substr(project.workingDir.length + 1);
-                
+
                 //lib
                 let libsObj =
                 {

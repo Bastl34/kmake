@@ -32,6 +32,15 @@ let globals =
         'ios': ['armv7', 'arm64', 'i386', 'x86_64']
     },
 
+    DEFAULT_TEMPLATE_BY_PLATFORM:
+    {
+        'darwin': 'xcodeMac',
+        'win32': 'vs2019',
+        'linux': 'makefile'
+    },
+
+    DEFAULT_OUTPUT_DIR: './out',
+
     CONFIGURATIONS: ['debug', 'release'],
 
     PLATFORM_RESOLVER: ['defines', 'includePaths', 'libPaths', 'dependencies', 'buildFlags', 'linkerFlags'],
