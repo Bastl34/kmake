@@ -266,7 +266,8 @@ async function makeXcode(options)
             soucesList.forEach(file =>
             {
                 //get the relative path from output dir to source
-                let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(file.path)) + '/' + file.name;
+                let absolutePath = path.resolve(file.path);
+                let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + file.name;
 
                 sourceFileContent += '		' + file.uid2 + ' /* ' + file.name + ' in Sources */ = {isa = PBXBuildFile; fileRef = ' + file.uid + ' /* ' + file.name + ' */; };\n';
                 sourceFileReferenceContent += '		' + file.uid + ' /* ' + file.name + ' */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = ' + file.type + '; name = ' + file.name + '; path = ' + relativePath + '; sourceTree = "<group>"; };\n';
@@ -284,7 +285,8 @@ async function makeXcode(options)
             libsList.forEach(lib =>
             {
                 //get the relative path from output dir to source
-                let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(lib.path)) + '/' + lib.name;
+                let absolutePath = path.resolve(lib.path);
+                let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + lib.name;
                 if (lib.isWorkspaceLib)
                     relativePath = lib.name;
 

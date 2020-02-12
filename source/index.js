@@ -293,7 +293,7 @@ for(let itemKey in options)
 // ******************** resolve dependency files ********************
 
 //this is basicly the same as the next part
-//but for dependencies it could ne that they are from worspace -> to an extra check is needed
+//but for dependencies it could be that they are from the workspace -> so an extra check is needed
 Logging.info('resolving dependency files...');
 for(let itemKey in options)
 {
