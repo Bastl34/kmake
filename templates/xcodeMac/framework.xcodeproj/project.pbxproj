@@ -37,7 +37,7 @@
 
 /* Begin PBXFileReference section */
 		6BB5710323EDF9C300430CC2 /* PROJECT_NAME.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PROJECT_NAME.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		6BB5710723EDF9C300430CC2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PROJECT_NAME/Info.plist; name = Info.plist; sourceTree = "<group>"; };
+		6BB5710723EDF9C300430CC2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; name = Info.plist; sourceTree = "<group>"; };
 		70EC42EF163F701F007A327B /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = PROJECT_NAME/assets; name = assets; sourceTree = "<group>"; };
 		/*SOURCE_FILE_REFERENCE*/
 /* End PBXFileReference section */
@@ -86,7 +86,7 @@
 			children = (
 				6BB5710723EDF9C300430CC2 /* Info.plist */,
 			);
-			path = framework;
+			path = PROJECT_NAME;
 			sourceTree = "<group>";
 		};
 		/*SOURCE_DIRECTORIES*/

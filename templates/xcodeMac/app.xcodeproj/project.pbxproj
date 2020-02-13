@@ -38,9 +38,9 @@
 
 /* Begin PBXFileReference section */
 		6BFF407A23EDCB6400C3629C /* PROJECT_NAME.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PROJECT_NAME.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		6BFF408023EDCB6800C3629C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = PROJECT_NAME/Assets.xcassets; name = Assets.xcassets; sourceTree = "<group>"; };
-		6BFF408523EDCB6800C3629C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PROJECT_NAME/Info.plist; name = Info.plist; sourceTree = "<group>"; };
-		6BFF408823EDCB6800C3629C /* app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = PROJECT_NAME/app.entitlements; name = app.entitlements; sourceTree = "<group>"; };
+		6BFF408023EDCB6800C3629C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; name = Assets.xcassets; sourceTree = "<group>"; };
+		6BFF408523EDCB6800C3629C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; name = Info.plist; sourceTree = "<group>"; };
+		6BFF408823EDCB6800C3629C /* app.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = app.entitlements; name = app.entitlements; sourceTree = "<group>"; };
 		70EC42EF163F701F007A327A /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = PROJECT_NAME/assets; name = assets; sourceTree = "<group>"; };
 		/*SOURCE_FILE_REFERENCE*/
 /* End PBXFileReference section */
@@ -91,7 +91,7 @@
 				6BFF408523EDCB6800C3629C /* Info.plist */,
 				6BFF408823EDCB6800C3629C /* app.entitlements */,
 			);
-			path = app;
+			path = PROJECT_NAME;
 			sourceTree = "<group>";
 		};
 
