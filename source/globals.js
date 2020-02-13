@@ -66,6 +66,8 @@ let globals =
 
     ICON: 'resources/defaultIcon.png',
 
+    DEFAULT_ASSET_DIR: 'assets',
+
     XCODE_ICONS:
     {
         mac:

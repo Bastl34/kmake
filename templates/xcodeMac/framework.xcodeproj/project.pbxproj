@@ -8,17 +8,19 @@
 
 /* Begin PBXBuildFile section */
 		/*SOURCE_FILE*/
+		70EC42F0163F701F007A327B /* assets in CopyFiles */ = {isa = PBXBuildFile; fileRef = 70EC42EF163F701F007A327B /* assets */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		6BA632BB23DA085D008F13A3 /* CopyFiles */ = {
+		6BA632BB23DA085D008F13A2 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
+			dstPath = "";
+			dstSubfolderSpec = 7;
 			files = (
+				70EC42F0163F701F007A327B /* assets in CopyFiles */,
 			);
-			runOnlyForDeploymentPostprocessing = 1;
+			runOnlyForDeploymentPostprocessing = 0;
 		};
 		6BFA080423EB71EB000E3724 /* Embed Libraries */ = {
 			isa = PBXCopyFilesBuildPhase;
@@ -35,7 +37,8 @@
 
 /* Begin PBXFileReference section */
 		6BB5710323EDF9C300430CC2 /* PROJECT_NAME.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = PROJECT_NAME.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		6BB5710723EDF9C300430CC2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6BB5710723EDF9C300430CC2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = PROJECT_NAME/Info.plist; name = Info.plist; sourceTree = "<group>"; };
+		70EC42EF163F701F007A327B /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; path = PROJECT_NAME/assets; name = assets; sourceTree = "<group>"; };
 		/*SOURCE_FILE_REFERENCE*/
 /* End PBXFileReference section */
 
@@ -56,6 +59,7 @@
 			children = (
 				/*SOURCE_ROOT*/
 				6BB5710523EDF9C300430CC2 /* framework */,
+				70EC42EF163F701F007A327B /* assets */,
 				6BB5710423EDF9C300430CC2 /* Products */,
 				6BFA07FE23EB71E9000E3732 /* Frameworks */,
 			);
@@ -104,6 +108,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6BB5710B23EDF9C300430CC2 /* Build configuration list for PBXNativeTarget "framework" */;
 			buildPhases = (
+				70EC42F8164036FC007A327B /* ShellScript */,
 				6BB570FE23EDF9C300430CC2 /* Headers */,
 				6BB570FF23EDF9C300430CC2 /* Sources */,
 				6BB5710023EDF9C300430CC2 /* Frameworks */,
@@ -161,6 +166,22 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		70EC42F8164036FC007A327B /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/*SHELL_SCRIPT*/";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		6BB570FF23EDF9C300430CC2 /* Sources */ = {
@@ -339,7 +360,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = framework/Info.plist;
+				INFOPLIST_FILE = PROJECT_NAME/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -361,7 +382,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = framework/Info.plist;
+				INFOPLIST_FILE = PROJECT_NAME/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

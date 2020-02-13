@@ -28,20 +28,21 @@ workspace:
         BUNDLE_VERSION: '${PROJECT_VERSION}'
 
     content:
-        - app
+        - bla
         - dep1
         - dep2
         - dep21
 
 # main App
-app:
-    name: '${PROJECT_NAME}'
+bla:
+    #name: '${PROJECT_NAME}'
+    name: 'bla'
 
     type: project
     outputType: app #main
     #outputType: framework
     projectType: source
-    #icon: 'assets/icon/icon.png'
+    icon: 'assets/icon/icon.png'
 
     settings:
         MACOSX_DEPLOYMENT_TARGET: '10.12'
@@ -79,6 +80,16 @@ app:
                     - '/MacRelease2'
                 config:debug:
                     - '/MacDebug2'
+
+    assets:
+        -
+            source: ./assets/icon
+            destination: 'icon'
+            exclude:
+                - '*.psd'
+        -
+            source: ./assets2/test
+            destination: 'test'
 
     sources:
         - source/main.cpp

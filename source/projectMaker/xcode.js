@@ -76,7 +76,7 @@ async function makeXcode(options)
         if (fs.existsSync(options.build.templatePath + '/' + project.outputType))
         {
             sourcePath = options.build.templatePath + '/' + project.outputType;
-            destPath = options.build.outputPath + '/' + project.outputType;
+            destPath = options.build.outputPath + '/' + projectName;
 
             let results = await copy(sourcePath, destPath, {overwrite: true});
             Logging.log(results.length + ' files copied');
@@ -405,6 +405,10 @@ async function makeXcode(options)
             // ********** apply icon
             Logging.log("generating icons...");
             await applyIcon(projectName, project, options);
+
+            // ********** assets
+            Logging.log("applying asset data...");
+            await applyAssets(projectName, project, options);
         }
     }
 
@@ -555,6 +559,55 @@ async function applyIcon(projectName, project, options)
     await replace({files: iconJson, from: `/*ICONS*/`, to: iconContent.trim()});
 
     return true;
+}
+
+async function applyAssets(projectName, project, options)
+{
+    if (!('assets' in project))
+        return;
+
+    if (!(fs.existsSync(options.build.outputPath + '/' + projectName)))
+    {
+        Logging.warning('there is no content directory (assets) for this type of project: '+project.outputType);
+        return;
+    }
+
+    let copyScript = projectName + '/copyAssets.sh';
+    let copyScriptOutPath = options.build.outputPath + '/' + copyScript;
+
+    let scriptContent = '';
+    scriptContent += 'rm  -rf "' + path.join(projectName, Globals.DEFAULT_ASSET_DIR) + '/"\n';
+    scriptContent += 'mkdir "' + path.join(projectName, Globals.DEFAULT_ASSET_DIR) + '/"\n\n';
+
+    //create asset dir
+    await fs.mkdirSync(path.join(options.build.outputPath, projectName, Globals.DEFAULT_ASSET_DIR));
+
+    //generate copy script
+    for(let i in project.assets)
+    {
+        let asset = project.assets[i];
+
+        let source = path.resolve(path.join(project.workingDir, asset.source)) + '/';
+        let dest = path.join(projectName, Globals.DEFAULT_ASSET_DIR, asset.destination);
+
+        let exclude = '';
+        if ('exclude' in asset)
+        {
+            asset.exclude.forEach(excludeItem =>
+            {
+                exclude += `--exclude "${excludeItem}" `;
+            });
+        }
+
+        let rsync = `rsync -av ${exclude.trim()} "${source}" "${dest}"\n`;
+        scriptContent += rsync;
+    }
+
+    fs.writeFileSync(copyScriptOutPath, scriptContent);
+    fs.chmodSync(copyScriptOutPath, 0o744);
+
+    let projectFilePath = options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj';
+    await replace({files: projectFilePath, from: `/*SHELL_SCRIPT*/`, to: copyScript});
 }
 
 module.exports = makeXcode;

@@ -371,8 +371,6 @@ async function runHooks(options, type)
     }
 }
 
-//console.log(options);
-
 // ******************** make ********************
 
 (async () =>
