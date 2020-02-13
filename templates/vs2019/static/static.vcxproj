@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{FB71F03D-D245-411B-A06A-8220EC0753F3}</ProjectGuid>
+    <ProjectGuid>{{#PROJECT_ID#}}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>libStatic</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>

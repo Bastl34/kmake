@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
-    <ProjectGuid>{34EFDDDE-69A7-416B-AF33-B698D60A782F}</ProjectGuid>
+    <ProjectGuid>{{#PROJECT_ID#}}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>libDynamic</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>

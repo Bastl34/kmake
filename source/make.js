@@ -3,6 +3,7 @@ const path = require('path');
 const Logging = require('./helper/logging');
 
 const makeXcode = require('./projectMaker/xcode');
+const makeVisualStudio = require('./projectMaker/visualStudio');
 
 async function make(options)
 {
@@ -34,6 +35,8 @@ async function make(options)
     //create project files
     if (options.build.template == 'xcodeMac')
         res = await makeXcode(options);
+    else if (options.build.template == 'vs2019')
+        res = await makeVisualStudio(options);
 
     return res;
 }

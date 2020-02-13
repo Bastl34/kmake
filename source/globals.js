@@ -16,6 +16,9 @@ let globals =
 
     TEMPLATES:
     {
+        'vs': 'vs2019',
+        'vs2019': 'vs2019',
+        
         'mac': 'xcodeMac',
         'xcodemac': 'xcodeMac'
     },

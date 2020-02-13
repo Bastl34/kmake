@@ -5,6 +5,7 @@
     "main": "index.js",
     "scripts": {
         "dev-mac": "npm i && nodemon --ignore examples/* source/index.js examples/cpp xcodeMac examples/cpp/out --useInputCache 1",
+        "dev-vs": "npm i && nodemon --ignore examples/* source/index.js examples/cpp vs2019 examples/cpp/out --useInputCache 1",
         "lint": "eslint source/"
     },
     "dependencies": {

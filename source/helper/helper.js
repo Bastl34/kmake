@@ -55,6 +55,11 @@ let Helper =
             newKeys[keys[key]] = key;
 
         return newKeys;
+    },
+
+    capitalizeFirstLetter(string)
+    {
+        return string.charAt(0).toUpperCase() + string.slice(1);
     }
 };
 
