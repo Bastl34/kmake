@@ -120,13 +120,17 @@ async function makeVisualStudio(options)
         let projectFilePath = options.build.outputPath + '/' + projectName + '/' + projectName + '.vcxproj';
 
         results = await replace({files: projectFilePath, from: /#PROJECT_ID#/g, to: projectIds[projectName]});
+
+        // ********** platform specific data
+        Logging.log("applying platform data...");
+        await applyPlatformData(projectName, project, options);
     }
     return true;
 }
 
 async function applyPlatformData(projectName, project, options)
 {
-    let projectFilePath = options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj';
+    let projectFilePath = options.build.outputPath + '/' + projectName + '/' + projectName + '.vcxproj';
 
     //Globals.PLATFORMS[options.build.template].forEach(platform =>
     for(let platformI in Globals.PLATFORMS[options.build.template])
@@ -145,9 +149,10 @@ async function applyPlatformData(projectName, project, options)
             includesArray.forEach(item =>
             {
                 item = FileHelper.relative(options.build.outputPath, item);
-                includePathsContent += '					"' + item + '",\n';
+                includePathsContent += '"' + item + '";';
             });
 
+            /*
 
             //defines
             let definesContent = '';
@@ -181,13 +186,16 @@ async function applyPlatformData(projectName, project, options)
             {
                 linkerFlagsContent += '					"' + item + '",\n';
             });
+            */
+
+            let configName = Helper.capitalizeFirstLetter(config);
 
             //apply
-            await replace({files: projectFilePath, from: `/*DEFINES_${configKey}*/`, to: definesContent.trim()});
-            await replace({files: projectFilePath, from: new RegExp(`/\\*LIB_PATHS_${configKey}\\*/`, 'g'), to: libPathsContent.trim()});
-            await replace({files: projectFilePath, from: `/*INCLUDES_${configKey}*/`, to: includePathsContent.trim()});
-            await replace({files: projectFilePath, from: `/*BUILD_FLAGS_${configKey}*/`, to: buildFlagsContent.trim()});
-            await replace({files: projectFilePath, from: `/*LINKER_FLAGS_${configKey}*/`, to: linkerFlagsContent.trim()});
+            //await replace({files: projectFilePath, from: `/*DEFINES_${configKey}*/`, to: definesContent.trim()});
+            await replace({files: projectFilePath, from: new RegExp(`/<\!--INCLUDES_${platform}_${configName}-->/`, 'g'), to: includePathsContent.trim()});
+            //await replace({files: projectFilePath, from: `/*INCLUDES_${configKey}*/`, to: includePathsContent.trim()});
+            //await replace({files: projectFilePath, from: `/*BUILD_FLAGS_${configKey}*/`, to: buildFlagsContent.trim()});
+            //await replace({files: projectFilePath, from: `/*LINKER_FLAGS_${configKey}*/`, to: linkerFlagsContent.trim()});
         }
     }
 }
