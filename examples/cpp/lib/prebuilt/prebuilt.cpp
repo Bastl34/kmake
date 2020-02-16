@@ -1,8 +1,8 @@
-#include <iostream>
+#include <stdio.h>
 
 #include "prebuilt.h"
 
 void prebuiltFunc(int input)
 {
-    std::cout << "hallo from prebuilt with " << input << std::endl;
+    printf("hallo from prebuilt with %d\n", input);
 }
