@@ -357,6 +357,8 @@ async function applyPlatformData(projectName, project, options)
 
                     lib += DEPENDENCY_FILE_ENDING_BY_OUTPUT_TYPE[outputType];
                 }
+                else
+                    lib = FileHelper.relative(path.join(options.build.outputPath, projectName), lib);
 
                 libsContent += '"' + lib + '";';
             });

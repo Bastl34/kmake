@@ -316,7 +316,7 @@ for(let itemKey in options)
         {
             if (typeof object === "string")
             {
-                //only resolve paths for items in worspace
+                //only resolve paths for items not in workspace
                 if (options.workspace.content.indexOf(object) == -1)
                 {
                     let filePath = item.workingDir + '/' + object;
@@ -400,8 +400,8 @@ async function runHooks(options, type)
 }
 
 
-console.log(options.bla.libPaths);
-console.log(options.bla.dependencies);
+//console.log(options.bla.libPaths);
+//console.log(options.bla.dependencies);
 
 // ******************** make ********************
 (async () =>
