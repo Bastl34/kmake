@@ -24,6 +24,7 @@ const HOOKS_SWAPPED = Helper.swapObjectKeyValue(Globals.HOOKS);
 //parse commandline arguments
 let args = argParser();
 
+
 // ******************** find yaml ********************
 let fileStat;
 try { fileStat = fs.statSync(args.project); }
@@ -43,6 +44,7 @@ if (!fileStat || !fileStat.isFile())
         process.exit();
     }
 }
+
 
 // ******************** find template ********************
 args.template = args.template.toLocaleLowerCase();
@@ -73,6 +75,7 @@ catch(e)
     process.exit();
 }
 
+
 // ******************** find output ********************
 let outputPath = kmakeRoot + '/' + args.output;
 if(path.isAbsolute(args.output))
@@ -90,8 +93,8 @@ catch(e)
     process.exit();
 }
 
-// ******************** load yaml ********************
 
+// ******************** load yaml ********************
 let options = {};
 Logging.info('loading build settings...');
 try
@@ -103,6 +106,7 @@ try
     process.exit();
 }
 
+
 // ******************** build settings ********************
 options.build =
 {
@@ -111,6 +115,7 @@ options.build =
     projectPath: FileHelper.normalize(kmakeRoot + '/' + args.project),
     outputPath: FileHelper.normalize(outputPath)
 };
+
 
 // ******************** get inputs ********************
 Logging.info('getting input data...');
@@ -178,6 +183,7 @@ if ('inputs' in options)
     }
 }
 
+
 // ******************** process variables ********************
 Logging.info('replacing variables...');
 Helper.recursiveReplace(options, (key, object) =>
@@ -194,6 +200,7 @@ Helper.recursiveReplace(options, (key, object) =>
 
     return object;
 });
+
 
 // ******************** apply workspace settings to each project ********************
 Logging.info('processing workspace settings...');
@@ -214,7 +221,6 @@ for(let i in options.workspace.content)
             options[project].settings[settingsKey] = options.workspace.settings[settingsKey];
     }
 }
-
 
 
 // ******************** add workspace dependencie paths to project's  ********************
@@ -247,9 +253,28 @@ for(let optionKey in options)
     }
 }
 
+
+// ******************** add PROJECT_[PROJECT_NAME] to each project ********************
+Logging.info('add PROJECT_[PROJECT_NAME] to each project...');
+
+for(let optionKey in options)
+{
+    let project = options[optionKey];
+
+    if ('type' in project && project.type == 'project')
+    {
+        if (!('defines' in project))
+            project.defines = [];
+        
+        project.defines.push('PROJECT_'+optionKey.toUpperCase());
+    }
+}
+
+
 // ******************** resolve platforms/architectures ********************
 Logging.info('resolving platform specific settings...');
 options = platformResolver(options, options.build);
+
 
 // ******************** resolve source files ********************
 Logging.info('resolving source files...');
@@ -275,6 +300,7 @@ for(let itemKey in options)
         item.sources = sources;
     }
 }
+
 
 // ******************** resolve dependency files ********************
 
@@ -303,6 +329,7 @@ for(let itemKey in options)
     }
 }
 
+
 // ******************** resolve platform specific paths ********************
 Logging.info('resolving platform/arch/config specific paths...');
 
@@ -321,7 +348,7 @@ for(let optionKey in options)
         {
             Helper.recursiveReplace(property, (key, object) =>
             {
-                if (typeof object === "string")
+                if (typeof object === "string" && !path.isAbsolute(object))
                 {
                     let filePath = option.workingDir + '/' + object;
                     object = FileHelper.normalize(filePath);
@@ -332,6 +359,7 @@ for(let optionKey in options)
         }
     }
 }
+
 
 // ******************** hooks ********************
 async function runHooks(options, type)
@@ -371,8 +399,11 @@ async function runHooks(options, type)
     }
 }
 
-// ******************** make ********************
 
+console.log(options.bla.libPaths);
+console.log(options.bla.dependencies);
+
+// ******************** make ********************
 (async () =>
 {
     try

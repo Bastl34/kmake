@@ -102,6 +102,11 @@ bla:
         - dep21
         - 'platform:xcodeMac':
             - 'lib/prebuilt/bin/xcodeMac/x86_64/prebuilt.a'
+        - 'platform:vs*':
+            arch:win32:
+                - 'lib/prebuilt/bin/vs2019/win32/prebuilt.lib'
+            arch:x64:
+                - 'lib/prebuilt/bin/vs2019/x64/prebuilt.lib'
 
     hooks:
         beforePrepare: 'echo ECHOING before prepare'

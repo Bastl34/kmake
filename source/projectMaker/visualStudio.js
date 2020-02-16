@@ -26,11 +26,10 @@ const OUTPUT_TYPE_MAP =
     'framework': 'dynamic'
 };
 
-const FILE_ENDING_BY_OUTPUT_TYPE =
+const DEPENDENCY_FILE_ENDING_BY_OUTPUT_TYPE =
 {
-    'main': '.exe',
-    'static': '.obj',
-    'dynamic': '.dll'
+    'static': '.lib',
+    'dynamic': '.lib'
 };
 
 function uuid()
@@ -130,6 +129,10 @@ async function makeVisualStudio(options)
     {
         let projectName = options.workspace.content[i];
         let project = options[projectName];
+
+        let outputType = project.outputType;
+        if (outputType in OUTPUT_TYPE_MAP)
+            outputType = OUTPUT_TYPE_MAP[outputType];
 
         if (project.type != 'project' && project.projectType != 'source')
             continue;
@@ -231,7 +234,7 @@ async function makeVisualStudio(options)
         {
             //get the relative path from output dir to source
             let absolutePath = path.resolve(file.path);
-            let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + file.name;
+            let relativePath = path.relative(path.join(options.build.outputPath, outputType) , path.dirname(absolutePath)) + '/' + file.name;
 
             let outFileName = file.name + '.' + file.uid2 + '.obj';
 
@@ -242,7 +245,7 @@ async function makeVisualStudio(options)
                 compileFiles += '    </ClCompile>\r\n';
 
                 compileFilesFilters += '    <ClCompile Include="' + relativePath + '">\r\n';
-                compileFilesFilters += '      <Filter>' + file.dir+'</Filter>\r\n';
+                compileFilesFilters += '      <Filter>' + path.normalize(file.dir)+'</Filter>\r\n';
                 compileFilesFilters += '    </ClCompile>\r\n';
             }
             else if (file.type == 'header')
@@ -250,7 +253,7 @@ async function makeVisualStudio(options)
                 headerFiles += '    <ClInclude Include="' + relativePath + '" />\r\n';
 
                 headerFilesFilters += '    <ClInclude Include="' + relativePath + '">\r\n';
-                headerFilesFilters += '      <Filter>' + file.dir+'</Filter>\r\n';
+                headerFilesFilters += '      <Filter>' + path.normalize(file.dir)+'</Filter>\r\n';
                 headerFilesFilters += '    </ClInclude>\r\n';
             }
             else
@@ -258,7 +261,7 @@ async function makeVisualStudio(options)
                 assetFiles += '    <None Include="' + relativePath + '" />\r\n';
 
                 assetFilesFilters += '    <None Include="' + relativePath + '">\r\n';
-                assetFilesFilters += '      <Filter>' + file.dir+'</Filter>\r\n';
+                assetFilesFilters += '      <Filter>' + path.normalize(file.dir)+'</Filter>\r\n';
                 assetFilesFilters += '    </None>\r\n';
             }
         });
@@ -267,7 +270,7 @@ async function makeVisualStudio(options)
         let directoriesFilters = '';
         directoryList.forEach(directory =>
         {
-            directoriesFilters += '    <Filter Include="' + directory.path + '">\r\n';
+            directoriesFilters += '    <Filter Include="' + path.normalize(directory.path) + '">\r\n';
             directoriesFilters += '      <UniqueIdentifier>{' + directory.uid + '}</UniqueIdentifier>\r\n';
             directoriesFilters += '    </Filter>\r\n';
         });
@@ -300,8 +303,6 @@ async function applyPlatformData(projectName, project, options)
     let projectFilePath = options.build.outputPath + '/' + projectName + '/' + projectName + '.vcxproj';
     let projectUserPath = projectFilePath + '.user';
 
-    console.log(projectFilePath);
-
     //Globals.PLATFORMS[options.build.template].forEach(platform =>
     for(let platformI in Globals.PLATFORMS[options.build.template])
     {
@@ -318,7 +319,7 @@ async function applyPlatformData(projectName, project, options)
             let includesArray = ('includePaths' in project) ? project['includePaths'][platform][config] : [];
             includesArray.forEach(item =>
             {
-                item = FileHelper.relative(options.build.outputPath, item);
+                item = FileHelper.relative(path.join(options.build.outputPath, projectName), item);
                 includePathsContent += '"' + item + '";';
             });
 
@@ -336,7 +337,7 @@ async function applyPlatformData(projectName, project, options)
             let libsPathsArray = ('libPaths' in project) ? project['libPaths'][platform][config] : [];
             libsPathsArray.forEach(item =>
             {
-                item = FileHelper.relative(options.build.outputPath, item);
+                item = FileHelper.relative(path.join(options.build.outputPath, projectName), item);
                 libPathsContent += '"' + item + '";';
             });
 
@@ -345,15 +346,17 @@ async function applyPlatformData(projectName, project, options)
             let libsArray = ('dependencies' in project) ? project['dependencies'][platform][config] : [];
             libsArray.forEach(lib =>
             {
-                let outputType = options[lib].outputType;
-                if (!(outputType in FILE_ENDING_BY_OUTPUT_TYPE))
+                if (lib in options)
                 {
-                    Logging.error('outputType: ' + outputType +  ' not supported for ' + lib);
-                    return false;
-                }
+                    let outputType = options[lib].outputType;
+                    if (!(outputType in DEPENDENCY_FILE_ENDING_BY_OUTPUT_TYPE))
+                    {
+                        Logging.error('outputType: ' + outputType +  ' not supported for ' + lib);
+                        return false;
+                    }
 
-                lib += FILE_ENDING_BY_OUTPUT_TYPE[outputType];
-                lib = FileHelper.relative(options.build.outputPath, lib);
+                    lib += DEPENDENCY_FILE_ENDING_BY_OUTPUT_TYPE[outputType];
+                }
 
                 libsContent += '"' + lib + '";';
             });
@@ -379,11 +382,13 @@ async function applyPlatformData(projectName, project, options)
             //apply
             await replace({files: projectFilePath, from: new RegExp(`<!--INCLUDES_${platform}_${configName}-->`, 'g'), to: includePathsContent.trim()});
             await replace({files: projectFilePath, from: new RegExp(`<!--DEFINES_${platform}_${configName}-->`, 'g'), to: definesContent.trim()});
-            await replace({files: projectUserPath, from: new RegExp(`<!--LIB_PATHS_${platform}_${configName}-->`, 'g'), to: libPathsContent.trim()});
+            await replace({files: projectFilePath, from: new RegExp(`<!--LIB_PATHS_${platform}_${configName}-->`, 'g'), to: libPathsContent.trim()});
             await replace({files: projectFilePath, from: new RegExp(`<!--LIBS_${platform}_${configName}-->`, 'g'), to: libsContent.trim()});
 
             await replace({files: projectFilePath, from: new RegExp(`<!--BUILD_FLAGS_${platform}_${configName}-->`, 'g'), to: buildFlagsContent.trim()});
             await replace({files: projectFilePath, from: new RegExp(`<!--LINKER_FLAGS_${platform}_${configName}-->`, 'g'), to: linkerFlagsContent.trim()});
+
+            await replace({files: projectUserPath, from: new RegExp(`<!--LIB_PATHS_${platform}_${configName}-->`, 'g'), to: libPathsContent.trim()});
         }
     }
 }

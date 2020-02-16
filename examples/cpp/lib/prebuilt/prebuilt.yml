@@ -1,4 +1,11 @@
 
+# workspace settings
+workspace:
+    name: 'prebuilt'
+
+    content:
+        - prebuilt
+
 # prebuilt
 prebuilt:
     name: prebuilt
