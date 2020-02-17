@@ -97,6 +97,7 @@ async function makeVisualStudio(options)
     let projectDef = '';
     let platformDef = '';
 
+    //generate project ids
     let projectIds = {}
 
     for(let i in options.workspace.content)
@@ -105,8 +106,36 @@ async function makeVisualStudio(options)
 
         let projectId = uuid();
         projectIds[projectName] = projectId;
+    }
 
-        projectDef += `Project("{${solutionId1}}") = "${projectName}", ".\\${projectName}\\${projectName}.vcxproj", "{${projectId}"\nEndProject\n`;
+    //generate solution file
+    for(let i in options.workspace.content)
+    {
+        let projectName = options.workspace.content[i];
+        let projectId = projectIds[projectName];
+
+        //project definition with all dependencies
+        projectDef += `Project("{${solutionId1}}") = "${projectName}", ".\\${projectName}\\${projectName}.vcxproj", "{${projectId}"\n`;
+        projectDef += `	ProjectSection(ProjectDependencies) = postProject\n`;
+
+        if (projectName in options && 'dependencies' in options[projectName])
+        {
+            let project = options[projectName];
+
+            //use win32 release
+            let libs = [];
+            if ('dependencies' in project && 'win32' in project.dependencies)
+                libs = project.dependencies['win32']['release'];
+
+            libs.forEach(lib =>
+            {
+                if (lib in options)
+                    projectDef += `		{${projectIds[lib]}} = {${projectIds[lib]}}\n`;
+            });
+        }
+
+        projectDef += `	EndProjectSection\n`;
+        projectDef += `EndProject\n`;
 
         Globals.PLATFORMS[vsVersion].forEach(platform =>
         {
