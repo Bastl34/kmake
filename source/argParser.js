@@ -1,4 +1,5 @@
 const os = require('os');
+const path = require('path');
 
 const Globals = require('./globals');
 const Logging = require('./helper/logging');
@@ -78,7 +79,7 @@ function argParser()
 
     //use default output dir if not set
     if (!obj.output)
-        obj.output = Globals.DEFAULT_OUTPUT_DIR;
+        obj.output = path.join(obj.project,Globals.DEFAULT_OUTPUT_DIR);
 
     //check if something is missing
     if ((!obj.project || !obj.template || !obj.output))

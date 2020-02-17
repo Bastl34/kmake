@@ -56,6 +56,7 @@ bla:
     includePaths:
         - './'
         - 'lib/prebuilt/'
+        - 'lib/prebuiltDyn/'
         - 'platform:vs*':
             arch:win32:
                 config:release:
@@ -102,11 +103,14 @@ bla:
         - dep21
         - 'platform:xcodeMac':
             - 'lib/prebuilt/bin/xcodeMac/x86_64/prebuilt.a'
+            - 'lib/prebuiltDyn/bin/xcodeMac/x86_64/prebuiltDyn.dylib'
         - 'platform:vs*':
             arch:win32:
                 - 'lib/prebuilt/bin/vs2019/win32/prebuilt.lib'
+                - 'lib/prebuiltDyn/bin/vs2019/win32/prebuiltDyn.lib'
             arch:x64:
                 - 'lib/prebuilt/bin/vs2019/x64/prebuilt.lib'
+                - 'lib/prebuiltDyn/bin/vs2019/x64/prebuiltDyn.lib'
 
     hooks:
         beforePrepare: 'echo ECHOING before prepare'

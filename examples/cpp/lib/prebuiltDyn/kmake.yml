@@ -1,0 +1,16 @@
+
+# workspace settings
+workspace:
+    name: 'prebuiltDyn'
+
+    content:
+        - prebuiltDyn
+
+# prebuilt
+prebuiltDyn:
+    name: prebuiltDyn
+    type: project
+    outputType: dynamic
+    projectType: source
+
+    sources: ['*.cpp', '*.h']
