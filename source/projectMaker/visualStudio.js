@@ -32,6 +32,23 @@ const DEPENDENCY_FILE_ENDING_BY_OUTPUT_TYPE =
     'dynamic': '.lib'
 };
 
+const SETTINGS_MAP = 
+{
+    'VS_C_RUNTIME':
+    {
+        'release': 
+        {
+            'MT': 'MultiThreaded',
+            'MD': 'MultiThreadedDLL',
+        },
+        'debug': 
+        {
+            'MT': 'MultiThreadedDebug',
+            'MD': 'MultiThreadedDebugDLL',
+        }
+    }
+};
+
 function uuid()
 {
     let a = Helper.randomString(8, '0123456789ABCDEF', false);
@@ -332,7 +349,6 @@ async function applyPlatformData(projectName, project, options)
     let projectFilePath = options.build.outputPath + '/' + projectName + '/' + projectName + '.vcxproj';
     let projectUserPath = projectFilePath + '.user';
 
-    //Globals.PLATFORMS[options.build.template].forEach(platform =>
     for(let platformI in Globals.PLATFORMS[options.build.template])
     {
         let platform = Globals.PLATFORMS[options.build.template][platformI];
@@ -420,8 +436,73 @@ async function applyPlatformData(projectName, project, options)
             await replace({files: projectFilePath, from: new RegExp(`<!--LINKER_FLAGS_${platform}_${configName}-->`, 'g'), to: linkerFlagsContent.trim()});
 
             await replace({files: projectUserPath, from: new RegExp(`<!--LIB_PATHS_${platform}_${configName}-->`, 'g'), to: libPathsContent.trim()});
+
+            // ********** apply settings
+            Logging.log("applying project settings...");
+            await applyProjectSettings(projectName, project, options);
         }
     }
+}
+
+async function applyProjectSettings(projectName, project, options)
+{
+    let files = [];
+
+    files.push(options.build.outputPath + '/' + projectName + '/' + projectName + '.vcxproj');
+    files.push(options.build.outputPath + '/' + projectName + '/' + projectName + '.vcxproj.user');
+
+    files.map(file => path.resolve(file));
+
+    for(let settingsKey in Globals.DEFAULT_BUILD_SETTINGS)
+    {
+        let val = Globals.DEFAULT_BUILD_SETTINGS[settingsKey];
+        if ('settings' in project && settingsKey in project.settings)
+            val = project.settings[settingsKey];
+
+        for(let platformI in Globals.PLATFORMS[options.build.template])
+        {
+            let platform = Globals.PLATFORMS[options.build.template][platformI];
+    
+            //Globals.CONFIGURATIONS.forEach(config =>
+            for(let configI in Globals.CONFIGURATIONS)
+            {
+                let config = Globals.CONFIGURATIONS[configI];
+                let configKey = config.toUpperCase();
+                let configName = Helper.capitalizeFirstLetter(config);
+
+                //resolve value
+                let resolvedVal = null;
+                if (settingsKey in SETTINGS_MAP)
+                {
+                    //direct
+                    if (val in SETTINGS_MAP[settingsKey] && typeof SETTINGS_MAP[settingsKey][val] == 'string')
+                        resolvedVal = SETTINGS_MAP[settingsKey][val];
+
+                    //based on config
+                    if (config in SETTINGS_MAP[settingsKey] && val in SETTINGS_MAP[settingsKey][config] && typeof SETTINGS_MAP[settingsKey][config][val] == 'string')
+                        resolvedVal = SETTINGS_MAP[settingsKey][config][val];
+
+                    //based on platform
+                    if (platform in SETTINGS_MAP[settingsKey] && val in SETTINGS_MAP[settingsKey][platform] && typeof SETTINGS_MAP[settingsKey][platform][val] == 'string')
+                        resolvedVal = SETTINGS_MAP[settingsKey][platform][val];
+
+                    //based on platform and config
+                    if (platform in SETTINGS_MAP[settingsKey] && config in SETTINGS_MAP[settingsKey][platform] && val in  SETTINGS_MAP[settingsKey][platform][config])
+                        resolvedVal = SETTINGS_MAP[settingsKey][platform][config][val];
+                }
+
+                if (!resolvedVal)
+                    resolvedVal = val;
+
+                await replace({files: files, from: new RegExp(`<!--${settingsKey}-->`, 'g'), to: resolvedVal.trim()});
+                await replace({files: files, from: new RegExp(`<!--${settingsKey}_${platform}_${configName}-->`, 'g'), to: resolvedVal.trim()});
+                await replace({files: files, from: new RegExp(`<!--${settingsKey}_${platform}-->`, 'g'), to: resolvedVal.trim()});
+                await replace({files: files, from: new RegExp(`<!--${settingsKey}_${configName}-->`, 'g'), to: resolvedVal.trim()});
+            }
+        }
+    }
+
+    return true;
 }
 
 module.exports = makeVisualStudio;

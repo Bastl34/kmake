@@ -46,6 +46,7 @@ bla:
 
     settings:
         MACOSX_DEPLOYMENT_TARGET: '10.12'
+        VS_C_RUNTIME: 'MT' #MT or MD
 
     defines:
         - APP_NAME: '${PROJECT_NAME}'
@@ -106,7 +107,7 @@ bla:
             - 'lib/prebuiltDyn/bin/xcodeMac/x86_64/prebuiltDyn.dylib'
         - 'platform:vs*':
             arch:win32:
-                - 'lib/prebuilt/bin/vs2019/win32/prebuilt.lib'
+                - 'lib/prebuilt/out/Release/prebuilt.lib'
                 - 'lib/prebuiltDyn/bin/vs2019/win32/prebuiltDyn.lib'
             arch:x64:
                 - 'lib/prebuilt/bin/vs2019/x64/prebuilt.lib'

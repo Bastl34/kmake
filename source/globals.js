@@ -18,7 +18,7 @@ let globals =
     {
         'vs': 'vs2019',
         'vs2019': 'vs2019',
-        
+
         'mac': 'xcodeMac',
         'xcodemac': 'xcodeMac'
     },
@@ -64,7 +64,10 @@ let globals =
         ORGANIZATION_NAME: 'Test Org',
         PRODUCT_BUNDLE_IDENTIFIER: 'test.test.test',
         HUMAN_READABLE_COPYRIGHT: 'Copyright',
-        BUNDLE_VERSION: '1.0.0'
+        BUNDLE_VERSION: '1.0.0',
+
+        //visual studio settings
+        VS_C_RUNTIME: 'MT' //MT or MD
     },
 
     ICON: 'resources/defaultIcon.png',

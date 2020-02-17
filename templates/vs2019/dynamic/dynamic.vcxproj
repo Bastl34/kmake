@@ -73,18 +73,26 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>#PROJECT_NAME#</TargetName>
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <TargetName>#PROJECT_NAME#</TargetName>
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>#PROJECT_NAME#</TargetName>
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>#PROJECT_NAME#</TargetName>
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -95,6 +103,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories><!--INCLUDES_win32_Debug--></AdditionalIncludeDirectories>
       <AdditionalOptions><!--BUILD_FLAGS_win32_Debug--> %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary><!--VS_C_RUNTIME_Debug--></RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -114,6 +123,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories><!--INCLUDES_x64_Debug--></AdditionalIncludeDirectories>
       <AdditionalOptions><!--BUILD_FLAGS_x64_Debug--> %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary><!--VS_C_RUNTIME_Debug--></RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -135,6 +145,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories><!--INCLUDES_win32_Release--></AdditionalIncludeDirectories>
       <AdditionalOptions><!--BUILD_FLAGS_win32_Release--> %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary><!--VS_C_RUNTIME_Release--></RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -158,6 +169,7 @@
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories><!--INCLUDES_x64_Release--></AdditionalIncludeDirectories>
       <AdditionalOptions><!--BUILD_FLAGS_x64_Release--> %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeLibrary><!--VS_C_RUNTIME_Release--></RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

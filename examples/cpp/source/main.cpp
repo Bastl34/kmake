@@ -5,7 +5,7 @@
 #include <dep2.h>
 
 #include <prebuilt.h>
-#include <prebuiltDyn.h>
+//#include <prebuiltDyn.h>
 
 int main()
 {
@@ -15,7 +15,7 @@ int main()
     stuff();
 
     prebuiltFunc(1337);
-    prebuiltDynFunc(1234);
+    //prebuiltDynFunc(1234);
 
     return 0;
 }
