@@ -254,8 +254,8 @@ for(let optionKey in options)
 }
 
 
-// ******************** add PROJECT_[PROJECT_NAME] to each project ********************
-Logging.info('add PROJECT_[PROJECT_NAME] to each project...');
+// ******************** add PROJECT_[PROJECT_NAME] define to each project ********************
+Logging.info('add PROJECT_[PROJECT_NAME] define to each project...');
 
 for(let optionKey in options)
 {

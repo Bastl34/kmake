@@ -83,6 +83,19 @@ bla:
                 config:debug:
                     - '/MacDebug2'
 
+    libPaths:
+        - 'platform:vs*':
+            arch:win32:
+                config:release:
+                    - 'lib/prebuiltDyn/bin/vs2019/win32'
+                config:debug:
+                    - 'lib/prebuiltDyn/bin/vs2019/win32'
+            arch:x64:
+                config:release:
+                    - 'lib/prebuiltDyn/bin/vs2019/x64'
+                config:debug:
+                    - 'lib/prebuiltDyn/bin/vs2019/x64'
+
     assets:
         -
             source: ./assets/icon
