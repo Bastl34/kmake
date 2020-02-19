@@ -4,9 +4,6 @@ const yaml = require('js-yaml');
 const glob = require('glob');
 const readlineSync = require('readline-sync');
 
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
-
 const Helper = require('./helper/helper');
 const FileHelper = require('./helper/fileHelper');
 const Logging = require('./helper/logging');
@@ -18,8 +15,6 @@ const platformResolver = require('./platformResolver');
 const make = require('./make');
 
 const kmakeRoot = fs.realpathSync(__dirname + '/..');
-
-const HOOKS_SWAPPED = Helper.swapObjectKeyValue(Globals.HOOKS);
 
 //parse commandline arguments
 let args = argParser();
@@ -184,8 +179,8 @@ if ('inputs' in options)
 }
 
 
-// ******************** process variables ********************
-Logging.info('replacing variables...');
+// ******************** process local variables ********************
+Logging.info('replacing local variables...');
 Helper.recursiveReplace(options, (key, object) =>
 {
     if (typeof object === "string")
@@ -201,6 +196,52 @@ Helper.recursiveReplace(options, (key, object) =>
     return object;
 });
 
+// ******************** process global variables ********************
+Logging.info('replacing global variables...');
+
+for(let optionKey in options)
+{
+    let project = options[optionKey];
+
+    let replacements = {};
+
+    // ********** WORKING_DIR
+    if ('workingDir' in project)
+    {
+        let workingDirAbsolute = path.resolve(project.workingDir);
+        let outputDirAbsolute = path.resolve(options.build.outputPath);
+
+        let relativePathToWorkingDir = FileHelper.relative(outputDirAbsolute, workingDirAbsolute);
+
+        replacements['WORKING_DIR'] = relativePathToWorkingDir;
+    }
+
+    // ********** WORKING_DIR_ABSOLUTE
+    if ('workingDir' in project)
+    {
+        let workingDirAbsolute = FileHelper.normalize(path.resolve(project.workingDir));
+        replacements['WORKING_DIR_ABSOLUTE'] = workingDirAbsolute;
+    }
+
+    // ********** PROJECT_NAME
+    replacements['PROJECT_NAME'] = optionKey;
+
+    //replace
+    Helper.recursiveReplace(project, (key, object) =>
+    {
+        if (typeof object === "string")
+        {
+            for(let varName in replacements)
+            {
+                let replacement = '\\${' + varName + '}';
+                let regex = new RegExp(replacement, 'g');
+                object = object.replace(regex, replacements[varName]);
+            }
+        }
+    
+        return object;
+    });
+}
 
 // ******************** apply workspace settings to each project ********************
 Logging.info('processing workspace settings...');
@@ -361,6 +402,7 @@ for(let optionKey in options)
 
 
 // ******************** hooks ********************
+/*
 async function runHooks(options, type)
 {
     Logging.info('running ' + HOOKS_SWAPPED[type] + ' hooks...');
@@ -397,6 +439,7 @@ async function runHooks(options, type)
         }
     }
 }
+*/
 
 
 //console.log(options.bla.libPaths);

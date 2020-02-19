@@ -62,9 +62,21 @@ let Helper =
         return string.charAt(0).toUpperCase() + string.slice(1);
     },
 
-    sleep(milliseconds) {
+    sleep(milliseconds)
+    {
         return new Promise(resolve => setTimeout(resolve, milliseconds));
-     }
+    },
+
+    hasKeys(obj, level,  ...rest)
+    {
+        if (obj === undefined)
+            return false;
+
+        if (rest.length == 0 && obj.hasOwnProperty(level))
+            return true;
+
+        return Helper.hasKeys(obj[level], ...rest);
+    }
 };
 
 

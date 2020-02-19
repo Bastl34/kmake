@@ -5,9 +5,9 @@ imports:
 
 # variables
 variables:
-    PROJECT_NAME: Example
+    NAME: Example
     ORGANIZATION: Example Corp
-    PROJECT_VERSION: 1.1.1
+    VERSION: 1.1.1
     MAC_OS_TARGET: '10.11'
     PACKAGE_NAME: 'test.test.test'
     COPYRIGHT: 'Copyright by Tester'
@@ -18,14 +18,14 @@ inputs:
 
 # workspace settings
 workspace:
-    name: '${PROJECT_NAME}'
+    name: '${NAME}'
 
     settings:
         MACOSX_DEPLOYMENT_TARGET: '${MAC_OS_TARGET}'
         PRODUCT_BUNDLE_IDENTIFIER: '${PACKAGE_NAME}'
         ORGANIZATION_NAME: '${ORGANIZATION}'
         HUMAN_READABLE_COPYRIGHT: '${COPYRIGHT}'
-        BUNDLE_VERSION: '${PROJECT_VERSION}'
+        BUNDLE_VERSION: '${VERSION}'
 
     content:
         - bla
@@ -35,7 +35,7 @@ workspace:
 
 # main App
 bla:
-    #name: '${PROJECT_NAME}'
+    #name: '${NAME}'
     name: 'bla'
 
     type: project
@@ -49,7 +49,7 @@ bla:
         VS_C_RUNTIME: 'MT' #MT or MD
 
     defines:
-        - APP_NAME: '${PROJECT_NAME}'
+        - APP_NAME: '${NAME}'
         - DEBUG_APP: 1
         - TEST_APP
         - TEST_DEFINE
@@ -132,12 +132,19 @@ bla:
 
     hooks:
         beforePrepare:
-            - 'echo ECHOING before prepare'
+            - 'echo ---------- before prepare ----------'
         preBuild:
             - 'echo pre build'
         preLink:
             - 'echo pre link'
         postBuild:
             - 'echo post build'
+            - 'platform:xcodeMac':
+                - 'node "${WORKING_DIR}/scripts/node.js"'
+                - 'sh "${WORKING_DIR}/scripts/shell.sh"'
+            - 'platform:vs*':
+                - 'node.exe "${WORKING_DIR}/../scripts/node.js"'
+                - 'powershell.exe -executionpolicy bypass -file "${WORKING_DIR_ABSOLUTE}/scripts/powershell.ps1"'
+                - 'cmd.exe /c "${WORKING_DIR}/../scripts/cmd.cmd"'
         afterPrepare:
-            - 'echo ECHOING after prepare'
+            - 'echo ---------- after prepare ----------'

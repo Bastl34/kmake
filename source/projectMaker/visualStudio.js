@@ -6,8 +6,9 @@ const replace = require('replace-in-file');
 
 const Helper = require('../helper/helper');
 const FileHelper = require('../helper/fileHelper');
+const MakeHelper = require('../helper/makeHelper');
 const Logging = require('../helper/logging');
-const iconGenerator = require('../helper/iconGenerator');
+
 
 const Globals = require('../globals');
 
@@ -183,6 +184,19 @@ async function makeVisualStudio(options)
 
         Logging.info('========== ' + projectName + ' ==========');
 
+
+        // ********** beforePrepare hook
+
+        //use win32 release
+        if (Helper.hasKeys(project, 'hooks', 'beforePrepare', 'win32', 'release'))
+        {
+            for(let i in project.hooks.beforePrepare.win32.release)
+            {
+                let hook = project.hooks.beforePrepare.win32.release[i];
+                await MakeHelper.runHook(hook, project.workingDir);
+            }
+        }
+
         let soucesList = [];
         let directoryList = {};
 
@@ -338,6 +352,18 @@ async function makeVisualStudio(options)
         // ********** platform specific data
         Logging.log("applying platform data...");
         await applyPlatformData(projectName, project, options);
+
+        // ********** afterPrepare hook
+
+        //use win32 release
+        if (Helper.hasKeys(project, 'hooks', 'afterPrepare', 'win32', 'release'))
+        {
+            for(let i in project.hooks.afterPrepare.win32.release)
+            {
+                let hook = project.hooks.afterPrepare.win32.release[i];
+                await MakeHelper.runHook(hook, project.workingDir);
+            }
+        }
     }
     return true;
 }

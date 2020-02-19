@@ -9,12 +9,6 @@ let globals =
         framework: 4
     },
 
-    HOOKS:
-    {
-        beforePrepare: 0,
-        afterPrepare: 1
-    },
-
     TEMPLATES:
     {
         'vs': 'vs2019',
@@ -32,6 +26,8 @@ let globals =
         'xcodeMac': ['x86_64'],
         'vs2019': ['win32', 'x64'],
         'makefile': ['x86', 'x86_64', 'arm', 'arm64'],
+
+        //TODO
         'android': ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'],
         'ios': ['armv7', 'arm64', 'i386', 'x86_64']
     },

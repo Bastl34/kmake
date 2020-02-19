@@ -7,6 +7,7 @@ const plist = require('plist');
 
 const Helper = require('../helper/helper');
 const FileHelper = require('../helper/fileHelper');
+const MakeHelper = require('../helper/makeHelper');
 const Logging = require('../helper/logging');
 const iconGenerator = require('../helper/iconGenerator');
 
@@ -113,6 +114,18 @@ async function makeXcode(options)
             continue;
 
         Logging.info('========== ' + projectName + ' ==========');
+
+        // ********** beforePrepare hook
+
+        //use x86_64 release
+        if (Helper.hasKeys(project, 'hooks', 'beforePrepare', 'x86_64', 'release'))
+        {
+            for(let i in project.hooks.beforePrepare.x86_64.release)
+            {
+                let hook = project.hooks.beforePrepare.x86_64.release[i];
+                await MakeHelper.runHook(hook, project.workingDir);
+            }
+        }
 
         let libsList = [];
         let soucesList = [];
@@ -413,6 +426,18 @@ async function makeXcode(options)
         // ********** replacements
         Logging.log("applying replacements...");
         applyReplacements(projectName, project, options);
+
+        // ********** afterPrepare hook
+
+        //use x86_64 release
+        if (Helper.hasKeys(project, 'hooks', 'afterPrepare', 'x86_64', 'release'))
+        {
+            for(let i in project.hooks.afterPrepare.x86_64.release)
+            {
+                let hook = project.hooks.afterPrepare.x86_64.release[i];
+                await MakeHelper.runHook(hook, project.workingDir);
+            }
+        }
     }
 
     return true;
