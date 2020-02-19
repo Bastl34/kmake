@@ -382,7 +382,7 @@ async function applyPlatformData(projectName, project, options)
             libsPathsArray.forEach(item =>
             {
                 item = FileHelper.relative(path.join(options.build.outputPath, projectName), item);
-                libPathsContent += '"' + item + '";';
+                libPathsContent += item + ';';
             });
 
             //dependencies
