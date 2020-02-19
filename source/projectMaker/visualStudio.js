@@ -32,16 +32,16 @@ const DEPENDENCY_FILE_ENDING_BY_OUTPUT_TYPE =
     'dynamic': '.lib'
 };
 
-const SETTINGS_MAP = 
+const SETTINGS_MAP =
 {
     'VS_C_RUNTIME':
     {
-        'release': 
+        'release':
         {
             'MT': 'MultiThreaded',
             'MD': 'MultiThreadedDLL',
         },
-        'debug': 
+        'debug':
         {
             'MT': 'MultiThreadedDebug',
             'MD': 'MultiThreadedDebugDLL',
@@ -92,8 +92,7 @@ async function makeVisualStudio(options)
         let sourcePath = path.join(options.build.templatePath, outputType);
         let destPath = path.join(options.build.outputPath, projectName);
 
-        let results = await copy(sourcePath, destPath, {overwrite: true});
-        Logging.log(results.length + ' files copied');
+        await copy(sourcePath, destPath, {overwrite: true});
 
         //rename project files
         fs.renameSync(path.join(destPath,outputType+'.vcxproj'), path.join(destPath,projectName+'.vcxproj'));
@@ -102,11 +101,11 @@ async function makeVisualStudio(options)
     }
 
     // ******************** generate workspace.sln ********************
+    Logging.log('generating ' + options.workspace.name + '.sln');
     let sourcePath = options.build.templatePath + '/workspace.sln';
     let destPath = options.build.outputPath + '/' + options.workspace.name + '.sln';
 
-    let results = await copy(sourcePath, destPath, {overwrite: true});
-    Logging.log(results.length + ' files copied');
+    await copy(sourcePath, destPath, {overwrite: true});
 
     let solutionId1 = uuid();
     let solutionId2 = uuid();
@@ -462,7 +461,7 @@ async function applyProjectSettings(projectName, project, options)
         for(let platformI in Globals.PLATFORMS[options.build.template])
         {
             let platform = Globals.PLATFORMS[options.build.template][platformI];
-    
+
             //Globals.CONFIGURATIONS.forEach(config =>
             for(let configI in Globals.CONFIGURATIONS)
             {

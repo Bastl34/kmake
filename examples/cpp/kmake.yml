@@ -54,6 +54,10 @@ bla:
         - TEST_APP
         - TEST_DEFINE
 
+    replacements:
+        plist:
+            CFBundleVersion: '1.1.2'
+
     includePaths:
         - './'
         - 'lib/prebuilt/'

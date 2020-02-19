@@ -3,6 +3,7 @@ const fs = require('fs');
 
 const copy = require('recursive-copy');
 const replace = require('replace-in-file');
+const plist = require('plist');
 
 const Helper = require('../helper/helper');
 const FileHelper = require('../helper/fileHelper');
@@ -69,8 +70,7 @@ async function makeXcode(options)
         let sourcePath = options.build.templatePath + '/' + project.outputType + '.xcodeproj';
         let destPath = options.build.outputPath + '/' + projectName + '.xcodeproj';
 
-        let results = await copy(sourcePath, destPath, {overwrite: true});
-        Logging.log(results.length + ' files copied');
+        await copy(sourcePath, destPath, {overwrite: true});
 
         //check and copy extra dependencies
         if (fs.existsSync(options.build.templatePath + '/' + project.outputType))
@@ -78,17 +78,17 @@ async function makeXcode(options)
             sourcePath = options.build.templatePath + '/' + project.outputType;
             destPath = options.build.outputPath + '/' + projectName;
 
-            let results = await copy(sourcePath, destPath, {overwrite: true});
-            Logging.log(results.length + ' files copied');
+            await copy(sourcePath, destPath, {overwrite: true});
         }
     }
 
+
     // ******************** generate .xcworkspace ********************
+    Logging.log('generating ' + options.workspace.name + '.xcworkspace');
     let sourcePath = options.build.templatePath + '/workspace.xcworkspace';
     let destPath = options.build.outputPath + '/' + options.workspace.name + '.xcworkspace';
 
-    let results = await copy(sourcePath, destPath, {overwrite: true});
-    Logging.log(results.length + ' files copied');
+    await copy(sourcePath, destPath, {overwrite: true});
 
     let fileRefStr = '';
     for(let i in options.workspace.content)
@@ -100,8 +100,7 @@ async function makeXcode(options)
 
     let workspaceContentFilePath = destPath + '/contents.xcworkspacedata';
 
-    results = await replace({files: workspaceContentFilePath, from: '<!--FileRef-->', to: fileRefStr.trim()});
-    Logging.log(results.length + ' files changed');
+    await replace({files: workspaceContentFilePath, from: '<!--FileRef-->', to: fileRefStr.trim()});
 
 
     // ******************** generate projects ********************
@@ -378,6 +377,7 @@ async function makeXcode(options)
         });
 
         // ********** replacements
+        Logging.log('generating ' + projectName + '.xcodeproj');
         let projectFilePath = options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj';
         let workspaceContentPath = options.build.outputPath + '/' + projectName + '.xcodeproj/project.xcworkspace/contents.xcworkspacedata';
 
@@ -409,6 +409,10 @@ async function makeXcode(options)
         // ********** assets
         Logging.log("applying asset data...");
         await applyAssets(projectName, project, options);
+
+        // ********** replacements
+        Logging.log("applying replacements...");
+        applyReplacements(projectName, project, options);
     }
 
     return true;
@@ -488,9 +492,9 @@ async function applyProjectSettings(projectName, project, options)
     files.push(options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj');
     files.push(options.build.outputPath + '/' + projectName + '.xcodeproj/project.xcworkspace/contents.xcworkspacedata');
 
-    let plist = options.build.outputPath + '/' + projectName + '/Info.plist';
-    if (fs.existsSync(plist))
-        files.push(plist);
+    let plistFile = options.build.outputPath + '/' + projectName + '/Info.plist';
+    if (fs.existsSync(plistFile))
+        files.push(plistFile);
 
     files.map(file => path.resolve(file));
 
@@ -606,6 +610,24 @@ async function applyAssets(projectName, project, options)
 
     let projectFilePath = options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj';
     await replace({files: projectFilePath, from: `/*SHELL_SCRIPT*/`, to: copyScript});
+}
+
+function applyReplacements(projectName, project, options)
+{
+    if (!('replacements' in project) || !('plist' in project.replacements))
+        return;
+
+    let plistFile = options.build.outputPath + '/' + projectName + '/Info.plist';
+    if (!fs.existsSync(plistFile))
+        return;
+
+    let plistContent = fs.readFileSync(plistFile).toString();
+    let plistObj = plist.parse(plistContent);
+
+    for(let plistKey in project.replacements.plist)
+        plistObj[plistKey] = project.replacements.plist[plistKey];
+
+    fs.writeFileSync(plistFile, plist.build(plistObj));
 }
 
 module.exports = makeXcode;
