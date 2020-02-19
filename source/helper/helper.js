@@ -60,7 +60,11 @@ let Helper =
     capitalizeFirstLetter(string)
     {
         return string.charAt(0).toUpperCase() + string.slice(1);
-    }
+    },
+
+    sleep(milliseconds) {
+        return new Promise(resolve => setTimeout(resolve, milliseconds));
+     }
 };
 
 

@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const Logging = require('./helper/logging');
+const Helper = require('./helper/helper');
 
 const makeXcode = require('./projectMaker/xcode');
 const makeVisualStudio = require('./projectMaker/visualStudio');
@@ -24,11 +25,20 @@ async function make(options)
 
     //clear output dir if needed
     if (options.build.cleanOutputDir && fs.existsSync(path.normalize(options.build.outputPath)))
+    {
+        Logging.info('clearing output dir...');
         fs.rmdirSync(path.normalize(options.build.outputPath), {recursive: true});
+
+        //wait some tome -> otherwise mkdir will fail on windows
+        await Helper.sleep(100);
+    }
 
     //create output directory
     if (!fs.existsSync(path.normalize(options.build.outputPath)))
+    {
+        Logging.info('creating output dir...');
         fs.mkdirSync(path.normalize(options.build.outputPath));
+    }
 
     let res = false;
 

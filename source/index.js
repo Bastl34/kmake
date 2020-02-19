@@ -275,7 +275,6 @@ for(let optionKey in options)
 Logging.info('resolving platform specific settings...');
 options = platformResolver(options, options.build);
 
-
 // ******************** resolve source files ********************
 Logging.info('resolving source files...');
 for(let itemKey in options)
@@ -408,7 +407,7 @@ async function runHooks(options, type)
 {
     try
     {
-        await runHooks(options, Globals.HOOKS.beforePrepare);
+        //await runHooks(options, Globals.HOOKS.beforePrepare);
 
         Logging.info('generating project...');
         let res = await make(options);
@@ -418,8 +417,7 @@ async function runHooks(options, type)
         if (res)
             Logging.rainbow("project generation was successful");
 
-        await runHooks(options, Globals.HOOKS.afterPrepare);
-
+        //await runHooks(options, Globals.HOOKS.afterPrepare);
     }
     catch (e)
     {

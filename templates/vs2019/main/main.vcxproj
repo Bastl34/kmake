@@ -106,6 +106,21 @@
       <AdditionalOptions><!--LINKER_FLAGS_win32_Debug--> %(AdditionalOptions)</AdditionalOptions>
       <AdditionalLibraryDirectories><!--LIB_PATHS_win32_Debug-->..\$(Platform)\$(Configuration);</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>
+        <!--HOOK_POST_BUILD_win32_Debug-->
+      </Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+        <!--HOOK_PRE_BUILD_win32_Debug-->
+      </Command>
+    </PreBuildEvent>
+    <PreLinkEvent>
+      <Command>
+        <!--HOOK_PRE_LINK_win32_Debug-->
+      </Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -124,6 +139,21 @@
       <AdditionalOptions><!--LINKER_FLAGS_x64_Debug--> %(AdditionalOptions)</AdditionalOptions>
       <AdditionalLibraryDirectories><!--LIB_PATHS_x64_Debug-->..\$(Platform)\$(Configuration);</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>
+        <!--HOOK_POST_BUILD_x64_Debug-->
+      </Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+        <!--HOOK_PRE_BUILD_x64_Debug-->
+      </Command>
+    </PreBuildEvent>
+    <PreLinkEvent>
+      <Command>
+        <!--HOOK_PRE_LINK_x64_Debug-->
+      </Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
@@ -146,6 +176,21 @@
       <AdditionalOptions><!--LINKER_FLAGS_win32_Release--> %(AdditionalOptions)</AdditionalOptions>
       <AdditionalLibraryDirectories><!--LIB_PATHS_win32_Release-->..\$(Platform)\$(Configuration);</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>
+        <!--HOOK_POST_BUILD_win32_Release-->
+      </Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+        <!--HOOK_PRE_BUILD_win32_Release-->
+      </Command>
+    </PreBuildEvent>
+    <PreLinkEvent>
+      <Command>
+        <!--HOOK_PRE_LINK_win32_Release-->
+      </Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -168,6 +213,21 @@
       <AdditionalOptions><!--LINKER_FLAGS_x64_Release--> %(AdditionalOptions)</AdditionalOptions>
       <AdditionalLibraryDirectories><!--LIB_PATHS_x64_Release-->..\$(Platform)\$(Configuration);</AdditionalLibraryDirectories>
     </Link>
+    <PostBuildEvent>
+      <Command>
+        <!--HOOK_POST_BUILD_x64_Release-->
+      </Command>
+    </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>
+        <!--HOOK_PRE_BUILD_x64_Release-->
+      </Command>
+    </PreBuildEvent>
+    <PreLinkEvent>
+      <Command>
+        <!--HOOK_PRE_LINK_x64_Release-->
+      </Command>
+    </PreLinkEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <!--[COMPILE_FILES]-->

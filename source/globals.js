@@ -53,7 +53,22 @@ let globals =
 
     CONFIGURATIONS: ['debug', 'release'],
 
-    PLATFORM_RESOLVER: ['defines', 'includePaths', 'libPaths', 'dependencies', 'buildFlags', 'linkerFlags'],
+    PLATFORM_RESOLVER:
+    [
+        'defines',
+        'includePaths',
+        'libPaths',
+        'dependencies',
+        'buildFlags',
+        'linkerFlags',
+
+        //hooks
+        'beforePrepare',
+        'preBuild',
+        'preLink',
+        'postBuild',
+        'afterPrepare'
+    ],
 
     DEFAULT_BUILD_SETTINGS:
     {

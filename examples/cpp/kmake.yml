@@ -131,5 +131,13 @@ bla:
                 - 'lib/prebuiltDyn/bin/vs2019/x64/prebuiltDyn.lib'
 
     hooks:
-        beforePrepare: 'echo ECHOING before prepare'
-        afterPrepare: 'echo ECHOING after prepare'
+        beforePrepare:
+            - 'echo ECHOING before prepare'
+        preBuild:
+            - 'echo pre build'
+        preLink:
+            - 'echo pre link'
+        postBuild:
+            - 'echo post build'
+        afterPrepare:
+            - 'echo ECHOING after prepare'

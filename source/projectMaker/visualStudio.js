@@ -166,7 +166,6 @@ async function makeVisualStudio(options)
     results = await replace({files: destPath, from: '#PROJECT_DEF#', to: projectDef.trim()});
     results = await replace({files: destPath, from: '#PLATFORM_DEF#', to: platformDef.trim()});
     results = await replace({files: destPath, from: '#SOLUTION_ID#', to: solutionId2});
-    Logging.log(results.length + ' files changed');
 
 
     // ******************** generate projects ********************
@@ -358,6 +357,30 @@ async function applyPlatformData(projectName, project, options)
             let config = Globals.CONFIGURATIONS[configI];
             let configKey = config.toUpperCase();
 
+            //hook: pre build
+            let hookPreBuildContent = '';
+            let hookPreBuildArray = ('hooks' in project && 'preBuild' in project.hooks) ? project['hooks']['preBuild'][platform][config] : [];
+            hookPreBuildArray.forEach(item =>
+            {
+                hookPreBuildContent += '        ' + item + '\n';
+            });
+
+            //hook: post build
+            let hookPostBuildContent = '';
+            let hookPostBuildArray = ('hooks' in project && 'postBuild' in project.hooks) ? project['hooks']['postBuild'][platform][config] : [];
+            hookPostBuildArray.forEach(item =>
+            {
+                hookPostBuildContent += '        ' + item + '\n';
+            });
+
+            //hook: pre link
+            let hookPreLinkContent = '';
+            let hookPreLinkArray = ('hooks' in project && 'preLink' in project.hooks) ? project['hooks']['preLink'][platform][config] : [];
+            hookPreLinkArray.forEach(item =>
+            {
+                hookPreLinkContent += '        ' + item + '\n';
+            });
+
             //include
             let includePathsContent = '';
             let includesArray = ('includePaths' in project) ? project['includePaths'][platform][config] : [];
@@ -374,7 +397,6 @@ async function applyPlatformData(projectName, project, options)
             {
                 definesContent += getDefineEntry(item) + ';';
             });
-
 
             //libPaths
             let libPathsContent = '';
@@ -402,7 +424,19 @@ async function applyPlatformData(projectName, project, options)
                     lib += DEPENDENCY_FILE_ENDING_BY_OUTPUT_TYPE[outputType];
                 }
                 else
+                {
+                    //check if there is a dll and copy the dll on post build
+                    let dllPath = lib.replace('.lib', '.dll');
+                    if (fs.existsSync(dllPath))
+                    {
+                        dllPathRelative = FileHelper.relative(path.join(options.build.outputPath, projectName), dllPath);
+                        let dllName = path.basename(dllPath);
+                        hookPostBuildContent += `        copy /Y "$(ProjectDir)\\${path.normalize(dllPathRelative)}" "$(SolutionDir)$(Platform)\\$(Configuration)\\${dllName}"`;
+                    }
+
+                    //change lib path relative to output dir
                     lib = FileHelper.relative(path.join(options.build.outputPath, projectName), lib);
+                }
 
                 libsContent += '"' + lib + '";';
             });
@@ -435,6 +469,10 @@ async function applyPlatformData(projectName, project, options)
             await replace({files: projectFilePath, from: new RegExp(`<!--LINKER_FLAGS_${platform}_${configName}-->`, 'g'), to: linkerFlagsContent.trim()});
 
             await replace({files: projectUserPath, from: new RegExp(`<!--LIB_PATHS_${platform}_${configName}-->`, 'g'), to: libPathsContent.trim()});
+
+            await replace({files: projectFilePath, from: new RegExp(`<!--HOOK_PRE_BUILD_${platform}_${configName}-->`, 'g'), to: hookPreBuildContent.trim()});
+            await replace({files: projectFilePath, from: new RegExp(`<!--HOOK_POST_BUILD_${platform}_${configName}-->`, 'g'), to: hookPostBuildContent.trim()});
+            await replace({files: projectFilePath, from: new RegExp(`<!--HOOK_PRE_LINK_${platform}_${configName}-->`, 'g'), to: hookPreLinkContent.trim()});
 
             // ********** apply settings
             Logging.log("applying project settings...");

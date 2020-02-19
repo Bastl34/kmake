@@ -4,7 +4,7 @@ const Globals = require('./globals');
 
 const platformKeys = Object.keys(Globals.PLATFORMS);
 
-function platformResolver(options, buildOptions, level = 0)
+function platformResolver(options, buildOptions)
 {
     let isArray = options instanceof Array;
     let newOptions = isArray ? [] : {};
@@ -15,21 +15,18 @@ function platformResolver(options, buildOptions, level = 0)
 
         let newOption = undefined;
 
-        //resolve on level 1
-        if (level == 1)
-        {
-            let hasResolvableKey = Globals.PLATFORM_RESOLVER.indexOf(optionKey) != -1;
+        let hasResolvableKey = Globals.PLATFORM_RESOLVER.indexOf(optionKey) != -1;
 
-            if (hasResolvableKey)
-                newOption = resolvePlatform(option, buildOptions);
-            else
-                newOption = options[optionKey];
+        //resolve
+        if (hasResolvableKey)
+        {
+            newOption = resolvePlatform(option, buildOptions);
         }
         //recursive
         else
         {
             if (option instanceof Object)
-                newOption = platformResolver(option, buildOptions, level + 1);
+                newOption = platformResolver(option, buildOptions);
             else
                 newOption = options[optionKey];
         }
