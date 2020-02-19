@@ -133,6 +133,7 @@ bla:
     hooks:
         beforePrepare:
             - 'echo ---------- before prepare ----------'
+            - 'echo ${ENV:PATH}'
         preBuild:
             - 'echo pre build'
         preLink:

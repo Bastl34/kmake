@@ -178,6 +178,25 @@ if ('inputs' in options)
     }
 }
 
+// ******************** process env variables ********************
+Logging.info('replacing env variables...');
+Helper.recursiveReplace(options, (key, object) =>
+{
+    if (typeof object === "string")
+    {
+        for(let varName in process.env)
+        {
+            varName = varName.toUpperCase();
+
+            let replacement = '\\${ENV:' + varName + '}';
+            let regex = new RegExp(replacement, 'g');
+            object = object.replace(regex, process.env[varName]);
+        }
+    }
+
+    return object;
+});
+
 
 // ******************** process local variables ********************
 Logging.info('replacing local variables...');
@@ -401,57 +420,11 @@ for(let optionKey in options)
 }
 
 
-// ******************** hooks ********************
-/*
-async function runHooks(options, type)
-{
-    Logging.info('running ' + HOOKS_SWAPPED[type] + ' hooks...');
-
-    for(let itemKey in options)
-    {
-        let item = options[itemKey];
-        if ('hooks' in item)
-        {
-            let hooks = item['hooks'];
-
-            for(let hookName in hooks)
-            {
-                let hook = hooks[hookName];
-
-                if (hookName == HOOKS_SWAPPED[type])
-                {
-                    let command = hook;
-                    let workingDir = path.resolve(item.workingDir);
-
-                    try
-                    {
-                        const { stdout, stderr } = await exec(command, {cwd: workingDir});
-                        Logging.log(stdout.trim());
-                        if (stderr && stderr.trim())
-                            Logging.error(stderr.trim());
-                    }
-                    catch(e)
-                    {
-                        Logging.error(itemKey + ': ' + HOOKS_SWAPPED[type] + ' hook failed');
-                    }
-                }
-            }
-        }
-    }
-}
-*/
-
-
-//console.log(options.bla.libPaths);
-//console.log(options.bla.dependencies);
-
 // ******************** make ********************
 (async () =>
 {
     try
     {
-        //await runHooks(options, Globals.HOOKS.beforePrepare);
-
         Logging.info('generating project...');
         let res = await make(options);
 
@@ -459,8 +432,6 @@ async function runHooks(options, type)
 
         if (res)
             Logging.rainbow("project generation was successful");
-
-        //await runHooks(options, Globals.HOOKS.afterPrepare);
     }
     catch (e)
     {
