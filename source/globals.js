@@ -5,7 +5,8 @@ let globals =
     {
         main: 1,
         static: 2,
-        dynamic: 3
+        dynamic: 3,
+        framework: 4
     },
 
     HOOKS:

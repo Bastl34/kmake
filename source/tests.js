@@ -1,6 +1,7 @@
 const os = require('os');
 const util = require('util');
 const path = require('path');
+const colors = require('colors');
 
 const exec = util.promisify(require('child_process').exec);
 
@@ -25,7 +26,9 @@ const BIN_DIR = 'bin';
 async function runTests()
 {
     if (os.platform() == 'darwin')
-        xcodeMac();
+        await xcodeMac();
+
+    console.log(colors.green('all tests successful 🎉🎉🎉'));
 }
 
 async function xcodeMac()
