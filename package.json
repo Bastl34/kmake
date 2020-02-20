@@ -19,7 +19,8 @@
         "micromatch": "^4.0.2",
         "colors": "^1.4.0",
         "jimp": "^0.9.3",
-        "plist": "^3.0.1"
+        "plist": "^3.0.1",
+        "escape-html": "^1.0.3"
     },
     "keywords": [],
     "devDependencies": {

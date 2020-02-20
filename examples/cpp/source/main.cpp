@@ -11,6 +11,7 @@ int main()
 {
     std::cout << "main" << std::endl;
     dep1Func();
+    
     dep2Func();
     stuff();
 

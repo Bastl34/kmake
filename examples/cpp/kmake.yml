@@ -136,8 +136,6 @@ bla:
             - 'echo ${ENV:PATH}'
         preBuild:
             - 'echo pre build'
-        preLink:
-            - 'echo pre link'
         postBuild:
             - 'echo post build'
             - 'platform:xcodeMac':

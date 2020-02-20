@@ -4,6 +4,7 @@ const fs = require('fs');
 const copy = require('recursive-copy');
 const replace = require('replace-in-file');
 const plist = require('plist');
+const escapeHtml = require('escape-html');
 
 const Helper = require('../helper/helper');
 const FileHelper = require('../helper/fileHelper');
@@ -73,6 +74,11 @@ async function makeXcode(options)
 
         await copy(sourcePath, destPath, {overwrite: true});
 
+        //renaming
+        let from = path.join(destPath, 'xcshareddata/xcschemes', project.outputType + '.xcscheme');
+        let to = path.join(destPath, 'xcshareddata/xcschemes', projectName + '.xcscheme');
+        fs.renameSync(from, to);
+
         //check and copy extra dependencies
         if (fs.existsSync(options.build.templatePath + '/' + project.outputType))
         {
@@ -109,6 +115,8 @@ async function makeXcode(options)
     {
         let projectName = options.workspace.content[i];
         let project = options[projectName];
+
+        let projectId = Helper.randomString(24, '0123456789ABCDEF', false);
 
         if (project.type != 'project' && project.projectType != 'source')
             continue;
@@ -393,9 +401,15 @@ async function makeXcode(options)
         Logging.log('generating ' + projectName + '.xcodeproj');
         let projectFilePath = options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj';
         let workspaceContentPath = options.build.outputPath + '/' + projectName + '.xcodeproj/project.xcworkspace/contents.xcworkspacedata';
+        let schemePath = options.build.outputPath + '/' + projectName + '.xcodeproj/xcshareddata/xcschemes/' + projectName + '.xcscheme';
+
+        results = await replace({files: projectFilePath, from: /PROJECT_ID/g, to: projectId});
+        results = await replace({files: workspaceContentPath, from: /PROJECT_ID/g, to: projectId});
+        results = await replace({files: schemePath, from: /PROJECT_ID/g, to: projectId});
 
         results = await replace({files: projectFilePath, from: /PROJECT_NAME/g, to: projectName});
         results = await replace({files: workspaceContentPath, from: /PROJECT_NAME/g, to: projectName});
+        results = await replace({files: schemePath, from: /PROJECT_NAME/g, to: projectName});
 
         results = await replace({files: projectFilePath, from: '/*SOURCE_FILE_REFERENCE*/', to: sourceFileReferenceContent.trim()});
         results = await replace({files: projectFilePath, from: '/*SOURCE_FILE*/', to: sourceFileContent.trim()});
@@ -426,6 +440,10 @@ async function makeXcode(options)
         // ********** replacements
         Logging.log("applying replacements...");
         applyReplacements(projectName, project, options);
+
+        // ********** replacements
+        Logging.log("applying hooks...");
+        await applyHooks(projectName, projectId, project, options);
 
         // ********** afterPrepare hook
 
@@ -653,6 +671,58 @@ function applyReplacements(projectName, project, options)
         plistObj[plistKey] = project.replacements.plist[plistKey];
 
     fs.writeFileSync(plistFile, plist.build(plistObj));
+}
+
+async function applyHooks(projectName, projectId, project, options)
+{
+    let schemePath = options.build.outputPath + '/' + projectName + '.xcodeproj/xcshareddata/xcschemes/' + projectName + '.xcscheme';
+
+    //use x86_64 release
+    if (Helper.hasKeys(project, 'hooks', 'preBuild', 'x86_64', 'release'))
+    {
+        let hookContent = '';
+        for(let i in project.hooks.preBuild.x86_64.release)
+        {
+            //hook should run in working dir
+            let hookEnv = escapeHtml(`cd $\{PROJECT_DIR\}`) + '&#10;';
+            hookEnv += escapeHtml(`exec > $\{PROJECT_DIR\}/${projectName}_preBuild_${i}.log 2>&1`) + '&#10;';
+            let hook = hookEnv + escapeHtml(project.hooks.preBuild.x86_64.release[i]);
+
+            hookContent += `         <ExecutionAction ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">\n`;
+            hookContent += `            <ActionContent title = "preBuild Script" scriptText = "${hook}">\n`;
+            hookContent += `               <EnvironmentBuildable>\n`;
+            hookContent += `                  <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "${projectId}" BuildableName = "${projectName}.app" BlueprintName = "${projectName}" ReferencedContainer = "container:${projectName}.xcodeproj">\n`;
+            hookContent += `                  </BuildableReference>\n`;
+            hookContent += `               </EnvironmentBuildable>\n`;
+            hookContent += `            </ActionContent>\n`;
+            hookContent += `         </ExecutionAction>\n`;
+        }
+
+        results = await replace({files: schemePath, from: '<!--HOOK_PRE_BUILD-->', to: hookContent.trim()});
+    }
+
+    if (Helper.hasKeys(project, 'hooks', 'postBuild', 'x86_64', 'release'))
+    {
+        let hookContent = '';
+        for(let i in project.hooks.postBuild.x86_64.release)
+        {
+            //hook should run in working dir
+            let hookEnv = escapeHtml(`cd $\{PROJECT_DIR\}`) + '&#10;';
+            hookEnv += escapeHtml(`exec > $\{PROJECT_DIR\}/${projectName}_postBuild_${i}.log 2>&1`) + '&#10;';
+            let hook = hookEnv + escapeHtml(project.hooks.postBuild.x86_64.release[i]);
+
+            hookContent += `         <ExecutionAction ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">\n`;
+            hookContent += `            <ActionContent title = "postBuild Script" scriptText = "${hook}">\n`;
+            hookContent += `               <EnvironmentBuildable>\n`;
+            hookContent += `                  <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "${projectId}" BuildableName = "${projectName}.app" BlueprintName = "${projectName}" ReferencedContainer = "container:${projectName}.xcodeproj">\n`;
+            hookContent += `                  </BuildableReference>\n`;
+            hookContent += `               </EnvironmentBuildable>\n`;
+            hookContent += `            </ActionContent>\n`;
+            hookContent += `         </ExecutionAction>\n`;
+        }
+
+        results = await replace({files: schemePath, from: '<!--HOOK_POST_BUILD-->', to: hookContent.trim()});
+    }
 }
 
 module.exports = makeXcode;

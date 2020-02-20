@@ -99,7 +99,7 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		6BFF407923EDCB6400C3629C /* app */ = {
+		PROJECT_ID /* app */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6BFF408B23EDCB6800C3629C /* Build configuration list for PBXNativeTarget "app" */;
 			buildPhases = (
@@ -128,7 +128,7 @@
 				LastUpgradeCheck = 1130;
 				ORGANIZATIONNAME = "/*ORGANIZATION_NAME*/";
 				TargetAttributes = {
-					6BFF407923EDCB6400C3629C = {
+					PROJECT_ID = {
 						CreatedOnToolsVersion = 11.3.1;
 					};
 				};
@@ -146,7 +146,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				6BFF407923EDCB6400C3629C /* app */,
+				PROJECT_ID /* app */,
 			);
 		};
 /* End PBXProject section */
