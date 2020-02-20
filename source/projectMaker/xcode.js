@@ -677,51 +677,36 @@ async function applyHooks(projectName, projectId, project, options)
 {
     let schemePath = options.build.outputPath + '/' + projectName + '.xcodeproj/xcshareddata/xcschemes/' + projectName + '.xcscheme';
 
-    //use x86_64 release
-    if (Helper.hasKeys(project, 'hooks', 'preBuild', 'x86_64', 'release'))
+    let hooks = [{name: 'preBuild', replacementName: 'HOOK_PRE_BUILD'}, {name: 'postBuild', replacementName: 'HOOK_POST_BUILD'}];
+
+    for(let hookI in hooks)
     {
-        let hookContent = '';
-        for(let i in project.hooks.preBuild.x86_64.release)
+        let hookName = hooks[hookI].name;
+        let replacementName = hooks[hookI].replacementName;
+
+        //use x86_64 release
+        if (Helper.hasKeys(project, 'hooks', hookName, 'x86_64', 'release'))
         {
-            //hook should run in working dir
-            let hook = escapeHtml(`cd $\{PROJECT_DIR\}`) + '&#10;';
-            hook += escapeHtml(`exec > $\{PROJECT_DIR\}/${projectName}_preBuild_${i}.log 2>&1`) + '&#10;';
-            hook += escapeHtml(project.hooks.preBuild.x86_64.release[i]);
+            let hookContent = '';
+            for(let i in project['hooks'][hookName]['x86_64']['release'])
+            {
+                //hook should run in working dir
+                let hook = escapeHtml(`cd $\{PROJECT_DIR\}`) + '&#10;';
+                hook += escapeHtml(`exec > $\{PROJECT_DIR\}/${projectName}_${hookName}_${i}.log 2>&1`) + '&#10;';
+                hook += escapeHtml(project['hooks'][hookName]['x86_64']['release'][i]);
 
-            hookContent += `         <ExecutionAction ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">\n`;
-            hookContent += `            <ActionContent title = "preBuild Script" scriptText = "${hook}">\n`;
-            hookContent += `               <EnvironmentBuildable>\n`;
-            hookContent += `                  <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "${projectId}" BuildableName = "${projectName}.app" BlueprintName = "${projectName}" ReferencedContainer = "container:${projectName}.xcodeproj">\n`;
-            hookContent += `                  </BuildableReference>\n`;
-            hookContent += `               </EnvironmentBuildable>\n`;
-            hookContent += `            </ActionContent>\n`;
-            hookContent += `         </ExecutionAction>\n`;
+                hookContent += `         <ExecutionAction ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">\n`;
+                hookContent += `            <ActionContent title = "${hookName} Script" scriptText = "${hook}">\n`;
+                hookContent += `               <EnvironmentBuildable>\n`;
+                hookContent += `                  <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "${projectId}" BuildableName = "${projectName}.app" BlueprintName = "${projectName}" ReferencedContainer = "container:${projectName}.xcodeproj">\n`;
+                hookContent += `                  </BuildableReference>\n`;
+                hookContent += `               </EnvironmentBuildable>\n`;
+                hookContent += `            </ActionContent>\n`;
+                hookContent += `         </ExecutionAction>\n`;
+            }
+
+            results = await replace({files: schemePath, from: '<!--' + replacementName + '-->', to: hookContent.trim()});
         }
-
-        results = await replace({files: schemePath, from: '<!--HOOK_PRE_BUILD-->', to: hookContent.trim()});
-    }
-
-    if (Helper.hasKeys(project, 'hooks', 'postBuild', 'x86_64', 'release'))
-    {
-        let hookContent = '';
-        for(let i in project.hooks.postBuild.x86_64.release)
-        {
-            //hook should run in working dir
-            let hook = escapeHtml(`cd $\{PROJECT_DIR\}`) + '&#10;';
-            hook += escapeHtml(`exec > $\{PROJECT_DIR\}/${projectName}_postBuild_${i}.log 2>&1`) + '&#10;';
-            hook += escapeHtml(project.hooks.postBuild.x86_64.release[i]);
-
-            hookContent += `         <ExecutionAction ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">\n`;
-            hookContent += `            <ActionContent title = "postBuild Script" scriptText = "${hook}">\n`;
-            hookContent += `               <EnvironmentBuildable>\n`;
-            hookContent += `                  <BuildableReference BuildableIdentifier = "primary" BlueprintIdentifier = "${projectId}" BuildableName = "${projectName}.app" BlueprintName = "${projectName}" ReferencedContainer = "container:${projectName}.xcodeproj">\n`;
-            hookContent += `                  </BuildableReference>\n`;
-            hookContent += `               </EnvironmentBuildable>\n`;
-            hookContent += `            </ActionContent>\n`;
-            hookContent += `         </ExecutionAction>\n`;
-        }
-
-        results = await replace({files: schemePath, from: '<!--HOOK_POST_BUILD-->', to: hookContent.trim()});
     }
 }
 
