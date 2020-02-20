@@ -145,5 +145,7 @@ bla:
                 - 'node.exe "${WORKING_DIR}/../scripts/node.js"'
                 - 'powershell.exe -executionpolicy bypass -file "${WORKING_DIR_ABSOLUTE}/scripts/powershell.ps1"'
                 - 'cmd.exe /c "${WORKING_DIR_BACKSLASH}\..\scripts\cmd.cmd"'
+        preLink:
+            - 'echo pre link'
         afterPrepare:
             - 'echo ---------- after prepare ----------'
