@@ -684,9 +684,9 @@ async function applyHooks(projectName, projectId, project, options)
         for(let i in project.hooks.preBuild.x86_64.release)
         {
             //hook should run in working dir
-            let hookEnv = escapeHtml(`cd $\{PROJECT_DIR\}`) + '&#10;';
-            hookEnv += escapeHtml(`exec > $\{PROJECT_DIR\}/${projectName}_preBuild_${i}.log 2>&1`) + '&#10;';
-            let hook = hookEnv + escapeHtml(project.hooks.preBuild.x86_64.release[i]);
+            let hook = escapeHtml(`cd $\{PROJECT_DIR\}`) + '&#10;';
+            hook += escapeHtml(`exec > $\{PROJECT_DIR\}/${projectName}_preBuild_${i}.log 2>&1`) + '&#10;';
+            hook += escapeHtml(project.hooks.preBuild.x86_64.release[i]);
 
             hookContent += `         <ExecutionAction ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">\n`;
             hookContent += `            <ActionContent title = "preBuild Script" scriptText = "${hook}">\n`;
@@ -707,9 +707,9 @@ async function applyHooks(projectName, projectId, project, options)
         for(let i in project.hooks.postBuild.x86_64.release)
         {
             //hook should run in working dir
-            let hookEnv = escapeHtml(`cd $\{PROJECT_DIR\}`) + '&#10;';
-            hookEnv += escapeHtml(`exec > $\{PROJECT_DIR\}/${projectName}_postBuild_${i}.log 2>&1`) + '&#10;';
-            let hook = hookEnv + escapeHtml(project.hooks.postBuild.x86_64.release[i]);
+            let hook = escapeHtml(`cd $\{PROJECT_DIR\}`) + '&#10;';
+            hook += escapeHtml(`exec > $\{PROJECT_DIR\}/${projectName}_postBuild_${i}.log 2>&1`) + '&#10;';
+            hook += escapeHtml(project.hooks.postBuild.x86_64.release[i]);
 
             hookContent += `         <ExecutionAction ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">\n`;
             hookContent += `            <ActionContent title = "postBuild Script" scriptText = "${hook}">\n`;
