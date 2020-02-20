@@ -7,6 +7,7 @@
         "dev-mac": "npm i && npx nodemon --ignore examples/* source/index.js examples/cpp xcodeMac examples/cpp/out --useInputCache 1",
         "dev-vs": "npm i && npx nodemon --ignore examples/* source/index.js examples/cpp vs2019 examples/cpp/out --useInputCache 1",
         "lint": "eslint source/",
+        "test": "npm i && node source/tests.js",
         "test-dev": "npm i && npx nodemon --ignore examples/* source/tests.js"
     },
     "dependencies": {

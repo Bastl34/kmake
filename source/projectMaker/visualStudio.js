@@ -132,7 +132,7 @@ async function makeVisualStudio(options)
         let projectId = projectIds[projectName];
 
         //project definition with all dependencies
-        projectDef += `Project("{${solutionId1}}") = "${projectName}", ".\\${projectName}\\${projectName}.vcxproj", "{${projectId}"\n`;
+        projectDef += `Project("{${solutionId1}}") = "${projectName}", ".\\${projectName}\\${projectName}.vcxproj", "{${projectId}}"\n`;
         projectDef += `	ProjectSection(ProjectDependencies) = postProject\n`;
 
         if (projectName in options && 'dependencies' in options[projectName])
@@ -160,6 +160,7 @@ async function makeVisualStudio(options)
             {
                 let configName = Helper.capitalizeFirstLetter(config);
                 platformDef += `		{${projectId}}.${configName}|${platform}.ActiveCfg = ${configName}|${platform}\n`;
+                platformDef += `		{${projectId}}.${configName}|${platform}.Build.0 = ${configName}|${platform}\n`;
             });
         });
     }
