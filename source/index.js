@@ -233,6 +233,7 @@ for(let optionKey in options)
         let relativePathToWorkingDir = FileHelper.relative(outputDirAbsolute, workingDirAbsolute);
 
         replacements['WORKING_DIR'] = relativePathToWorkingDir;
+        replacements['WORKING_DIR_BACKSLASH'] = path.normalize(relativePathToWorkingDir);
     }
 
     // ********** WORKING_DIR_ABSOLUTE
@@ -240,6 +241,7 @@ for(let optionKey in options)
     {
         let workingDirAbsolute = FileHelper.normalize(path.resolve(project.workingDir));
         replacements['WORKING_DIR_ABSOLUTE'] = workingDirAbsolute;
+        replacements['WORKING_DIR_ABSOLUTE_BACKSLASH'] = path.normalize(workingDirAbsolute);
     }
 
     // ********** PROJECT_NAME
