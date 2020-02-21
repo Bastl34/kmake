@@ -9,7 +9,7 @@
 
 #include <fstream>
 #include <string>
-#include <unistd.h>
+
 #include <filesystem>
 
 namespace fs = std::filesystem;
@@ -36,14 +36,13 @@ int main(int const argc, const char* const argv[], char* envv[])
 {
     std::cout << "main" << std::endl;
 
-    char cwd[10240];
-    getcwd(cwd, sizeof(cwd));
-
+    std::string cwd = fs::current_path().u8string();
+    
     std::cout << "app dir: " << argv[0] << std::endl;
     std::cout << "current working dir: " << cwd << std::endl;
 
     //change workingdir to current execution dir
-    chdir(fs::path(argv[0]).parent_path().c_str());
+    std::filesystem::current_path(fs::path(argv[0]).parent_path());
 
     dep1Func();
 

@@ -506,7 +506,7 @@ async function applyPlatformData(projectName, project, options)
             await replace({files: projectFilePath, from: new RegExp(`<!--HOOK_PRE_LINK_${platform}_${configName}-->`, 'g'), to: hookPreLinkContent.trim()});
 
             // ********** apply settings
-            Logging.log("applying project settings...");
+            Logging.log(`applying project settings for ${platform} ${configName}...`);
             await applyProjectSettings(projectName, project, options);
         }
     }

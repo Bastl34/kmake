@@ -96,7 +96,8 @@ let globals =
         BUNDLE_VERSION: '1.0.0',
 
         //visual studio settings
-        VS_C_RUNTIME: 'MT' //MT or MD
+        VS_C_RUNTIME: 'MT', //MT or MD
+        VS_LANGUAGE_STANDARD: 'stdcpp17'
     },
 
     ICON: 'resources/defaultIcon.png',

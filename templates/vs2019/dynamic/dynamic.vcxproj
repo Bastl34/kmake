@@ -104,6 +104,7 @@
       <AdditionalIncludeDirectories><!--INCLUDES_win32_Debug--></AdditionalIncludeDirectories>
       <AdditionalOptions><!--BUILD_FLAGS_win32_Debug--> %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary><!--VS_C_RUNTIME_Debug--></RuntimeLibrary>
+      <LanguageStandard><!--VS_LANGUAGE_STANDARD--></LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -139,6 +140,7 @@
       <AdditionalIncludeDirectories><!--INCLUDES_x64_Debug--></AdditionalIncludeDirectories>
       <AdditionalOptions><!--BUILD_FLAGS_x64_Debug--> %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary><!--VS_C_RUNTIME_Debug--></RuntimeLibrary>
+      <LanguageStandard><!--VS_LANGUAGE_STANDARD--></LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -176,6 +178,7 @@
       <AdditionalIncludeDirectories><!--INCLUDES_win32_Release--></AdditionalIncludeDirectories>
       <AdditionalOptions><!--BUILD_FLAGS_win32_Release--> %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary><!--VS_C_RUNTIME_Release--></RuntimeLibrary>
+      <LanguageStandard><!--VS_LANGUAGE_STANDARD--></LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -215,6 +218,7 @@
       <AdditionalIncludeDirectories><!--INCLUDES_x64_Release--></AdditionalIncludeDirectories>
       <AdditionalOptions><!--BUILD_FLAGS_x64_Release--> %(AdditionalOptions)</AdditionalOptions>
       <RuntimeLibrary><!--VS_C_RUNTIME_Release--></RuntimeLibrary>
+      <LanguageStandard><!--VS_LANGUAGE_STANDARD--></LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
