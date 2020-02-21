@@ -1,7 +1,6 @@
 
 # Dep 2.1
 dep21:
-    name: dep21
     type: project
     outputType: static
     projectType: source

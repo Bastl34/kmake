@@ -553,6 +553,7 @@ async function applyProjectSettings(projectName, project, options)
         if ('settings' in project && settingsKey in project.settings)
             val = project.settings[settingsKey];
 
+        await replace({files: files, from: new RegExp(`<!--${settingsKey}-->`, 'g'), to: val.trim()});
         await replace({files: files, from: new RegExp(`/\\*${settingsKey}\\*/`, 'g'), to: val.trim()});
     }
 

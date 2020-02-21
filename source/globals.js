@@ -82,6 +82,9 @@ let globals =
 
     DEFAULT_BUILD_SETTINGS:
     {
+        //some generics
+        DISPLAY_NAME: 'Test',
+
         //xcode settings
         MACOSX_DEPLOYMENT_TARGET: '10.15',
         GCC_C_LANGUAGE_STANDARD: 'gnu11',

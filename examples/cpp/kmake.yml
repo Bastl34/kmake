@@ -35,9 +35,6 @@ workspace:
 
 # main App
 bla:
-    #name: '${NAME}'
-    name: 'bla'
-
     type: project
     outputType: app #main
     #outputType: framework
@@ -45,6 +42,7 @@ bla:
     icon: 'assets/icon/icon.png'
 
     settings:
+        DISPLAY_NAME: 'Awesome App'
         MACOSX_DEPLOYMENT_TARGET: '10.15'
         VS_C_RUNTIME: 'MT' #MT or MD
 

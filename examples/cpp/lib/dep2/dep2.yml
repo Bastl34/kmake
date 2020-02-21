@@ -4,7 +4,6 @@ imports:
 
 # dep 2
 dep2:
-    name: dep2
     type: project
     outputType: dynamic
     projectType: source

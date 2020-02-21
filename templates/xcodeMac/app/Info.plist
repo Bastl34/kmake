@@ -14,16 +14,18 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>$(PRODUCT_NAME)</string>
+	<key>CFBundleDisplayName</key>
+	<string><!--DISPLAY_NAME--></string>
 	<key>CFBundlePackageType</key>
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
-	<string>/*BUNDLE_VERSION*/</string>
+	<string><!--BUNDLE_VERSION--></string>
 	<key>CFBundleVersion</key>
-	<string>/*BUNDLE_VERSION*/</string>
+	<string><!--BUNDLE_VERSION--></string>
 	<key>LSMinimumSystemVersion</key>
 	<string>$(MACOSX_DEPLOYMENT_TARGET)</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>/*HUMAN_READABLE_COPYRIGHT*/</string>
+	<string><!--HUMAN_READABLE_COPYRIGHT--></string>
 	<key>NSSupportsAutomaticTermination</key>
 	<true/>
 	<key>NSSupportsSuddenTermination</key>

@@ -8,7 +8,6 @@ workspace:
 
 # prebuilt
 prebuiltDyn:
-    name: prebuiltDyn
     type: project
     outputType: dynamic
     projectType: source

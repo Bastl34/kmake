@@ -8,7 +8,6 @@ workspace:
 
 # prebuilt
 prebuilt:
-    name: prebuilt
     type: project
     outputType: static
     projectType: source

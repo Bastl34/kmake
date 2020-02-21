@@ -1,6 +1,5 @@
 # Dep 1
 dep1:
-    name: dep1
     type: project
     outputType: static
     projectType: source
