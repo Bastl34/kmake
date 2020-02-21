@@ -445,7 +445,7 @@ async function makeXcode(options)
         Logging.log("applying replacements...");
         applyReplacements(projectName, project, options);
 
-        // ********** replacements
+        // ********** hooks
         Logging.log("applying hooks...");
         await applyHooks(projectName, projectId, project, options);
 
@@ -659,7 +659,7 @@ async function applyAssets(projectName, project, options)
     fs.chmodSync(copyScriptOutPath, 0o744);
 
     let projectFilePath = options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj';
-    await replace({files: projectFilePath, from: `/*SHELL_SCRIPT*/`, to: copyScript});
+    await replace({files: projectFilePath, from: `/*COPY_ASSETS_SCRIPT*/`, to: copyScript});
 }
 
 function applyReplacements(projectName, project, options)

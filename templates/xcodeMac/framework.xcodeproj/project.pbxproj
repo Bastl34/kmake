@@ -179,7 +179,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "/*SHELL_SCRIPT*/";
+			shellScript = "/*COPY_ASSETS_SCRIPT*/";
 		};
 /* End PBXShellScriptBuildPhase section */
 

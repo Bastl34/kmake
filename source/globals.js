@@ -105,7 +105,7 @@ let globals =
     DEFAULT_ASSET_DIR: 'assets',
     ASSET_DIRS_BY_TEMPLATE:
     {
-        'vs2019': '.',
+        'vs2019': '../..',
         'xcodeMac': '../Resources'
     },
 

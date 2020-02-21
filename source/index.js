@@ -335,10 +335,10 @@ for(let optionKey in options)
         project.defines.push('PROJECT_'+optionKey.toUpperCase());
 
         //this is the relative path based on the execution file
-        project.defines.push({'ASSET_DIR': '"' + Globals.ASSET_DIRS_BY_TEMPLATE[args.template] + '"'});
+        project.defines.push({'ASSET_DIR': '"' + FileHelper.normalize(Globals.ASSET_DIRS_BY_TEMPLATE[args.template]) + '"'});
 
         //absolute path to project
-        project.defines.push({'PROJECT_PATH': '"' + path.resolve(project.workingDir + '"')});
+        project.defines.push({'PROJECT_PATH': '"' + FileHelper.resolve(project.workingDir + '"')});
     }
 }
 

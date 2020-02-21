@@ -22,6 +22,7 @@ const BIN_DIR = 'bin';
     }
     catch (e)
     {
+        console.log(colors.error('❌❌❌ tests failed ❌❌❌'));
         console.error(e);
     }
 })();

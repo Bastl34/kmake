@@ -110,6 +110,7 @@
     <PostBuildEvent>
       <Command>
         <!--HOOK_POST_BUILD_win32_Debug-->
+        <!--COPY_ASSETS-->
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
@@ -144,6 +145,7 @@
     <PostBuildEvent>
       <Command>
         <!--HOOK_POST_BUILD_x64_Debug-->
+        <!--COPY_ASSETS-->
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
@@ -182,6 +184,7 @@
     <PostBuildEvent>
       <Command>
         <!--HOOK_POST_BUILD_win32_Release-->
+        <!--COPY_ASSETS-->
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>
@@ -220,6 +223,7 @@
     <PostBuildEvent>
       <Command>
         <!--HOOK_POST_BUILD_x64_Release-->
+        <!--COPY_ASSETS-->
       </Command>
     </PostBuildEvent>
     <PreBuildEvent>

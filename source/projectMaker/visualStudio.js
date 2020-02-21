@@ -355,6 +355,10 @@ async function makeVisualStudio(options)
         Logging.log("applying platform data...");
         await applyPlatformData(projectName, project, options);
 
+        // ********** assets
+        Logging.log("applying asset data...");
+        await applyAssets(projectName, project, options);
+
         // ********** afterPrepare hook
 
         //use win32 release
@@ -390,7 +394,7 @@ async function applyPlatformData(projectName, project, options)
             let hookPreBuildArray = ('hooks' in project && 'preBuild' in project.hooks) ? project['hooks']['preBuild'][platform][config] : [];
             hookPreBuildArray.forEach(item =>
             {
-                hookPreBuildContent += '        ' + item + '\n';
+                hookPreBuildContent += '        ' + item + '\r\n';
             });
 
             //hook: post build
@@ -398,7 +402,7 @@ async function applyPlatformData(projectName, project, options)
             let hookPostBuildArray = ('hooks' in project && 'postBuild' in project.hooks) ? project['hooks']['postBuild'][platform][config] : [];
             hookPostBuildArray.forEach(item =>
             {
-                hookPostBuildContent += '        ' + item + '\n';
+                hookPostBuildContent += '        ' + item + '\r\n';
             });
 
             //hook: pre link
@@ -406,7 +410,7 @@ async function applyPlatformData(projectName, project, options)
             let hookPreLinkArray = ('hooks' in project && 'preLink' in project.hooks) ? project['hooks']['preLink'][platform][config] : [];
             hookPreLinkArray.forEach(item =>
             {
-                hookPreLinkContent += '        ' + item + '\n';
+                hookPreLinkContent += '        ' + item + '\r\n';
             });
 
             //include
@@ -461,7 +465,7 @@ async function applyPlatformData(projectName, project, options)
                     {
                         dllPathRelative = FileHelper.relative(path.join(options.build.outputPath, projectName), dllPath);
                         let dllName = path.basename(dllPath);
-                        hookPostBuildContent += `        copy /Y "$(ProjectDir)\\${path.normalize(dllPathRelative)}" "$(SolutionDir)$(Platform)\\$(Configuration)\\${dllName}"`;
+                        hookPostBuildContent += `        copy /Y "$(ProjectDir)\\${path.normalize(dllPathRelative)}" "$(SolutionDir)$(Platform)\\$(Configuration)\\${dllName}"\r\n`;
                     }
 
                     //change lib path relative to output dir
@@ -571,6 +575,65 @@ async function applyProjectSettings(projectName, project, options)
     }
 
     return true;
+}
+
+async function applyAssets(projectName, project, options)
+{
+    if (!('assets' in project))
+        return;
+
+    if (!(fs.existsSync(options.build.outputPath + '/' + projectName)))
+    {
+        Logging.warning('there is no content directory (assets) for this type of project: '+project.outputType);
+        return;
+    }
+
+    let copyScript = projectName + '/copyAssets.cmd';
+    let copyScriptOutPath = options.build.outputPath + '/' + copyScript;
+
+    let scriptContent = '';
+
+    //create asset dir
+    await fs.mkdirSync(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR));
+
+    //generate copy script
+    for(let i in project.assets)
+    {
+        let excludeFile = 'copyAssetsExclude_' + i + '.txt';
+        let asset = project.assets[i];
+
+        let source = path.normalize(path.resolve(path.join(project.workingDir, asset.source)));
+        let dest = path.normalize(path.resolve(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR, asset.destination)) + '/');
+
+        let assetDir = path.normalize(path.resolve(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR, asset.destination)));
+
+        scriptContent += 'if exist "' + assetDir + '" rmdir "' + assetDir + '\\" /s /Q\n';
+        scriptContent += 'md "' + assetDir + '/"\r\n';
+
+        let exclude = '';
+        if ('exclude' in asset)
+        {
+            asset.exclude.forEach(excludeItem =>
+            {
+                excludeItem = excludeItem.replace("*.", ".").replace(".*", ".");
+
+                exclude += `${excludeItem}\r\n`;
+            });
+        }
+
+        fs.writeFileSync(options.build.outputPath + '/' + projectName + '/' + excludeFile, exclude);
+
+        let xcopy = `xcopy "${source}" "${dest}" /E /I /Y /exclude:${excludeFile}\r\n`;
+        scriptContent += xcopy +'\r\n';
+    }
+
+    fs.writeFileSync(copyScriptOutPath, scriptContent);
+    //fs.chmodSync(copyScriptOutPath, 0o744);
+
+    let cmd = 'cmd.exe /c "copyAssets.cmd"'
+
+    let projectFilePath = options.build.outputPath + '/' + projectName + '/' + projectName + '.vcxproj';
+    await replace({files: projectFilePath, from: new RegExp(`<!--COPY_ASSETS-->`, 'g'), to: cmd});
 }
 
 module.exports = makeVisualStudio;
