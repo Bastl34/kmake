@@ -69,8 +69,9 @@ function getDefineEntry(item)
     if (item instanceof Object)
     {
         let name = Object.keys(item)[0];
-        let isStr = typeof item[name] === 'string';
-        return name + "=" + (isStr ? '"' + item[name] + '"' : item[name]);
+        //let isStr = typeof item[name] === 'string';
+        //return name + "=" + (isStr ? '"' + item[name] + '"' : item[name]);
+        return name + "=" + item[name];
     }
 
     return item;
@@ -413,7 +414,8 @@ async function applyPlatformData(projectName, project, options)
             let includesArray = ('includePaths' in project) ? project['includePaths'][platform][config] : [];
             includesArray.forEach(item =>
             {
-                item = FileHelper.relative(path.join(options.build.outputPath, projectName), item);
+                if (!path.isAbsolute(item))
+                    item = FileHelper.relative(path.join(options.build.outputPath, projectName), item);
                 includePathsContent += '"' + item + '";';
             });
 
@@ -430,7 +432,8 @@ async function applyPlatformData(projectName, project, options)
             let libsPathsArray = ('libPaths' in project) ? project['libPaths'][platform][config] : [];
             libsPathsArray.forEach(item =>
             {
-                item = FileHelper.relative(path.join(options.build.outputPath, projectName), item);
+                if (!path.isAbsolute(item))
+                    item = FileHelper.relative(path.join(options.build.outputPath, projectName), item);
                 libPathsContent += item + ';';
             });
 
@@ -462,7 +465,8 @@ async function applyPlatformData(projectName, project, options)
                     }
 
                     //change lib path relative to output dir
-                    lib = FileHelper.relative(path.join(options.build.outputPath, projectName), lib);
+                    if (!path.isAbsolute(lib))
+                        lib = FileHelper.relative(path.join(options.build.outputPath, projectName), lib);
                 }
 
                 libsContent += '"' + lib + '";';

@@ -54,8 +54,12 @@ function getDefineEntry(item)
     if (item instanceof Object)
     {
         let name = Object.keys(item)[0];
+
         let isStr = typeof item[name] === 'string';
-        return '"' + name + "=" + (isStr ? '\\"' + item[name] + '\\"' : item[name]) + '"';
+        if (isStr)
+            item[name] = item[name].replace(/\"/g, '\\\"').replace(/\\\\/g, '\\');
+
+        return '"' + name + '=\'' + item[name] + '\'"';
     }
 
     return '"' + item + '"';
@@ -481,7 +485,8 @@ async function applyPlatformData(projectName, project, options)
             let includesArray = ('includePaths' in project) ? project['includePaths'][platform][config] : [];
             includesArray.forEach(item =>
             {
-                item = FileHelper.relative(options.build.outputPath, item);
+                if (!path.isAbsolute(item))
+                    item = FileHelper.relative(options.build.outputPath, item);
                 includePathsContent += '					"' + item + '",\n';
             });
 
@@ -498,7 +503,8 @@ async function applyPlatformData(projectName, project, options)
             let libsPathsArray = ('libPaths' in project) ? project['libPaths'][platform][config] : [];
             libsPathsArray.forEach(item =>
             {
-                item = FileHelper.relative(options.build.outputPath, item);
+                if (!path.isAbsolute(item))
+                    item = FileHelper.relative(options.build.outputPath, item);
                 libPathsContent += '					"' + item + '",\n';
             });
 

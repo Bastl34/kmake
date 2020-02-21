@@ -83,10 +83,10 @@ let globals =
     DEFAULT_BUILD_SETTINGS:
     {
         //xcode settings
-        MACOSX_DEPLOYMENT_TARGET: '10.14',
+        MACOSX_DEPLOYMENT_TARGET: '10.15',
         GCC_C_LANGUAGE_STANDARD: 'gnu11',
         CLANG_CXX_LIBRARY: 'libc++',
-        CLANG_CXX_LANGUAGE_STANDARD: 'gnu++14',
+        CLANG_CXX_LANGUAGE_STANDARD: 'gnu++17',
         ORGANIZATION_NAME: 'Test Org',
         PRODUCT_BUNDLE_IDENTIFIER: 'test.test.test',
         HUMAN_READABLE_COPYRIGHT: 'Copyright',
@@ -99,6 +99,11 @@ let globals =
     ICON: 'resources/defaultIcon.png',
 
     DEFAULT_ASSET_DIR: 'assets',
+    ASSET_DIRS_BY_TEMPLATE:
+    {
+        'vs2019': '.',
+        'xcodeMac': '../Resources'
+    },
 
     XCODE_ICONS:
     {

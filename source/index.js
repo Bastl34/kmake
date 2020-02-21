@@ -317,8 +317,9 @@ for(let optionKey in options)
 }
 
 
-// ******************** add PROJECT_[PROJECT_NAME] define to each project ********************
-Logging.info('add PROJECT_[PROJECT_NAME] define to each project...');
+// ******************** add additional defines to each project ********************
+Logging.info('add additional defines to each project...');
+Logging.info(' - PROJECT_NAME, PROJECT_[PROJECT_NAME], ASSET_DIR, PROJECT_PATH');
 
 for(let optionKey in options)
 {
@@ -329,7 +330,15 @@ for(let optionKey in options)
         if (!('defines' in project))
             project.defines = [];
 
+        project.defines.push({'PROJECT_NAME': '"' + optionKey + '"'});
+
         project.defines.push('PROJECT_'+optionKey.toUpperCase());
+
+        //this is the relative path based on the execution file
+        project.defines.push({'ASSET_DIR': '"' + Globals.ASSET_DIRS_BY_TEMPLATE[args.template] + '"'});
+
+        //absolute path to project
+        project.defines.push({'PROJECT_PATH': '"' + path.resolve(project.workingDir + '"')});
     }
 }
 

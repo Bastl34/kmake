@@ -8,7 +8,7 @@ variables:
     NAME: Example
     ORGANIZATION: Example Corp
     VERSION: 1.1.1
-    MAC_OS_TARGET: '10.11'
+    MAC_OS_TARGET: '10.15'
     PACKAGE_NAME: 'test.test.test'
     COPYRIGHT: 'Copyright by Tester'
 
@@ -45,11 +45,11 @@ bla:
     icon: 'assets/icon/icon.png'
 
     settings:
-        MACOSX_DEPLOYMENT_TARGET: '10.12'
+        MACOSX_DEPLOYMENT_TARGET: '10.15'
         VS_C_RUNTIME: 'MT' #MT or MD
 
     defines:
-        - APP_NAME: '${NAME}'
+        - APP_NAME: '"${NAME}"'
         - DEBUG_APP: 1
         - TEST_APP
         - TEST_DEFINE
