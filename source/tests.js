@@ -10,7 +10,6 @@ const MakeHelper = require('./helper/makeHelper');
 const exec = util.promisify(require('child_process').exec);
 
 const MAIN = 'source/index.js';
-const BUILD_CONFIG = 'Release';
 
 const OUT_DIR = 'out';
 const BIN_DIR = 'bin';
@@ -63,14 +62,15 @@ async function testXcodeWorkspace(project, template, workspaceName, mainProjectN
 {
     const outDir = path.join(project, OUT_DIR);
     const binDir = path.join(outDir, BIN_DIR);
+    const configName = 'Release';
     const workspacePath = path.join(outDir, workspaceName);
-    const binPath = path.join(binDir, 'Build/Products', BUILD_CONFIG, mainProjectName + '.app', 'Contents/MacOS', mainProjectName);
+    const binPath = path.join(binDir, 'Build/Products', configName, mainProjectName + '.app', 'Contents/MacOS', mainProjectName);
 
     //create project (workspace)
     await exec(`node ${MAIN} ${project} ${template} ${outDir} --useInputCache 1`);
 
     //build
-    await exec(`xcodebuild build -configuration ${BUILD_CONFIG} -workspace ${workspacePath}.xcworkspace -scheme ${mainProjectName} -derivedDataPath ${binDir}`);
+    await exec(`xcodebuild build -configuration ${configName} -workspace ${workspacePath}.xcworkspace -scheme ${mainProjectName} -derivedDataPath ${binDir}`);
 
     //test bin
     await exec(`./${binPath}`);

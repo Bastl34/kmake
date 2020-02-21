@@ -1,12 +1,15 @@
 let globals =
 {
     TEMPLATE_DIR: 'templates',
+
+    //keep the order -> the order is used to find the "main" project for the build command
     PROJECT_TYPES:
     {
         main: 1,
-        static: 2,
-        dynamic: 3,
-        framework: 4
+        app: 2,
+        framework: 3,
+        static: 4,
+        dynamic: 5
     },
 
     TEMPLATES:
@@ -35,7 +38,18 @@ let globals =
     ARG_OPTIONS_DEFAULT:
     {
         'useInputCache': false,
-        'cleanOutputDir': true
+        'cleanOutputDir': true,
+
+        //build arguments
+        'build': false,
+        'release': true,
+        'buildProject': null,
+        'binOutputDir': './bin',
+
+        //export arguments
+        'export': false,
+
+        //run arguments
     },
 
     DEFAULT_TEMPLATE_BY_PLATFORM:

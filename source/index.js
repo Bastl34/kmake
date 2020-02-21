@@ -13,6 +13,7 @@ const Globals = require('./globals');
 const ymlLoader = require('./ymlLoader');
 const platformResolver = require('./platformResolver');
 const make = require('./make');
+const build = require('./build');
 
 const kmakeRoot = fs.realpathSync(__dirname + '/..');
 
@@ -259,7 +260,7 @@ for(let optionKey in options)
                 object = object.replace(regex, replacements[varName]);
             }
         }
-    
+
         return object;
     });
 }
@@ -327,7 +328,7 @@ for(let optionKey in options)
     {
         if (!('defines' in project))
             project.defines = [];
-        
+
         project.defines.push('PROJECT_'+optionKey.toUpperCase());
     }
 }
@@ -427,13 +428,34 @@ for(let optionKey in options)
 {
     try
     {
-        Logging.info('generating project...');
-        let res = await make(options);
+        let res = null;
 
-        Logging.log('====================');
+        if (args.build)
+        {
+            Logging.info('building project...');
 
-        if (res)
-            Logging.rainbow("project generation was successful");
+            let res = await build(options);
+
+            Logging.log('====================');
+
+            if (res)
+                Logging.rainbow("project built was successfully");
+        }
+        else if (args.export)
+        {
+
+        }
+        else
+        {
+            Logging.info('generating project...');
+
+            let res = await make(options);
+
+            Logging.log('====================');
+
+            if (res)
+                Logging.rainbow("project generation was successful");
+        }
     }
     catch (e)
     {
