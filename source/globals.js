@@ -21,10 +21,10 @@ let globals =
         'xcodemac': 'xcodeMac'
     },
 
-    //all supported platforms
-    //if platform is not supported -> not matching plafroms from kmake.yml are not applied
-    //if you want to add a new platform/arch add it here
-    PLATFORMS:
+    //all supported archs
+    //if archs is not supported -> not matching archs from kmake.yml are not applied
+    //if you want to add a new template/arch add it here
+    ARCHS:
     {
         'xcodeMac': ['x86_64'],
         'vs2019': ['win32', 'x64'],

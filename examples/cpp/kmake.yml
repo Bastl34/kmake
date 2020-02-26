@@ -60,7 +60,7 @@ bla:
         - './'
         - 'lib/prebuilt/'
         - 'lib/prebuiltDyn/'
-        - 'platform:vs*':
+        - 'template:vs*':
             arch:win32:
                 config:release:
                     - 'c:/win32Release'
@@ -71,7 +71,7 @@ bla:
                     - 'c:/win64Release'
                 config:debug:
                     - 'c:/win64Debug'
-        - 'platform:xcodeMac':
+        - 'template:xcodeMac':
             arch:x86_64:
                 config:release:
                     - '/MacRelease'
@@ -86,7 +86,7 @@ bla:
                     - '/MacDebug2'
 
     libPaths:
-        - 'platform:vs*':
+        - 'template:vs*':
             arch:win32:
                 config:release:
                     - 'lib/prebuiltDyn/bin/vs2019/win32'
@@ -117,10 +117,10 @@ bla:
         - dep1
         - dep2
         - dep21
-        - 'platform:xcodeMac':
+        - 'template:xcodeMac':
             - 'lib/prebuilt/bin/xcodeMac/x86_64/prebuilt.a'
             - 'lib/prebuiltDyn/bin/xcodeMac/x86_64/prebuiltDyn.dylib'
-        - 'platform:vs*':
+        - 'template:vs*':
             arch:win32:
                 - 'lib/prebuilt/out/Release/prebuilt.lib'
                 - 'lib/prebuiltDyn/bin/vs2019/win32/prebuiltDyn.lib'
@@ -132,14 +132,20 @@ bla:
         beforePrepare:
             - 'echo ---------- before prepare ----------'
             - 'echo ${ENV:PATH}'
+            - 'platform:win32':
+                - 'echo hello from windows'
+            - 'platform:linux':
+                - 'echo hello from linux'
+            - 'platform:darwin':
+                - 'echo hello from mac'
         preBuild:
             - 'echo pre build'
         postBuild:
             - 'echo post build'
-            - 'platform:xcodeMac':
+            - 'template:xcodeMac':
                 - 'node "${WORKING_DIR}/scripts/node.js"'
                 - 'sh "${WORKING_DIR}/scripts/shell.sh"'
-            - 'platform:vs*':
+            - 'template:vs*':
                 - 'node.exe "${WORKING_DIR}/../scripts/node.js"'
                 - 'powershell.exe -executionpolicy bypass -file "${WORKING_DIR_ABSOLUTE}/scripts/powershell.ps1"'
                 - 'cmd.exe /c "${WORKING_DIR_BACKSLASH}\..\scripts\cmd.cmd"'

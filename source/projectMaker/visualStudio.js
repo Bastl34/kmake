@@ -155,7 +155,7 @@ async function makeVisualStudio(options)
         projectDef += `	EndProjectSection\n`;
         projectDef += `EndProject\n`;
 
-        Globals.PLATFORMS[vsVersion].forEach(platform =>
+        Globals.ARCHS[vsVersion].forEach(platform =>
         {
             Globals.CONFIGURATIONS.forEach(config =>
             {
@@ -379,9 +379,9 @@ async function applyPlatformData(projectName, project, options)
     let projectFilePath = options.build.outputPath + '/' + projectName + '/' + projectName + '.vcxproj';
     let projectUserPath = projectFilePath + '.user';
 
-    for(let platformI in Globals.PLATFORMS[options.build.template])
+    for(let platformI in Globals.ARCHS[options.build.template])
     {
-        let platform = Globals.PLATFORMS[options.build.template][platformI];
+        let platform = Globals.ARCHS[options.build.template][platformI];
 
         //Globals.CONFIGURATIONS.forEach(config =>
         for(let configI in Globals.CONFIGURATIONS)
@@ -531,9 +531,9 @@ async function applyProjectSettings(projectName, project, options)
         if ('settings' in project && settingsKey in project.settings)
             val = project.settings[settingsKey];
 
-        for(let platformI in Globals.PLATFORMS[options.build.template])
+        for(let platformI in Globals.ARCHS[options.build.template])
         {
-            let platform = Globals.PLATFORMS[options.build.template][platformI];
+            let platform = Globals.ARCHS[options.build.template][platformI];
 
             //Globals.CONFIGURATIONS.forEach(config =>
             for(let configI in Globals.CONFIGURATIONS)

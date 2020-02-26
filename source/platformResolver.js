@@ -1,8 +1,10 @@
+const os = require('os');
+
 const micromatch = require('micromatch');
 
 const Globals = require('./globals');
 
-const platformKeys = Object.keys(Globals.PLATFORMS);
+const archKeys = Object.keys(Globals.ARCHS);
 
 function platformResolver(options, buildOptions)
 {
@@ -68,13 +70,7 @@ function resolvePlatform(options, build)
             if (typeof keyName === 'string' && keyName.indexOf('platform:') == 0)
             {
                 let platform = keyName.substr('platform:'.length);
-                let match = micromatch(platformKeys, platform);
-
-                if (match && match instanceof Array)
-                    match = match[0];
-
-                //remove not matching platforms
-                if (match == build.template)
+                if (platform == os.platform())
                     newContent.push(option[keyName]);
 
                 platformItemFound = true;
@@ -82,6 +78,52 @@ function resolvePlatform(options, build)
         }
 
         if (!platformItemFound)
+            newContent.push(option);
+    }
+
+    newContent = resolveTemplate(newContent, build);
+
+    return newContent;
+}
+
+function resolveTemplate(options, build)
+{
+    let newContent = [];
+
+    for(let optionKey in options)
+    {
+        let option = options[optionKey];
+
+        //check if option is an object -> otherwise add it directly
+        if (!(option instanceof Object))
+        {
+            newContent.push(option);
+            continue;
+        }
+
+        let templateItemFound = false;
+        let keys = Object.keys(option);
+        for(let i = 0;i < keys.length;++i)
+        {
+            let keyName = keys[i];
+
+            if (typeof keyName === 'string' && keyName.indexOf('template:') == 0)
+            {
+                let template = keyName.substr('template:'.length);
+                let match = micromatch(archKeys, template);
+
+                if (match && match instanceof Array)
+                    match = match[0];
+
+                //remove not matching archs
+                if (match == build.template)
+                    newContent.push(option[keyName]);
+
+                    templateItemFound = true;
+            }
+        }
+
+        if (!templateItemFound)
             newContent.push(option);
     }
 
@@ -94,7 +136,7 @@ function resolvePlatform(options, build)
 function resolveArchitecture(options, build)
 {
     let newContent = {generic: []};
-    Globals.PLATFORMS[build.template].forEach(arch => { newContent[arch] = []; });
+    Globals.ARCHS[build.template].forEach(arch => { newContent[arch] = []; });
 
     for(let optionKey in options)
     {

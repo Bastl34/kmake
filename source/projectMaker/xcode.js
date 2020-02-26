@@ -469,10 +469,9 @@ async function applyPlatformData(projectName, project, options)
 {
     let projectFilePath = options.build.outputPath + '/' + projectName + '.xcodeproj/project.pbxproj';
 
-    //Globals.PLATFORMS[options.build.template].forEach(platform =>
-    for(let platformI in Globals.PLATFORMS[options.build.template])
+    for(let platformI in Globals.ARCHS[options.build.template])
     {
-        let platform = Globals.PLATFORMS[options.build.template][platformI];
+        let platform = Globals.ARCHS[options.build.template][platformI];
 
         //Globals.CONFIGURATIONS.forEach(config =>
         for(let configI in Globals.CONFIGURATIONS)
