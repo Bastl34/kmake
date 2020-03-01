@@ -119,7 +119,7 @@ function resolveTemplate(options, build)
                 if (match == build.template)
                     newContent.push(option[keyName]);
 
-                    templateItemFound = true;
+                templateItemFound = true;
             }
         }
 

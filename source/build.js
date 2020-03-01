@@ -10,8 +10,8 @@ async function build(options)
     let res = null;
     if (os.platform() == 'darwin')
         res = await buildXcodeMac(options);
-    else if (os.platform() == 'win32')
-        res = await visualStudio(options);
+    //else if (os.platform() == 'win32')
+    //    res = await buildVisualStudio(options);
 
     return res;
 }
@@ -21,7 +21,7 @@ function findBuildProject(options)
     //if build project is set
     if (options.buildProject)
     {
-        if (!(options.buildProject) in options)
+        if (!(options.buildProject in options))
         {
             throw Error('project ' + options.buildProject + ' not found');
         }
@@ -56,6 +56,12 @@ function findBuildProject(options)
     throw Error('no build project found');
 }
 
+/*
+async function buildVisualStudio(options)
+{
+}
+*/
+
 async function buildXcodeMac(options)
 {
     const workspaceName = options.workspace.name;
@@ -67,7 +73,7 @@ async function buildXcodeMac(options)
     const configName = options.build.release ? 'Release' : 'Debug';
 
     //build
-    let res = await exec(`xcodebuild build -configuration ${configName} -workspace ${workspacePath}.xcworkspace -scheme ${mainProjectName} -derivedDataPath ${outDir}`)
+    let res = await exec(`xcodebuild build -configuration ${configName} -workspace ${workspacePath}.xcworkspace -scheme ${mainProjectName} -derivedDataPath ${outDir}`);
     console.log(res.stdout);
     console.log(res.stderr);
 

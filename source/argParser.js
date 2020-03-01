@@ -86,7 +86,7 @@ function argParser()
 
     //use default output dir if not set
     if (!obj.output)
-        obj.output = path.join(obj.project,Globals.DEFAULT_OUTPUT_DIR);
+        obj.output = path.join(obj.project, Globals.DEFAULT_OUTPUT_DIR);
 
     //check if something is missing
     if ((!obj.project || !obj.template || !obj.output))
@@ -119,8 +119,8 @@ function applyDefines(obj)
                 obj[splits[0]] = val;
                 return obj;
             }
-            else
-                return def;
+
+            return def;
         });
     }
 }

@@ -27,16 +27,16 @@ let MakeHelper =
 
     findMsBuild()
     {
-        if (process.env.vsInstallDir !== undefined) 
+        if (process.env.vsInstallDir !== undefined)
         {
             if (fs.existsSync(process.env.vsInstallDir))
                 return process.env.vsInstallDir;
-            else
-                Logging.warning('vsInstallDir env is set but the directory does not exist');
+
+            Logging.warning('vsInstallDir env is set but the directory does not exist');
         }
 
         const basePath = path.join(process.env['ProgramFiles(X86)'], 'Microsoft Visual Studio');
-        const postPath = 'MSBuild/Current/Bin/MSBuild.exe'
+        const postPath = 'MSBuild/Current/Bin/MSBuild.exe';
 
         if (!fs.existsSync(basePath))
             return null;
@@ -44,8 +44,8 @@ let MakeHelper =
         //const variations = ['Professional', 'Enterprise', 'Community', 'BuildTools'];
 
         const versions = fs.readdirSync(basePath);
-        versions.sort((a, b) => {return b-a});
-        
+        versions.sort((a, b) => { return b - a; });
+
         //check all possibilites
         for(let i in versions)
         {
@@ -63,7 +63,7 @@ let MakeHelper =
             }
         }
 
-        return null
+        return null;
     }
 };
 

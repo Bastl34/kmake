@@ -86,14 +86,14 @@ let Helper =
         else if (value == 'false')
             return false;
         //float
-        else if (!isNaN(value) && !isNaN(parseFloat(value)) && value.toString().indexOf('.') != -1)
-            return parseFloat(value);
+        else if (!isNaN(value) && !isNaN(parseFloat(value, 10)) && value.toString().indexOf('.') != -1)
+            return parseFloat(value, 10);
         //int
-        else if (!isNaN(value) && !isNaN(parseInt(value)))
-            return parseInt(value);
+        else if (!isNaN(value) && !isNaN(parseInt(value, 10)))
+            return parseInt(value, 10);
+
         //other (string)
-        else
-            return value;
+        return value;
     }
 };
 

@@ -52,7 +52,7 @@ let globals =
         'binOutputDir': './bin',
 
         //export arguments
-        'export': false,
+        'export': false
 
         //run arguments
     },

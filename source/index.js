@@ -363,7 +363,7 @@ for(let optionKey in options)
 
         project.defines.push({'PROJECT_NAME': '"' + optionKey + '"'});
 
-        project.defines.push('PROJECT_'+optionKey.toUpperCase());
+        project.defines.push('PROJECT_' + optionKey.toUpperCase());
 
         //this is the relative path based on the execution file
         project.defines.push({'ASSET_DIR': '"' + FileHelper.normalize(Globals.ASSET_DIRS_BY_TEMPLATE[args.template]) + '"'});
@@ -469,8 +469,6 @@ for(let optionKey in options)
 {
     try
     {
-        let res = null;
-
         if (args.build)
         {
             Logging.info('building project...');
@@ -484,7 +482,7 @@ for(let optionKey in options)
         }
         else if (args.export)
         {
-
+            //TODO
         }
         else
         {

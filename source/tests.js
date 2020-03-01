@@ -18,7 +18,7 @@ const BIN_DIR = 'bin';
 {
     try
     {
-        await runTests()
+        await runTests();
     }
     catch (e)
     {
@@ -44,7 +44,7 @@ async function xcodeMac()
     const workspaceName = 'Example';
     const mainProjectName = 'bla';
 
-    Logging.info(' ========== ' + testXcodeWorkspace.name + ' ==========')
+    Logging.info(' ========== ' + testXcodeWorkspace.name + ' ==========');
     await testXcodeWorkspace(project, template, workspaceName, mainProjectName);
 }
 
@@ -55,7 +55,7 @@ async function visualStudio()
     const workspaceName = 'Example';
     const mainProjectName = 'bla';
 
-    Logging.info(' ========== ' + testVisualStudioSolution.name + ' ==========')
+    Logging.info(' ========== ' + testVisualStudioSolution.name + ' ==========');
     await testVisualStudioSolution(project, template, workspaceName, mainProjectName);
 }
 
