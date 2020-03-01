@@ -112,6 +112,7 @@ options.build =
     outputPath: FileHelper.normalize(outputPath)
 };
 
+
 // ******************** get inputs ********************
 Logging.info('getting input data...');
 if ('inputs' in options)
@@ -178,8 +179,17 @@ if ('inputs' in options)
     }
 }
 
-// ******************** apply command line data (defines) to all projects ********************
-Logging.info('apply command line defines to each project...');
+
+// ******************** apply command line data (defines, libs) to all projects ********************
+Logging.info('apply command line defines, libs, headerPath, libPath to each project...');
+
+const commandLineOptionMapping =
+[
+    {cmdKey: 'define', projectKey: 'defines'},
+    {cmdKey: 'lib', projectKey: 'dependencies'},
+    {cmdKey: 'includePath', projectKey: 'includePaths'},
+    {cmdKey: 'libPath', projectKey: 'libPaths'}
+];
 
 for(let optionKey in options)
 {
@@ -187,11 +197,14 @@ for(let optionKey in options)
 
     if ('type' in project && project.type == 'project')
     {
-        if (!('defines' in project))
-            project.defines = [];
+        commandLineOptionMapping.forEach(item =>
+        {
+            if (!(item.projectKey in project))
+                project[item.projectKey] = [];
 
-        if (args.define)
-            project.defines = [...project.defines, ...args.define];
+            if (item.cmdKey in args)
+                project[item.projectKey] = [...project[item.projectKey], ...args[item.cmdKey]];
+        });
     }
 }
 
@@ -231,6 +244,7 @@ Helper.recursiveReplace(options, (key, object) =>
 
     return object;
 });
+
 
 // ******************** process global variables ********************
 Logging.info('replacing global variables...');
@@ -280,6 +294,7 @@ for(let optionKey in options)
         return object;
     });
 }
+
 
 // ******************** apply workspace settings to each project ********************
 Logging.info('processing workspace settings...');
@@ -362,6 +377,7 @@ for(let optionKey in options)
 // ******************** resolve platforms/architectures ********************
 Logging.info('resolving platform specific settings...');
 options = platformResolver(options, options.build);
+
 
 // ******************** resolve source files ********************
 Logging.info('resolving source files...');

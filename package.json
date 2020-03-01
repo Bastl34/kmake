@@ -4,7 +4,7 @@
     "description": "build tool for c++ projects (node js based)",
     "main": "index.js",
     "scripts": {
-        "dev-mac": "npm i && npx nodemon --ignore examples/* source/index.js examples/cpp xcodeMac examples/cpp/out --useInputCache 1 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF",
+        "dev-mac": "npm i && npx nodemon --ignore examples/* source/index.js examples/cpp xcodeMac examples/cpp/out --useInputCache 1 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF --lib OpenAL.framework --libPath /System/Library/Frameworks/",
         "dev-mac-build": "npm i && npx nodemon --ignore examples/* source/index.js examples/cpp xcodeMac examples/cpp/out --useInputCache 1 --build 1 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF",
         "dev-vs": "npm i && npx nodemon --ignore examples/* source/index.js examples/cpp vs2019 examples/cpp/out --useInputCache 1 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF",
         "lint": "eslint source/",

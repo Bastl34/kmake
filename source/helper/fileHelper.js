@@ -26,7 +26,6 @@ let Helper =
         if (!itemPath)
             return 0;
 
-        //return itemPath.split("/").length - 1;
         return itemPath.split("/").length;
     },
 

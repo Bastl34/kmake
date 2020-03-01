@@ -4,6 +4,7 @@ const path = require('path');
 const Globals = require('./globals');
 const Logging = require('./helper/logging');
 const Helper = require('./helper/helper');
+const FileHelper = require('./helper/fileHelper');
 
 function argParser()
 {
@@ -97,6 +98,9 @@ function argParser()
     //appy defines
     applyDefines(obj);
 
+    //apply path items
+    applyPathItems(obj);
+
     return obj;
 }
 
@@ -119,6 +123,36 @@ function applyDefines(obj)
                 return def;
         });
     }
+}
+
+function applyPathItems(obj)
+{
+    const pathItems = ['lib', 'includePath', 'libPath'];
+
+    pathItems.forEach(pathItem =>
+    {
+        if (pathItem in obj)
+        {
+            obj[pathItem] = obj[pathItem].map(item =>
+            {
+                if (!path.isAbsolute(item) && FileHelper.countDirectoryLevels(item) > 1)
+                    return path.resolve(item);
+                return item;
+            });
+        }
+    });
+
+    /*
+    if ('lib' in obj)
+    {
+        obj.lib = obj.lib.map(lib =>
+        {
+            if (!path.isAbsolute(lib) && FileHelper.countDirectoryLevels() > 1)
+                return path.resolve(lib);
+            return lib;
+        });
+    }
+    */
 }
 
 module.exports = argParser;

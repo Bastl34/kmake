@@ -41,6 +41,9 @@ let globals =
         'cleanOutputDir': true,
 
         'define': [],
+        'lib': [],
+        'includePath': [],
+        'libPath': [],
 
         //build arguments
         'build': false,
