@@ -141,18 +141,6 @@ function applyPathItems(obj)
             });
         }
     });
-
-    /*
-    if ('lib' in obj)
-    {
-        obj.lib = obj.lib.map(lib =>
-        {
-            if (!path.isAbsolute(lib) && FileHelper.countDirectoryLevels() > 1)
-                return path.resolve(lib);
-            return lib;
-        });
-    }
-    */
 }
 
 module.exports = argParser;
