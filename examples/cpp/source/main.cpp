@@ -44,13 +44,19 @@ int main(int const argc, const char* const argv[], char* envv[])
     //change workingdir to current execution dir
     std::filesystem::current_path(fs::path(argv[0]).parent_path());
 
+    //test some funcs
     dep1Func();
-
     dep2Func();
     stuff();
 
+    //test prebuild
     prebuiltFunc(1337);
     prebuiltDynFunc(1234);
+
+    //test defines (via command line)
+#ifdef TEST_DEF4 
+    std::cout << "should be 1: " << TEST_DEF4 << std::endl;
+#endif
 
     return readAsset();
 }

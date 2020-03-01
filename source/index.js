@@ -112,7 +112,6 @@ options.build =
     outputPath: FileHelper.normalize(outputPath)
 };
 
-
 // ******************** get inputs ********************
 Logging.info('getting input data...');
 if ('inputs' in options)
@@ -176,6 +175,23 @@ if ('inputs' in options)
         Logging.error('error reading input variables ');
         Logging.log(e);
         process.exit();
+    }
+}
+
+// ******************** apply command line data (defines) to all projects ********************
+Logging.info('apply command line defines to each project...');
+
+for(let optionKey in options)
+{
+    let project = options[optionKey];
+
+    if ('type' in project && project.type == 'project')
+    {
+        if (!('defines' in project))
+            project.defines = [];
+
+        if (args.define)
+            project.defines = [...project.defines, ...args.define];
     }
 }
 

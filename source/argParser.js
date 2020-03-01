@@ -3,6 +3,7 @@ const path = require('path');
 
 const Globals = require('./globals');
 const Logging = require('./helper/logging');
+const Helper = require('./helper/helper');
 
 function argParser()
 {
@@ -48,7 +49,8 @@ function argParser()
         }
         else if (lastOptionKey && !isOptionKey)
         {
-            let type = typeof Globals.ARG_OPTIONS_DEFAULT[lastOptionKey];
+            let argItem = Globals.ARG_OPTIONS_DEFAULT[lastOptionKey];
+            let type = typeof argItem;
 
             if (type == 'boolean')
             {
@@ -58,6 +60,10 @@ function argParser()
             else if (type == 'number')
             {
                 obj[lastOptionKey] = parseFloat(arg);
+            }
+            else if (type == 'object' && argItem instanceof Array)
+            {
+                obj[lastOptionKey].push(arg);
             }
             else
                 obj[lastOptionKey] = arg;
@@ -88,7 +94,31 @@ function argParser()
         process.exit();
     }
 
+    //appy defines
+    applyDefines(obj);
+
     return obj;
+}
+
+function applyDefines(obj)
+{
+    if ('define' in obj)
+    {
+        obj.define = obj.define.map(def =>
+        {
+            let splits = def.split('=');
+
+            if (splits.length == 2)
+            {
+                let obj = {};
+                let val = Helper.getValueOfStringContent(splits[1]);
+                obj[splits[0]] = val;
+                return obj;
+            }
+            else
+                return def;
+        });
+    }
 }
 
 module.exports = argParser;

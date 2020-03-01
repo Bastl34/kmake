@@ -18,3 +18,8 @@ you can define platform settings for:
 * `hooks`
 * `buildFlags`
 * `linkerFlags`
+
+## Tips and tricks
+
+* define strings via command line
+  * `kmake examples/cpp vs2019 examples/cpp/out --define TEST_DEFINE=\"test\"`

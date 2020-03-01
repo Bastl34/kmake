@@ -40,6 +40,8 @@ let globals =
         'useInputCache': false,
         'cleanOutputDir': true,
 
+        'define': [],
+
         //build arguments
         'build': false,
         'release': true,

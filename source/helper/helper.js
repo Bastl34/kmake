@@ -76,6 +76,24 @@ let Helper =
             return true;
 
         return Helper.hasKeys(obj[level], ...rest);
+    },
+
+    getValueOfStringContent(value)
+    {
+        //bool
+        if (value == 'true')
+            return true;
+        else if (value == 'false')
+            return false;
+        //float
+        else if (!isNaN(value) && !isNaN(parseFloat(value)) && value.toString().indexOf('.') != -1)
+            return parseFloat(value);
+        //int
+        else if (!isNaN(value) && !isNaN(parseInt(value)))
+            return parseInt(value);
+        //other (string)
+        else
+            return value;
     }
 };
 
