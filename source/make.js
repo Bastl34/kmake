@@ -5,6 +5,7 @@ const Helper = require('./helper/helper');
 
 const makeXcode = require('./projectMaker/xcode');
 const makeVisualStudio = require('./projectMaker/visualStudio');
+const makeMakefile = require('./projectMaker/makefile');
 
 async function make(options)
 {
@@ -47,6 +48,8 @@ async function make(options)
         res = await makeXcode(options);
     else if (options.build.template == 'vs2019')
         res = await makeVisualStudio(options);
+    else if (options.build.template == 'makefile')
+        res = await makeMakefile(options);
 
     return res;
 }

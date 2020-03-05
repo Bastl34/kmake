@@ -18,7 +18,11 @@ let globals =
         'vs2019': 'vs2019',
 
         'mac': 'xcodeMac',
-        'xcodemac': 'xcodeMac'
+        'xcodemac': 'xcodeMac',
+
+        'mk': 'makefile',
+        'makefile': 'makefile',
+        'Makefile': 'makefile'
     },
 
     //all supported archs
@@ -102,7 +106,10 @@ let globals =
 
         //visual studio settings
         VS_C_RUNTIME: 'MT', //MT or MD
-        VS_LANGUAGE_STANDARD: 'stdcpp17'
+        VS_LANGUAGE_STANDARD: 'stdcpp17',
+
+        //makefile settings
+        MK_LANGUAGE_STANDARD: 'c++17',
     },
 
     ICON: 'resources/defaultIcon.png',
@@ -111,7 +118,8 @@ let globals =
     ASSET_DIRS_BY_TEMPLATE:
     {
         'vs2019': '../..',
-        'xcodeMac': '../Resources'
+        'xcodeMac': '../Resources',
+        'makefile': './',
     },
 
     XCODE_ICONS:

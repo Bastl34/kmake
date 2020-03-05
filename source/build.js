@@ -12,6 +12,8 @@ async function build(options)
         res = await buildXcodeMac(options);
     //else if (os.platform() == 'win32')
     //    res = await buildVisualStudio(options);
+    //else if (os.platform() == 'linux')
+    //    res = await buildMakefile(options);
 
     return res;
 }
@@ -58,6 +60,12 @@ function findBuildProject(options)
 
 /*
 async function buildVisualStudio(options)
+{
+}
+*/
+
+/*
+async function buildMakefile(options)
 {
 }
 */
