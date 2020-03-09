@@ -31,8 +31,8 @@ let globals =
     ARCHS:
     {
         'xcodeMac': ['x86_64'],
-        'vs2019': ['win32', 'x64'],
-        'makefile': ['x86', 'x86_64', 'arm', 'arm64'],
+        'vs2019': ['x64', 'win32'],
+        'makefile': ['x86_64', 'x86', 'arm', 'arm64'],
 
         //TODO
         'android': ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'],
