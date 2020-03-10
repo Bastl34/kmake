@@ -28,6 +28,7 @@ let globals =
     //all supported archs
     //if archs is not supported -> not matching archs from kmake.yml are not applied
     //if you want to add a new template/arch add it here
+    //the default target is based on the order
     ARCHS:
     {
         'xcodeMac': ['x86_64'],
@@ -70,7 +71,8 @@ let globals =
 
     DEFAULT_OUTPUT_DIR: './out',
 
-    CONFIGURATIONS: ['debug', 'release'],
+    //the default target is based on the order
+    CONFIGURATIONS: ['release', 'debug'],
 
     PLATFORM_RESOLVER:
     [

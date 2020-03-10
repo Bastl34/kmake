@@ -58,6 +58,7 @@ const FILE_ENDING_BY_OUTPUT_TYPE =
 
     'unknown': 'text'
 };
+*/
 
 function getDefineEntry(item)
 {
@@ -67,17 +68,12 @@ function getDefineEntry(item)
     if (item instanceof Object)
     {
         let name = Object.keys(item)[0];
-
-        let isStr = typeof item[name] === 'string';
-        if (isStr)
-            item[name] = item[name].replace(/\"/g, '\\\"').replace(/\\\\/g, '\\');
-
-        return '"' + name + '=\'' + item[name] + '\'"';
+        return name + '=' + item[name];
     }
-
-    return '"' + item + '"';
+    else
+        return item;
 }
-*/
+
 
 async function makeMakefile(options)
 {
@@ -409,6 +405,7 @@ async function makeMakefile(options)
         });
         */
 
+        let objectList = [];
         let sourceFileContent = '';
         project.sources.forEach(file =>
         {
@@ -427,7 +424,11 @@ async function makeMakefile(options)
 
             sourceFileContent += `${outPath}: ${relativePath}\n`;
             sourceFileContent += `    $(CC) $(SO_FLAGS) $(CPPFLAGS) ${relativePath} -o ${outPath} $(LDFLAGS)\n\n`;
+
+            objectList.push(outPath)
         });
+
+        //console.log(objectList)
 
         /*
        soucesList.forEach(file =>
@@ -449,6 +450,27 @@ async function makeMakefile(options)
        });
        */
 
+        let targets = ''
+        for(let platformI in Globals.ARCHS[options.build.template])
+        {
+            let platform = Globals.ARCHS[options.build.template][platformI];
+
+            //Globals.CONFIGURATIONS.forEach(config =>
+            for(let configI in Globals.CONFIGURATIONS)
+            {
+                let config = Globals.CONFIGURATIONS[configI];
+
+                let targetKey = platform + "_" + config
+
+                let outPath = 'TODOOOOO'
+
+                targets += targetKey + ': ' + objectList.join(' ') + '\n';
+                targets += `    $(CC) $(SO_FLAGS) $(CPPFLAGS) ${objectList.join(' ')} -o ${outPath} $(LDFLAGS)\n\n`;
+            }
+        }
+
+        let defaultTarget = Globals.ARCHS[options.build.template][0] + '_' + Globals.CONFIGURATIONS[0];
+
         // ********** replacements
         Logging.log('generating ' + projectName + '.mk');
         let projectFilePath = options.build.outputPath + '/' + projectName + '.mk';
@@ -461,7 +483,8 @@ async function makeMakefile(options)
         //results = await replace({files: workspaceContentPath, from: /PROJECT_NAME/g, to: projectName});
         //results = await replace({files: schemePath, from: /PROJECT_NAME/g, to: projectName});
 
-        //results = await replace({files: projectFilePath, from: '/SOURCE_FILE_REFERENCE/', to: sourceFileReferenceContent.trim()});
+        results = await replace({files: projectFilePath, from: '#DEFAULT_TARGET#', to: defaultTarget});
+        results = await replace({files: projectFilePath, from: '#TARGETS#', to: targets});
         results = await replace({files: projectFilePath, from: '#SOURCE_FILE#', to: sourceFileContent.trim()});
         //results = await replace({files: projectFilePath, from: '/COMPILE_FILES/', to: compileFiles.trim()});
         //results = await replace({files: projectFilePath, from: '/HEADER_FILES/', to: headerFiles.trim()});
@@ -472,11 +495,11 @@ async function makeMakefile(options)
         //results = await replace({files: projectFilePath, from: '/EMBED_LIBRARIES/', to: libEmbedList.trim()});
 
 
-        /*
         // ********** platform specific data
         Logging.log("applying platform data...");
         await applyPlatformData(projectName, project, options);
 
+        /*
         // ********** apply settings
         Logging.log("applying project settings...");
         await applyProjectSettings(projectName, project, options);
@@ -512,6 +535,86 @@ async function makeMakefile(options)
     }
 
     return true;
+}
+
+async function applyPlatformData(projectName, project, options)
+{
+    let projectFilePath = options.build.outputPath + '/' + projectName + '.mk';
+
+    let includePathsContent = '';
+    let definesContent = '';
+    let libPathsContent = '';
+    let buildFlagsContent = '';
+    let linkerFlagsContent = '';
+
+    for(let platformI in Globals.ARCHS[options.build.template])
+    {
+        let platform = Globals.ARCHS[options.build.template][platformI];
+
+        //Globals.CONFIGURATIONS.forEach(config =>
+        for(let configI in Globals.CONFIGURATIONS)
+        {
+            let config = Globals.CONFIGURATIONS[configI];
+
+            let targetKey = platform + "_" + config
+
+            //include
+            includePathsContent += targetKey + ': INCLUDES += '
+            let includesArray = ('includePaths' in project) ? project['includePaths'][platform][config] : [];
+            includesArray.forEach(item =>
+            {
+                if (!path.isAbsolute(item))
+                    item = FileHelper.relative(options.build.outputPath, item);
+                includePathsContent += '-I' + item + ' ';
+            });
+            includePathsContent += '\n'
+
+            //defines
+            definesContent += targetKey + ': DEFINES += '
+            let definesArray = ('defines' in project) ? project['defines'][platform][config] : [];
+            definesArray.forEach(item =>
+            {
+                definesContent += '-D' + getDefineEntry(item) + ' ';
+            });
+            definesContent += '\n'
+
+            //libPaths
+            libPathsContent += targetKey + ': LIB_PATHS += '
+            let libsPathsArray = ('libPaths' in project) ? project['libPaths'][platform][config] : [];
+            libsPathsArray.forEach(item =>
+            {
+                if (!path.isAbsolute(item))
+                    item = FileHelper.relative(options.build.outputPath, item);
+                libPathsContent += '-L' + item + ' ';
+            });
+            libPathsContent += '\n'
+
+            //buildFlags
+            buildFlagsContent += targetKey + ': CXXFLAGS += '
+            let buildFlagsArray = ('buildFlags' in project) ? project['buildFlags'][platform][config] : [];
+            buildFlagsArray.forEach(item =>
+            {
+                buildFlagsContent += item + ' ';
+            });
+            buildFlagsContent += '\n'
+
+            //linkerFlags
+            linkerFlagsContent += targetKey + ': LDFLAGS += '
+            let linkerFlagsArray = ('linkerFlags' in project) ? project['linkerFlags'][platform][config] : [];
+            linkerFlagsArray.forEach(item =>
+            {
+                linkerFlagsContent += item + ' ';
+            });
+            linkerFlagsContent += '\n'
+        }
+    }
+
+    //apply
+    await replace({files: projectFilePath, from: `#INCLUDES#`, to: includePathsContent.trim()});
+    await replace({files: projectFilePath, from: `#DEFINES#`, to: definesContent.trim()});
+    await replace({files: projectFilePath, from: `#LIB_PATHS#`, to: libPathsContent.trim()});
+    await replace({files: projectFilePath, from: `#CXXFLAGS#`, to: buildFlagsContent.trim()});
+    await replace({files: projectFilePath, from: `#LDFLAGS#`, to: linkerFlagsContent.trim()});
 }
 
 module.exports = makeMakefile;

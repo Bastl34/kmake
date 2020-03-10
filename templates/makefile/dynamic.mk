@@ -7,6 +7,20 @@ else
   CC := g++
 endif
 
-LDFLAGS = -shared
+DEFINES=
+INCLUDES=
+LIB_PATHS=
+CXXFLAGS=
+LDFLAGS= -shared
+
+#DEFINES#
+#INCLUDES#
+#LIB_PATHS#
+#CXXFLAGS#
+#LDFLAGS#
+
+default: #DEFAULT_TARGET#
+
+#TARGETS#
 
 #SOURCE_FILE#
