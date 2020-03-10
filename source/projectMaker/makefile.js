@@ -26,6 +26,13 @@ const HEADERS =
     '.hpp'
 ];
 
+const OUTPUT_BY_TYPE =
+{
+    'static': '.a',
+    'dynamic': '.so',
+    'main': '',
+};
+
 /*
 const XCODE_SOURCE_FILETYPE_MAP =
 {
@@ -72,6 +79,11 @@ function getDefineEntry(item)
     }
     else
         return item;
+}
+
+function getTargetKey(projectName, template, archIndex, configIndex)
+{
+    return projectName + "_" + Globals.ARCHS[template][archIndex] + '_' + Globals.CONFIGURATIONS[configIndex];
 }
 
 
@@ -419,11 +431,16 @@ async function makeMakefile(options)
 
             //get the relative path from output dir to source
             let absolutePath = path.resolve(file);
-            let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + file;
-            let outPath = path.join(Globals.DEFAULT_OUTPUT_DIR, relativePath.replace(/\.\.\//g, '')) + '.o';
+            let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + path.basename(file);
 
-            sourceFileContent += `${outPath}: ${relativePath}\n`;
-            sourceFileContent += `    $(CC) $(SO_FLAGS) $(CPPFLAGS) ${relativePath} -o ${outPath} $(LDFLAGS)\n\n`;
+            let outPath = path.join(Globals.DEFAULT_OUTPUT_DIR, relativePath.replace(/\.\.\//g, '')) + '.o';
+            let outDir = path.dirname(path.join(options.build.outputPath,outPath));
+
+            //create all output dirs
+            fs.mkdirSync(outDir, { recursive: true });
+
+            sourceFileContent += `${outPath}:\n`;
+            sourceFileContent += `	$(CC) $(SO_FLAGS) $(CPPFLAGS) ${relativePath} -o ${outPath} $(LDFLAGS)\n\n`;
 
             objectList.push(outPath)
         });
@@ -459,17 +476,20 @@ async function makeMakefile(options)
             for(let configI in Globals.CONFIGURATIONS)
             {
                 let config = Globals.CONFIGURATIONS[configI];
+                let targetKey = getTargetKey(projectName, options.build.template, platformI, configI);
 
-                let targetKey = platform + "_" + config
+                let outputType = project.outputType;
+                if (outputType in OUTPUT_TYPE_MAP)
+                    outputType = OUTPUT_TYPE_MAP[outputType];
 
-                let outPath = 'TODOOOOO'
+                let outPath = path.join(Globals.DEFAULT_OUTPUT_DIR,targetKey+OUTPUT_BY_TYPE[outputType]);
 
                 targets += targetKey + ': ' + objectList.join(' ') + '\n';
-                targets += `    $(CC) $(SO_FLAGS) $(CPPFLAGS) ${objectList.join(' ')} -o ${outPath} $(LDFLAGS)\n\n`;
+                targets += `	$(CC) $(SO_FLAGS) $(CPPFLAGS) ${objectList.join(' ')} -o ${outPath} $(LDFLAGS)\n\n`;
             }
         }
 
-        let defaultTarget = Globals.ARCHS[options.build.template][0] + '_' + Globals.CONFIGURATIONS[0];
+        let defaultTarget = getTargetKey(projectName, options.build.template, 0, 0);
 
         // ********** replacements
         Logging.log('generating ' + projectName + '.mk');
@@ -551,12 +571,11 @@ async function applyPlatformData(projectName, project, options)
     {
         let platform = Globals.ARCHS[options.build.template][platformI];
 
-        //Globals.CONFIGURATIONS.forEach(config =>
         for(let configI in Globals.CONFIGURATIONS)
         {
             let config = Globals.CONFIGURATIONS[configI];
 
-            let targetKey = platform + "_" + config
+            let targetKey = getTargetKey(projectName, options.build.template, platformI, configI);
 
             //include
             includePathsContent += targetKey + ': INCLUDES += '
