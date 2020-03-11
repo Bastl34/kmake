@@ -318,8 +318,9 @@ for(let i in options.workspace.content)
 
 
 // ******************** add workspace dependencie paths to project's  ********************
-Logging.info('appending workspace dependencies to includePaths and libPaths ...');
-let depenencyItems = ['includePaths', 'libPaths'];
+Logging.info('appending workspace dependencies to includePaths ...');
+//let depenencyItems = ['includePaths', 'libPaths'];
+let depenencyItems = ['includePaths'];
 
 for(let optionKey in options)
 {

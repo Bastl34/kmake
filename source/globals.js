@@ -70,6 +70,8 @@ let globals =
     },
 
     DEFAULT_OUTPUT_DIR: './out',
+    DEFAULT_BIN_DIR: './bin',
+    DEFAULT_OBJECTS_DIR: './obj',
 
     //the default target is based on the order
     CONFIGURATIONS: ['release', 'debug'],
@@ -111,7 +113,14 @@ let globals =
         VS_LANGUAGE_STANDARD: 'stdcpp17',
 
         //makefile settings
-        MK_LANGUAGE_STANDARD: 'c++17',
+        MK_DEFAULT_FLAGS: '-fPIC -Wall',
+        MK_CPP_LANGUAGE_STANDARD: 'std=c++17',
+        MK_C_LANGUAGE_STANDARD: 'std=c11',
+        MK_STD_LIB: 'static-libstdc++',
+        MK_DEBUG_LEVEL: 'g',
+        MK_OPTIMIZATION: 'O2',
+        MK_VERBOSE: '',
+        MK_AR_FLAGS: 'rvs'
     },
 
     ICON: 'resources/defaultIcon.png',
@@ -121,7 +130,7 @@ let globals =
     {
         'vs2019': '../..',
         'xcodeMac': '../Resources',
-        'makefile': './',
+        'makefile': '../..',
     },
 
     XCODE_ICONS:
