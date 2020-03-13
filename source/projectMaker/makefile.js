@@ -1,5 +1,6 @@
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 
 const copy = require('recursive-copy');
 const replace = require('replace-in-file');
@@ -29,28 +30,9 @@ const HEADERS =
 const OUTPUT_BY_TYPE =
 {
     'static': '.a',
-    'dynamic': '.so',
+    'dynamic': os.platform() == 'darwin' ? '.dylib' : '.so',
     'main': '',
 };
-
-function getDefineEntry(item)
-{
-    if (!item)
-        return "";
-
-    if (item instanceof Object)
-    {
-        let name = Object.keys(item)[0];
-
-        let isStr = typeof item[name] === 'string';
-        if (isStr)
-            item[name] = item[name].replace(/\"/g, '\\\"').replace(/\\\\/g, '\\');
-
-        return '"' + name + '=\'' + item[name] + '\'"';
-    }
-
-    return '"' + item + '"';
-}
 
 function getDefineEntry(item)
 {
@@ -205,6 +187,8 @@ async function makeMakefile(options)
                 let config = Globals.CONFIGURATIONS[configI];
 
                 let targetKey = getTargetKey(projectName, options.build.template, platformI, configI);
+                let preBuildHook = targetKey + '_preBuild';
+                let postBuildHook = targetKey + '_postBuild';
 
                 let outputType = project.outputType;
                 if (outputType in OUTPUT_TYPE_MAP)
@@ -222,21 +206,32 @@ async function makeMakefile(options)
                 {
                     if (lib in options)
                     {
-                        libsContent += ' -l"' + lib + '.a"';
+                        let libOutputType = options[lib].outputType;
+                        if (libOutputType in OUTPUT_BY_TYPE)
+                            libOutputType = OUTPUT_BY_TYPE[libOutputType];
+
+                        //libsContent += ' -l:' + lib + libOutputType;
+                        libsContent += ' ' + path.join(outDir, lib + libOutputType);
                     }
                     else
-                        libsContent += ' -l"' + path.basename(lib) + '"';
+                    {
+                        pathRelative = FileHelper.relative(options.build.outputPath, lib);
+                        //libsContent += ' -l:"' + path.basename(lib) + '"';
+                        libsContent += ' ' + pathRelative;
+                    }
                 });
 
                 //create all output dirs
                 fs.mkdirSync(path.dirname(outPathAbsolute), { recursive: true });
 
-                targets += targetKey + ': ' + objectList.join(' ') + '\n';
+                targets += targetKey + '_build: ' + preBuildHook + ' ' + objectList.join(' ') + '\n';
 
                 if (outputType == 'static')
                     targets += `	$(AR) $(ARFLAGS) ${outPath} ${objectList.join(' ')}\n\n`;
                 else
                     targets += `	$(CC) $(PRE_FLAGS) ${objectList.join(' ')} ${libsContent.trim()} -o ${outPath} $(POST_FLAGS)\n\n`;
+
+                targets += targetKey + ': ' + targetKey + '_build ' + postBuildHook + '\n';
             }
         }
 
@@ -275,10 +270,6 @@ async function makeMakefile(options)
         await applyProjectSettings(projectName, project, options);
 
         /*
-        // ********** apply icon
-        Logging.log("generating icons...");
-        await applyIcon(projectName, project, options);
-
         // ********** assets
         Logging.log("applying asset data...");
         await applyAssets(projectName, project, options);
@@ -286,14 +277,12 @@ async function makeMakefile(options)
         // ********** replacements
         Logging.log("applying replacements...");
         applyReplacements(projectName, project, options);
-
+        */
         // ********** hooks
         Logging.log("applying hooks...");
-        await applyHooks(projectName, projectId, project, options);
-        */
+        await applyHooks(projectName, project, options);
 
         // ********** afterPrepare hook
-
         //use x86_64 release
         if (Helper.hasKeys(project, 'hooks', 'afterPrepare', 'x86_64', 'release'))
         {
@@ -361,11 +350,11 @@ async function applyPlatformData(projectName, project, options)
             libPathsContent += '-L' + getBinDir(platform, config) + ' ';
 
             //append all dirs for libs
-            let libsArray = ('dependencies' in project) ? project['dependencies'][platform][config] : [];
-            libsArray.forEach(lib =>
-            {
-                if (!(lib in options))
-                {
+            //let libsArray = ('dependencies' in project) ? project['dependencies'][platform][config] : [];
+            //libsArray.forEach(lib =>
+            //{
+            //    if (!(lib in options))
+            //    {
                     /* TODO
                     //check if there is a dll and copy the dll on post build
                     let dllPath = lib.replace('.lib', '.dll');
@@ -378,12 +367,12 @@ async function applyPlatformData(projectName, project, options)
                     */
 
                     //change lib path relative to output dir
-                    if (!path.isAbsolute(lib))
-                        lib = FileHelper.relative(path.join(options.build.outputPath, projectName), lib);
-                    lib = path.dirname(lib)
-                    libPathsContent += ' -L"' + lib + '"';
-                }
-            });
+            //        if (!path.isAbsolute(lib))
+            //            lib = FileHelper.relative(path.join(options.build.outputPath, projectName), lib);
+            //        lib = path.dirname(lib)
+            //        libPathsContent += ' -L"' + lib + '"';
+            //    }
+            //});
 
             libPathsContent += '\n'
 
@@ -440,6 +429,47 @@ async function applyProjectSettings(projectName, project, options)
     }
 
     return true;
+}
+
+async function applyHooks(projectName, project, options)
+{
+    let projectFilePath = options.build.outputPath + '/' + projectName + '.mk';
+
+    let hooks = ['preBuild', 'postBuild'];
+
+    let hookContent = '';
+
+    for(let hookI in hooks)
+    {
+        let hookName = hooks[hookI];
+
+        for(let platformI in Globals.ARCHS[options.build.template])
+        {
+            let platform = Globals.ARCHS[options.build.template][platformI];
+
+            for(let configI in Globals.CONFIGURATIONS)
+            {
+                let config = Globals.CONFIGURATIONS[configI];
+                let targetKey = getTargetKey(projectName, options.build.template, platformI, configI);
+                let hookKey = targetKey + '_' + hookName;
+
+                hookContent += hookKey + ':\n';
+
+                if (Helper.hasKeys(project, 'hooks', hookName, platform, config))
+                {
+                    for(let i in project['hooks'][hookName][platform][config])
+                    {
+                        let hook = project['hooks'][hookName]['x86_64']['release'][i];
+                        hookContent += `	${hook}\n`;
+                    }
+
+                    hookContent += '\n';
+                }
+            }
+        }
+    }
+
+    results = await replace({files: projectFilePath, from: '#HOOKS#', to: hookContent.trim()});
 }
 
 module.exports = makeMakefile;

@@ -84,6 +84,8 @@ bla:
                     - '/MacRelease2'
                 config:debug:
                     - '/MacDebug2'
+        - 'template:makefile':
+                - '/mkInclude'
 
     libPaths:
         - 'template:vs*':
@@ -127,13 +129,20 @@ bla:
             arch:x64:
                 - 'lib/prebuilt/bin/vs2019/x64/prebuilt.lib'
                 - 'lib/prebuiltDyn/bin/vs2019/x64/prebuiltDyn.lib'
-        - 'template:makefile':
-            arch:86_64:
-                - 'lib/prebuilt/bin/makefile/linux/86_64/prebuilt.a'
-                - 'lib/prebuiltDyn/bin/makefile/linux/86_64/prebuiltDyn.so'
-            arch:x86:
-                - 'lib/prebuilt/bin/makefile/linux/x86/prebuilt.a'
-                - 'lib/prebuiltDyn/bin/makefile/linux/x86/prebuiltDyn.so'
+
+        - 'platform:darwin':
+            - 'template:makefile':
+                arch:x86_64:
+                    - 'lib/prebuilt/bin/makefile/mac/x86_64/prebuilt.a'
+                    - 'lib/prebuiltDyn/bin/makefile/mac/x86_64/prebuiltDyn.dylib'
+        - 'platform:linux':
+            - 'template:makefile':
+                arch:x86_64:
+                    - 'lib/prebuilt/bin/makefile/linux/x86_64/prebuilt.a'
+                    - 'lib/prebuiltDyn/bin/makefile/linux/x86_64/prebuiltDyn.so'
+                arch:x86:
+                    - 'lib/prebuilt/bin/makefile/linux/x86/prebuilt.a'
+                    - 'lib/prebuiltDyn/bin/makefile/linux/x86/prebuiltDyn.so'
 
     hooks:
         beforePrepare:
@@ -156,6 +165,9 @@ bla:
                 - 'node.exe "${WORKING_DIR}/../scripts/node.js"'
                 - 'powershell.exe -executionpolicy bypass -file "${WORKING_DIR_ABSOLUTE}/scripts/powershell.ps1"'
                 - 'cmd.exe /c "${WORKING_DIR_BACKSLASH}\..\scripts\cmd.cmd"'
+            - 'template:makefile':
+                - 'node "${WORKING_DIR}/scripts/node.js"'
+                - 'sh "${WORKING_DIR}/scripts/shell.sh"'
         preLink:
             - 'echo pre link'
         afterPrepare:

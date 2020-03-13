@@ -30,4 +30,6 @@ default: #DEFAULT_TARGET#
 
 #TARGETS#
 
+#HOOKS#
+
 #SOURCE_FILE#

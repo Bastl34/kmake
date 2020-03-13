@@ -71,7 +71,12 @@ function resolvePlatform(options, build)
             {
                 let platform = keyName.substr('platform:'.length);
                 if (platform == os.platform())
-                    newContent.push(option[keyName]);
+                {
+                    if (typeof option[keyName] === 'object' && option[keyName] instanceof Array)
+                        newContent = [...newContent, ...option[keyName]];
+                    else
+                        newContent.push(option[keyName]);
+                }
 
                 platformItemFound = true;
             }
@@ -117,7 +122,13 @@ function resolveTemplate(options, build)
 
                 //remove not matching archs
                 if (match == build.template)
-                    newContent.push(option[keyName]);
+                {
+                    if (typeof option[keyName] === 'object' && option[keyName] instanceof Array)
+                        newContent = [...newContent, ...option[keyName]];
+                    else
+                        newContent.push(option[keyName]);
+                }
+
 
                 templateItemFound = true;
             }
@@ -160,7 +171,12 @@ function resolveArchitecture(options, build)
                 let arch = keyName.substr('arch:'.length);
 
                 if (Object.keys(newContent).indexOf(arch) != -1)
-                    newContent[arch].push(option[keyName]);
+                {
+                    if (typeof option[keyName] === 'object' && option[keyName] instanceof Array)
+                        newContent[arch] = [...newContent[arch], ...option[keyName]];
+                    else
+                        newContent[arch].push(option[keyName]);
+                }
 
                 archItemFound = true;
             }

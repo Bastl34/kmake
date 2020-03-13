@@ -37,7 +37,7 @@ int main(int const argc, const char* const argv[], char* envv[])
     std::cout << "main" << std::endl;
 
     std::string cwd = fs::current_path().u8string();
-    
+
     std::cout << "app dir: " << argv[0] << std::endl;
     std::cout << "current working dir: " << cwd << std::endl;
 
@@ -54,7 +54,7 @@ int main(int const argc, const char* const argv[], char* envv[])
     prebuiltDynFunc(1234);
 
     //test defines (via command line)
-#ifdef TEST_DEF4 
+#ifdef TEST_DEF4
     std::cout << "should be 1: " << TEST_DEF4 << std::endl;
 #endif
 
