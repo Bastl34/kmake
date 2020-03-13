@@ -135,6 +135,7 @@ bla:
                 arch:x86_64:
                     - 'lib/prebuilt/bin/makefile/mac/x86_64/prebuilt.a'
                     - 'lib/prebuiltDyn/bin/makefile/mac/x86_64/prebuiltDyn.dylib'
+                    - 'm'
         - 'platform:linux':
             - 'template:makefile':
                 arch:x86_64:

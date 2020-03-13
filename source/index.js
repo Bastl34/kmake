@@ -424,7 +424,10 @@ for(let itemKey in options)
                 if (options.workspace.content.indexOf(object) == -1)
                 {
                     let filePath = item.workingDir + '/' + object;
-                    object = FileHelper.normalize(filePath);
+
+                    //only resolve libs with paths
+                    if (fs.existsSync(filePath))
+                        object = FileHelper.normalize(filePath);
                 }
             }
 

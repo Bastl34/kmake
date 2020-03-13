@@ -152,31 +152,8 @@ async function makeMakefile(options)
             objectList.push(outPath)
         });
 
-        //console.log(objectList)
 
-        /*
-       soucesList.forEach(file =>
-       {
-           //get the relative path from output dir to source
-           let absolutePath = path.resolve(file.path);
-           let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + file.name;
-
-           sourceFileContent += '		' + file.uid2 + ' / ' + file.name + ' in Sources / = {isa = PBXBuildFile; fileRef = ' + file.uid + ' / ' + file.name + ' /; };\n';
-           sourceFileReferenceContent += '		' + file.uid + ' / ' + file.name + ' / = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = ' + file.type + '; name = ' + file.name + '; path = ' + relativePath + '; sourceTree = "<group>"; };\n';
-
-           //only source files
-           if (file.type.indexOf('sourcecode') != -1 && file.type.indexOf('.h') == -1)
-               compileFiles += '				' + file.uid2 + ' / ' + file.name + ' in Sources /,\n';
-
-           //only header files
-           if (file.type.indexOf('.h') != -1)
-               headerFiles += '				' + file.uid2 + ' / ' + file.name + ' in Sources /,\n';
-       });
-       */
-
-
-       //platform specific targets
-
+        //platform specific targets
         let targets = ''
         for(let platformI in Globals.ARCHS[options.build.template])
         {
@@ -189,6 +166,7 @@ async function makeMakefile(options)
                 let targetKey = getTargetKey(projectName, options.build.template, platformI, configI);
                 let preBuildHook = targetKey + '_preBuild';
                 let postBuildHook = targetKey + '_postBuild';
+                let copyTarget = targetKey + '_copy';
 
                 let outputType = project.outputType;
                 if (outputType in OUTPUT_TYPE_MAP)
@@ -210,14 +188,17 @@ async function makeMakefile(options)
                         if (libOutputType in OUTPUT_BY_TYPE)
                             libOutputType = OUTPUT_BY_TYPE[libOutputType];
 
-                        //libsContent += ' -l:' + lib + libOutputType;
                         libsContent += ' ' + path.join(outDir, lib + libOutputType);
                     }
                     else
                     {
-                        pathRelative = FileHelper.relative(options.build.outputPath, lib);
-                        //libsContent += ' -l:"' + path.basename(lib) + '"';
-                        libsContent += ' ' + pathRelative;
+                        if (fs.existsSync(lib))
+                        {
+                            pathRelative = FileHelper.relative(options.build.outputPath, lib);
+                            libsContent += ' ' + pathRelative;
+                        }
+                        else
+                            libsContent += ' -l' + lib;
                     }
                 });
 
@@ -231,7 +212,7 @@ async function makeMakefile(options)
                 else
                     targets += `	$(CC) $(PRE_FLAGS) ${objectList.join(' ')} ${libsContent.trim()} -o ${outPath} $(POST_FLAGS)\n\n`;
 
-                targets += targetKey + ': ' + targetKey + '_build ' + postBuildHook + '\n';
+                targets += targetKey + ': ' + targetKey + '_build ' + copyTarget + ' ' + postBuildHook + '\n';
             }
         }
 
@@ -241,24 +222,9 @@ async function makeMakefile(options)
         Logging.log('generating ' + projectName + '.mk');
         let projectFilePath = options.build.outputPath + '/' + projectName + '.mk';
 
-        //results = await replace({files: projectFilePath, from: /PROJECT_ID/g, to: projectId});
-        //results = await replace({files: workspaceContentPath, from: /PROJECT_ID/g, to: projectId});
-        //results = await replace({files: schemePath, from: /PROJECT_ID/g, to: projectId});
-
-        //results = await replace({files: projectFilePath, from: /PROJECT_NAME/g, to: projectName});
-        //results = await replace({files: workspaceContentPath, from: /PROJECT_NAME/g, to: projectName});
-        //results = await replace({files: schemePath, from: /PROJECT_NAME/g, to: projectName});
-
         results = await replace({files: projectFilePath, from: '#DEFAULT_TARGET#', to: defaultTarget});
         results = await replace({files: projectFilePath, from: '#TARGETS#', to: targets});
         results = await replace({files: projectFilePath, from: '#SOURCE_FILE#', to: sourceFileContent.trim()});
-        //results = await replace({files: projectFilePath, from: '/COMPILE_FILES/', to: compileFiles.trim()});
-        //results = await replace({files: projectFilePath, from: '/HEADER_FILES/', to: headerFiles.trim()});
-        //results = await replace({files: projectFilePath, from: '/SOURCE_DIRECTORIES/', to: sourceDirectories.trim()});
-        //results = await replace({files: projectFilePath, from: '/SOURCE_ROOT/', to: sourceRoot.trim()});
-        //results = await replace({files: projectFilePath, from: '/LIBRARIES_LIST/', to: libList.trim()});
-        //results = await replace({files: projectFilePath, from: '/LIBRARIES_BUILD/', to: libBuildList.trim()});
-        //results = await replace({files: projectFilePath, from: '/EMBED_LIBRARIES/', to: libEmbedList.trim()});
 
 
         // ********** platform specific data
@@ -278,6 +244,11 @@ async function makeMakefile(options)
         Logging.log("applying replacements...");
         applyReplacements(projectName, project, options);
         */
+
+        // ********** copy files
+        Logging.log("applying file copy step...");
+        await applyCopyStep(projectName, project, options);
+
         // ********** hooks
         Logging.log("applying hooks...");
         await applyHooks(projectName, project, options);
@@ -348,32 +319,6 @@ async function applyPlatformData(projectName, project, options)
             });
 
             libPathsContent += '-L' + getBinDir(platform, config) + ' ';
-
-            //append all dirs for libs
-            //let libsArray = ('dependencies' in project) ? project['dependencies'][platform][config] : [];
-            //libsArray.forEach(lib =>
-            //{
-            //    if (!(lib in options))
-            //    {
-                    /* TODO
-                    //check if there is a dll and copy the dll on post build
-                    let dllPath = lib.replace('.lib', '.dll');
-                    if (fs.existsSync(dllPath))
-                    {
-                        dllPathRelative = FileHelper.relative(path.join(options.build.outputPath, projectName), dllPath);
-                        let dllName = path.basename(dllPath);
-                        hookPostBuildContent += `        copy /Y "$(ProjectDir)\\${path.normalize(dllPathRelative)}" "$(SolutionDir)$(Platform)\\$(Configuration)\\${dllName}"\r\n`;
-                    }
-                    */
-
-                    //change lib path relative to output dir
-            //        if (!path.isAbsolute(lib))
-            //            lib = FileHelper.relative(path.join(options.build.outputPath, projectName), lib);
-            //        lib = path.dirname(lib)
-            //        libPathsContent += ' -L"' + lib + '"';
-            //    }
-            //});
-
             libPathsContent += '\n'
 
             // ***** buildFlags
@@ -470,6 +415,44 @@ async function applyHooks(projectName, project, options)
     }
 
     results = await replace({files: projectFilePath, from: '#HOOKS#', to: hookContent.trim()});
+}
+
+async function applyCopyStep(projectName, project, options)
+{
+    let projectFilePath = options.build.outputPath + '/' + projectName + '.mk';
+
+    let copyContent = '';
+
+    for(let platformI in Globals.ARCHS[options.build.template])
+    {
+        let platform = Globals.ARCHS[options.build.template][platformI];
+
+        for(let configI in Globals.CONFIGURATIONS)
+        {
+            let config = Globals.CONFIGURATIONS[configI];
+            let targetKey = getTargetKey(projectName, options.build.template, platformI, configI);
+            let copyKey = targetKey + '_copy';
+
+            copyContent += copyKey + ':\n';
+
+            let libsArray = ('dependencies' in project) ? project['dependencies'][platform][config] : [];
+            libsArray.forEach(lib =>
+            {
+                if (!(lib in options))
+                {
+                    if (fs.existsSync(lib) && lib.indexOf(OUTPUT_BY_TYPE.dynamic) != -1)
+                    {
+                        let from = FileHelper.relative(options.build.outputPath, lib);
+                        let to = path.join(getBinDir(platform, config), path.basename(from));
+
+                        copyContent += `	cp -f ${from} ${to}\n`;
+                    }
+                }
+            });
+        }
+    }
+
+    results = await replace({files: projectFilePath, from: '#COPY#', to: copyContent.trim()});
 }
 
 module.exports = makeMakefile;

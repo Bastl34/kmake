@@ -32,4 +32,7 @@ default: #DEFAULT_TARGET#
 
 #HOOKS#
 
+#COPY#
+#ASSETS#
+
 #SOURCE_FILE#

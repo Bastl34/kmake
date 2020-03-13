@@ -32,17 +32,45 @@ int readAsset()
     return 1;
 }
 
+#ifndef __APPLE__
+    std::string getWorkingDir()
+    {
+        return fs::current_path().u8string();
+    }
+
+    void changeWorkingDir(std::string path)
+    {
+        std::filesystem::current_path(fs::path(path).parent_path());
+    }
+#else
+
+    #include <unistd.h>
+
+    std::string getWorkingDir()
+    {
+        char buff[FILENAME_MAX];
+        getcwd(buff, FILENAME_MAX);
+        std::string current_working_dir(buff);
+        return current_working_dir;
+    }
+
+    void changeWorkingDir(std::string path)
+    {
+        chdir(path.c_str());
+    }
+#endif
+
 int main(int const argc, const char* const argv[], char* envv[])
 {
     std::cout << "main" << std::endl;
 
-    std::string cwd = fs::current_path().u8string();
+    std::string cwd = getWorkingDir();
 
     std::cout << "app dir: " << argv[0] << std::endl;
     std::cout << "current working dir: " << cwd << std::endl;
 
     //change workingdir to current execution dir
-    std::filesystem::current_path(fs::path(argv[0]).parent_path());
+    changeWorkingDir(argv[0]);
 
     //test some funcs
     dep1Func();
