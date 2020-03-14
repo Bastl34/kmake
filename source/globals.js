@@ -130,7 +130,7 @@ let globals =
     {
         'vs2019': '../..',
         'xcodeMac': '../Resources',
-        'makefile': '../..',
+        'makefile': '../../..',
     },
 
     XCODE_ICONS:

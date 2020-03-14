@@ -16,7 +16,10 @@ namespace fs = std::filesystem;
 
 int readAsset()
 {
-    std::ifstream file(std::string(ASSET_DIR) + "/assets/test/test2/test.txt");
+    std::string assetDir = std::string(ASSET_DIR) + "/assets/test/test2/test.txt";
+    std::cout << "asset dir: " << assetDir.c_str() << std::endl;
+
+    std::ifstream file(assetDir);
     if (file.is_open())
     {
         std::string line;
@@ -71,6 +74,9 @@ int main(int const argc, const char* const argv[], char* envv[])
 
     //change workingdir to current execution dir
     changeWorkingDir(argv[0]);
+
+    cwd = getWorkingDir();
+    std::cout << "new working dir: " << cwd << std::endl;
 
     //test some funcs
     dep1Func();

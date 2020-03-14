@@ -4,8 +4,6 @@ const os = require('os');
 
 const copy = require('recursive-copy');
 const replace = require('replace-in-file');
-const plist = require('plist');
-const escapeHtml = require('escape-html');
 
 const Helper = require('../helper/helper');
 const FileHelper = require('../helper/fileHelper');
@@ -62,7 +60,6 @@ function getBinDir(platform, config)
 {
     return path.join(Globals.DEFAULT_BIN_DIR, platform, config);
 }
-
 
 async function makeMakefile(options)
 {
@@ -167,6 +164,7 @@ async function makeMakefile(options)
                 let preBuildHook = targetKey + '_preBuild';
                 let postBuildHook = targetKey + '_postBuild';
                 let copyTarget = targetKey + '_copy';
+                let assetsKey = projectName + '_assets';
 
                 let outputType = project.outputType;
                 if (outputType in OUTPUT_TYPE_MAP)
@@ -174,7 +172,8 @@ async function makeMakefile(options)
 
                 let outDir = getBinDir(platform, config);
                 let outPath = path.join(outDir, projectName + OUTPUT_BY_TYPE[outputType]);
-                let outPathAbsolute = path.resolve(path.join(options.build.outputPath, outPath))
+                let outPathAbsolute = path.resolve(path.join(options.build.outputPath, outPath));
+                let outBaseName = path.basename(outPath);
 
 
                 //dependencies
@@ -189,6 +188,8 @@ async function makeMakefile(options)
                             libOutputType = OUTPUT_BY_TYPE[libOutputType];
 
                         libsContent += ' ' + path.join(outDir, lib + libOutputType);
+                        //libsContent += ' -L' + path.dirname(path.join(outDir, lib + libOutputType));
+                        //libsContent += ' -l' + path.basename(lib);
                     }
                     else
                     {
@@ -207,12 +208,19 @@ async function makeMakefile(options)
 
                 targets += targetKey + '_build: ' + preBuildHook + ' ' + objectList.join(' ') + '\n';
 
+                //set execution path for lib
+                let installName = `-dynamiclib -install_name "@executable_path/${outBaseName}"`;
+                if (os.platform() == 'linux')
+                    installName = `-Wl,-soname,${outBaseName}`;
+
                 if (outputType == 'static')
                     targets += `	$(AR) $(ARFLAGS) ${outPath} ${objectList.join(' ')}\n\n`;
+                else if (outputType == 'dynamic')
+                    targets += `	$(CC) $(PRE_FLAGS) ${objectList.join(' ')} ${libsContent.trim()} -o ${outPath} $(POST_FLAGS) ${installName}\n\n`;
                 else
                     targets += `	$(CC) $(PRE_FLAGS) ${objectList.join(' ')} ${libsContent.trim()} -o ${outPath} $(POST_FLAGS)\n\n`;
 
-                targets += targetKey + ': ' + targetKey + '_build ' + copyTarget + ' ' + postBuildHook + '\n';
+                targets += targetKey + ': ' + targetKey + '_build ' + copyTarget + ' ' + assetsKey + ' ' + postBuildHook + '\n';
             }
         }
 
@@ -235,15 +243,9 @@ async function makeMakefile(options)
         Logging.log("applying project settings...");
         await applyProjectSettings(projectName, project, options);
 
-        /*
         // ********** assets
         Logging.log("applying asset data...");
         await applyAssets(projectName, project, options);
-
-        // ********** replacements
-        Logging.log("applying replacements...");
-        applyReplacements(projectName, project, options);
-        */
 
         // ********** copy files
         Logging.log("applying file copy step...");
@@ -453,6 +455,56 @@ async function applyCopyStep(projectName, project, options)
     }
 
     results = await replace({files: projectFilePath, from: '#COPY#', to: copyContent.trim()});
+}
+
+
+async function applyAssets(projectName, project, options)
+{
+    let assetsContent = projectName + '_assets:\n';
+
+    if ('assets' in project)
+    {
+        //fs.mkdirSync(options.build.outputPath + '/' + projectName);
+
+        let copyScript = 'copyAssets.sh';
+        let copyScriptOutPath = options.build.outputPath + '/' + copyScript;
+
+        let scriptContent = '';
+        scriptContent += 'rm  -rf "' + path.join(Globals.DEFAULT_ASSET_DIR) + '/"\n';
+        scriptContent += 'mkdir "' + path.join(Globals.DEFAULT_ASSET_DIR) + '/"\n\n';
+
+        //create asset dir
+        await fs.mkdirSync(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR));
+
+        //generate copy script
+        for(let i in project.assets)
+        {
+            let asset = project.assets[i];
+
+            let source = path.resolve(path.join(project.workingDir, asset.source)) + '/';
+            let dest = path.join(Globals.DEFAULT_ASSET_DIR, asset.destination);
+
+            let exclude = '';
+            if ('exclude' in asset)
+            {
+                asset.exclude.forEach(excludeItem =>
+                {
+                    exclude += `--exclude "${excludeItem}" `;
+                });
+            }
+
+            let rsync = `rsync -av ${exclude.trim()} "${source}" "${dest}"\n`;
+            scriptContent += rsync;
+        }
+
+        fs.writeFileSync(copyScriptOutPath, scriptContent);
+        fs.chmodSync(copyScriptOutPath, 0o744);
+
+        assetsContent += `	sh ${copyScript}\n\n`;
+    }
+
+    let projectFilePath = options.build.outputPath + '/' + projectName + '.mk';
+    await replace({files: projectFilePath, from: `#ASSETS#`, to: assetsContent.trim()});
 }
 
 module.exports = makeMakefile;
