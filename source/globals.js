@@ -56,6 +56,10 @@ let globals =
         'buildProject': null,
         'binOutputDir': './bin',
 
+        //watch arguments
+        'watch': false,
+        'watchCmd': '',
+
         //export arguments
         'export': false
 

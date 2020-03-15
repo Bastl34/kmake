@@ -9,7 +9,6 @@ const FileHelper = require('../helper/fileHelper');
 const MakeHelper = require('../helper/makeHelper');
 const Logging = require('../helper/logging');
 
-
 const Globals = require('../globals');
 
 const SOURCE_FILETYPE_MAP =

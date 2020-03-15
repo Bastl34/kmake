@@ -10,6 +10,7 @@
 
 #include <fstream>
 #include <string>
+#include <libgen.h>
 
 #include <filesystem>
 
@@ -42,7 +43,7 @@ int readAsset()
         return fs::current_path().u8string();
     }
 
-    void changeWorkingDir(std::string path)
+    void changeWorkingDirFromExecPath(std::string path)
     {
         std::filesystem::current_path(fs::path(path).parent_path());
     }
@@ -58,9 +59,12 @@ int readAsset()
         return current_working_dir;
     }
 
-    void changeWorkingDir(std::string path)
+    void changeWorkingDirFromExecPath(std::string path)
     {
-        chdir(path.c_str());
+        char* dir = &path[0];
+        dir = dirname(dir);
+
+        chdir(dir);
     }
 #endif
 
@@ -74,7 +78,7 @@ int main(int const argc, const char* const argv[], char* envv[])
     std::cout << "current working dir: " << cwd << std::endl;
 
     //change workingdir to current execution dir
-    changeWorkingDir(argv[0]);
+    changeWorkingDirFromExecPath(argv[0]);
 
     cwd = getWorkingDir();
     std::cout << "new working dir: " << cwd << std::endl;

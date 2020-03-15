@@ -12,8 +12,10 @@ const argParser = require('./argParser');
 const Globals = require('./globals');
 const ymlLoader = require('./ymlLoader');
 const platformResolver = require('./platformResolver');
+
 const make = require('./make');
 const build = require('./build');
+const watch = require('./watch');
 
 const kmakeRoot = fs.realpathSync(__dirname + '/..');
 
@@ -483,6 +485,12 @@ for(let optionKey in options)
 
             if (res)
                 Logging.rainbow("project built was successfully");
+        }
+        else if (args.watch)
+        {
+            Logging.info('watching...');
+
+            await watch(options);
         }
         else if (args.export)
         {

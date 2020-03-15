@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const Logging = require('./helper/logging');
 const Helper = require('./helper/helper');
+const FileHelper = require('./helper/fileHelper');
 
 const makeXcode = require('./projectMaker/xcode');
 const makeVisualStudio = require('./projectMaker/visualStudio');

@@ -10,7 +10,6 @@ const FileHelper = require('../helper/fileHelper');
 const MakeHelper = require('../helper/makeHelper');
 const Logging = require('../helper/logging');
 
-
 const Globals = require('../globals');
 
 const OUTPUT_TYPE_MAP =
@@ -120,6 +119,7 @@ async function makeMakefile(options)
     {
         let projectName = options.workspace.content[i];
         let project = options[projectName];
+        let PROJECT_NAME = projectName.toUpperCase();
 
         if (project.type != 'project' && project.projectType != 'source')
             continue;
@@ -162,7 +162,7 @@ async function makeMakefile(options)
             fs.mkdirSync(outDir, { recursive: true });
 
             sourceFileContent += `${outPath}: ${relativePath}\n`;
-            sourceFileContent += `	$(CC) $(${projectName.toUpperCase()}_PRE_FLAGS) ${relativePath} -c -o ${outPath} $(${projectName.toUpperCase()}_POST_FLAGS)\n\n`;
+            sourceFileContent += `	$(${PROJECT_NAME}_CC) $(${PROJECT_NAME}_PRE_FLAGS) ${relativePath} -c -o ${outPath} $(${PROJECT_NAME}_POST_FLAGS)\n\n`;
 
             objectList.push(outPath)
         });
@@ -182,7 +182,7 @@ async function makeMakefile(options)
                 let postBuildHook = targetKey + '_postBuild';
                 let copyTarget = targetKey + '_copy';
                 let assetsKey = projectName + '_assets';
-                let startKey = projectName.toUpperCase() + '_START';
+                let startKey = PROJECT_NAME + '_START';
 
                 let outputType = project.outputType;
                 if (outputType in OUTPUT_TYPE_MAP)
@@ -236,9 +236,9 @@ async function makeMakefile(options)
                 if (outputType == 'static')
                     targets += `	$(AR) $(ARFLAGS) ${outPath} ${objectList.join(' ')}\n\n`;
                 else if (outputType == 'dynamic')
-                    targets += `	$(CC) $(${projectName.toUpperCase()}_PRE_FLAGS) ${objectList.join(' ')} ${libsContent.trim()} -o ${outPath} $(${projectName.toUpperCase()}_POST_FLAGS) ${installName}\n\n`;
+                    targets += `	$(${PROJECT_NAME}_CC) $(${PROJECT_NAME}_PRE_FLAGS) ${objectList.join(' ')} ${libsContent.trim()} -o ${outPath} $(${PROJECT_NAME}_POST_FLAGS) ${installName}\n\n`;
                 else
-                    targets += `	$(CC) $(${projectName.toUpperCase()}_PRE_FLAGS) ${objectList.join(' ')} ${libsContent.trim()} -o ${outPath} $(${projectName.toUpperCase()}_POST_FLAGS)\n\n`;
+                    targets += `	$(${PROJECT_NAME}_CC) $(${PROJECT_NAME}_PRE_FLAGS) ${objectList.join(' ')} ${libsContent.trim()} -o ${outPath} $(${PROJECT_NAME}_POST_FLAGS)\n\n`;
 
                 targets += targetKey + ': ' + targetDepsContent.trim() + ' ' + targetKey + '_build ' + copyTarget + ' ' + assetsKey + ' ' + postBuildHook + '\n';
             }
@@ -310,7 +310,9 @@ async function makeMakefile(options)
 async function applyPlatformData(projectName, project, options)
 {
     let projectFilePath = options.build.outputPath + '/' + projectName + '.mk';
+    let PROJECT_NAME = projectName.toUpperCase();
 
+    let compilerContent = '';
     let includePathsContent = '';
     let definesContent = '';
     let libPathsContent = '';
@@ -327,8 +329,11 @@ async function applyPlatformData(projectName, project, options)
 
             let targetKey = getTargetKey(projectName, options.build.template, platformI, configI);
 
+            // ***** compiler
+            compilerContent += targetKey + `: ${PROJECT_NAME}_CC += -arch ${platform}\n`
+
             // ***** include
-            includePathsContent += targetKey + `: ${projectName.toUpperCase()}_INCLUDES += `
+            includePathsContent += targetKey + `: ${PROJECT_NAME}_INCLUDES += `
             let includesArray = ('includePaths' in project) ? project['includePaths'][platform][config] : [];
             includesArray.forEach(item =>
             {
@@ -339,7 +344,7 @@ async function applyPlatformData(projectName, project, options)
             includePathsContent += '\n'
 
             // ***** defines
-            definesContent += targetKey + `: ${projectName.toUpperCase()}_DEFINES += `
+            definesContent += targetKey + `: ${PROJECT_NAME}_DEFINES += `
             let definesArray = ('defines' in project) ? project['defines'][platform][config] : [];
             definesArray.forEach(item =>
             {
@@ -348,7 +353,7 @@ async function applyPlatformData(projectName, project, options)
             definesContent += '\n'
 
             // ***** libPaths
-            libPathsContent += targetKey + `: ${projectName.toUpperCase()}_LIB_PATHS += `
+            libPathsContent += targetKey + `: ${PROJECT_NAME}_LIB_PATHS += `
             let libsPathsArray = ('libPaths' in project) ? project['libPaths'][platform][config] : [];
             libsPathsArray.forEach(item =>
             {
@@ -361,7 +366,7 @@ async function applyPlatformData(projectName, project, options)
             libPathsContent += '\n'
 
             // ***** buildFlags
-            buildFlagsContent += targetKey + `: ${projectName.toUpperCase()}_CXXFLAGS += `
+            buildFlagsContent += targetKey + `: ${PROJECT_NAME}_CXXFLAGS += `
             let buildFlagsArray = ('buildFlags' in project) ? project['buildFlags'][platform][config] : [];
             buildFlagsArray.forEach(item =>
             {
@@ -369,12 +374,12 @@ async function applyPlatformData(projectName, project, options)
             });
 
             //append global config flags
-            buildFlagsContent += '$(' + projectName.toUpperCase() + '_' + config.toUpperCase() + ')'
+            buildFlagsContent += '$(' + PROJECT_NAME + '_' + config.toUpperCase() + ')'
             buildFlagsContent += '\n'
 
 
             // ***** linkerFlags
-            linkerFlagsContent += targetKey + `: ${projectName.toUpperCase()}_LDFLAGS += `
+            linkerFlagsContent += targetKey + `: ${PROJECT_NAME}_LDFLAGS += `
             let linkerFlagsArray = ('linkerFlags' in project) ? project['linkerFlags'][platform][config] : [];
             linkerFlagsArray.forEach(item =>
             {
@@ -385,6 +390,7 @@ async function applyPlatformData(projectName, project, options)
     }
 
     //apply
+    await replace({files: projectFilePath, from: `#TARGET_COMPILER#`, to: compilerContent.trim()});
     await replace({files: projectFilePath, from: `#TARGET_INCLUDES#`, to: includePathsContent.trim()});
     await replace({files: projectFilePath, from: `#TARGET_DEFINES#`, to: definesContent.trim()});
     await replace({files: projectFilePath, from: `#TARGET_LIB_PATHS#`, to: libPathsContent.trim()});
