@@ -1,4 +1,4 @@
-include #INCLUDES#
+#INCLUDES#
 
 clean:
 	rm -rf bin obj

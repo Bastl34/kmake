@@ -2,6 +2,7 @@
 imports:
 - 'lib/dep1/dep1.yml'
 - 'lib/dep2/dep2.yml'
+- 'lib/dep3/dep3.yml'
 
 # variables
 variables:
@@ -32,6 +33,7 @@ workspace:
         - dep1
         - dep2
         - dep21
+        - dep3
 
 # main App
 bla:
@@ -119,6 +121,7 @@ bla:
         - dep1
         - dep2
         - dep21
+        - dep3
         - 'template:xcodeMac':
             - 'lib/prebuilt/bin/xcodeMac/x86_64/prebuilt.a'
             - 'lib/prebuiltDyn/bin/xcodeMac/x86_64/prebuiltDyn.dylib'

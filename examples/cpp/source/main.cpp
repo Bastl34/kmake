@@ -3,6 +3,7 @@
 
 #include <dep1.h>
 #include <dep2.h>
+#include <dep3.h>
 
 #include <prebuilt.h>
 #include <prebuiltDyn.h>
@@ -82,6 +83,9 @@ int main(int const argc, const char* const argv[], char* envv[])
     dep1Func();
     dep2Func();
     stuff();
+
+    dep3Func1();
+    dep3Func2();
 
     //test prebuild
     prebuiltFunc(1337);
