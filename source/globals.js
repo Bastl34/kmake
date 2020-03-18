@@ -117,7 +117,7 @@ let globals =
         VS_LANGUAGE_STANDARD: 'stdcpp17',
 
         //makefile settings
-        MK_DEFAULT_FLAGS: '-fPIC -Wall',
+        MK_DEFAULT_FLAGS: '-fPIC -Wall -Wno-unused-command-line-argument',
         MK_CPP_LANGUAGE_STANDARD: 'std=c++17',
         MK_C_LANGUAGE_STANDARD: 'std=c11',
         MK_STD_LIB: 'static-libstdc++',

@@ -78,7 +78,6 @@ async function makeMakefile(options)
         await copy(sourcePath, destPath, {overwrite: true});
     }
 
-
     // ******************** generate Makefile ********************
     Logging.log('generating Makefile');
     let sourcePath = options.build.templatePath + '/framework.mk';
