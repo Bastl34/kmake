@@ -1,3 +1,5 @@
+const os = require('os');
+
 let globals =
 {
     TEMPLATE_DIR: 'templates',
@@ -33,11 +35,20 @@ let globals =
     {
         'xcodeMac': ['x86_64'],
         'vs2019': ['x64', 'win32'],
-        'makefile': ['x86_64', 'x86', 'arm', 'arm64'],
+        'makefile': ['x86_64', 'x86'],
 
         //TODO
         'android': ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'],
         'ios': ['armv7', 'arm64', 'i386', 'x86_64']
+    },
+
+    ARCHS_MAP:
+    {
+        'g++':
+        {
+            'x86_64': 'x86-64',
+            'x86': 'i386'
+        }
     },
 
     ARG_OPTIONS_DEFAULT:
@@ -117,14 +128,15 @@ let globals =
         VS_LANGUAGE_STANDARD: 'stdcpp17',
 
         //makefile settings
+        MK_CC: os.platform() == 'darwin' ? 'clang++' : 'g++',
         MK_DEFAULT_FLAGS: '-fPIC -Wall -Wno-unused-command-line-argument',
-        MK_CPP_LANGUAGE_STANDARD: 'std=c++17',
-        MK_C_LANGUAGE_STANDARD: 'std=c11',
-        MK_STD_LIB: 'static-libstdc++',
-        MK_DEBUG_LEVEL: 'g',
-        MK_OPTIMIZATION: 'O2',
+        MK_CPP_LANGUAGE_STANDARD: '-std=c++17',
+        MK_C_LANGUAGE_STANDARD: '-std=c11',
+        MK_STD_LIB: '-static-libstdc++ -lstdc++',
+        MK_DEBUG_LEVEL: '-g',
+        MK_OPTIMIZATION: '-O2',
         MK_VERBOSE: '',
-        MK_AR_FLAGS: 'rvs'
+        MK_AR_FLAGS: '-rvs'
     },
 
     ICON: 'resources/defaultIcon.png',

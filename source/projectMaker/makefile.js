@@ -24,6 +24,25 @@ const HEADERS =
     '.hpp'
 ];
 
+const SOURCE_MAP =
+{
+
+    '.c': 'c',
+    '.C': 'c++',
+    '.cc': 'c++',
+    '.cpp': 'c++',
+    '.CPP': 'c++',
+    '.c++': 'c++',
+    '.cp': 'c++',
+    '.cxx': 'c++'
+};
+
+const LNG_FLAG_MAP =
+{
+    'c++': 'PROJECT_NAME_CXX_FLAGS',
+    'c': 'PROJECT_NAME_C_FLAGS'
+};
+
 const OUTPUT_BY_TYPE =
 {
     'static': '.a',
@@ -58,6 +77,16 @@ function getTargetKey(projectName, template, archIndex, configIndex)
 function getBinDir(platform, config)
 {
     return path.join(Globals.DEFAULT_BIN_DIR, platform, config);
+}
+
+function getCC(project)
+{
+    let cc = Globals.DEFAULT_BUILD_SETTINGS.MK_CC;
+
+    if (project.settings && 'MK_CC' in project.settings)
+        cc = project.settings['MK_CC'];
+
+    return cc;
 }
 
 async function makeMakefile(options)
@@ -153,6 +182,7 @@ async function makeMakefile(options)
             //get the relative path from output dir to source
             let absolutePath = path.resolve(file);
             let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + path.basename(file);
+            let extname = path.extname(relativePath);
 
             let outPath = path.join(Globals.DEFAULT_OBJECTS_DIR, relativePath.replace(/\.\.\//g, '')) + '.o';
             let outDir = path.dirname(path.join(options.build.outputPath,outPath));
@@ -160,10 +190,23 @@ async function makeMakefile(options)
             //create all output dirs
             fs.mkdirSync(outDir, { recursive: true });
 
-            sourceFileContent += `${outPath}: ${relativePath}\n`;
-            sourceFileContent += `	$(${PROJECT_NAME}_CC) $(${PROJECT_NAME}_PRE_FLAGS) ${relativePath} -c -o ${outPath} $(${PROJECT_NAME}_POST_FLAGS)\n\n`;
+            let language = "";
+            let languageSettings = "";
+            if (extname in SOURCE_MAP)
+            {
+                let lng = SOURCE_MAP[extname];
+                language = '-x ' + lng;
 
-            objectList.push(outPath)
+                if (lng in LNG_FLAG_MAP)
+                    languageSettings = '$(' + LNG_FLAG_MAP[lng] + ')';
+            }
+
+
+
+            sourceFileContent += `${outPath}: ${relativePath}\n`;
+            sourceFileContent += `	$(${PROJECT_NAME}_CC) $(${PROJECT_NAME}_PRE_FLAGS) ${languageSettings} ${language} ${relativePath} -c -o ${outPath} $(${PROJECT_NAME}_POST_FLAGS)\n\n`;
+
+            objectList.push(outPath);
         });
 
         // ********** platform specific targets
@@ -214,7 +257,8 @@ async function makeMakefile(options)
                     {
                         if (fs.existsSync(lib))
                         {
-                            pathRelative = FileHelper.relative(options.build.outputPath, lib);
+                            let libAbsolute = path.resolve(lib);
+                            pathRelative = FileHelper.relative(options.build.outputPath, libAbsolute);
                             libsContent += ' ' + pathRelative;
                         }
                         else
@@ -329,7 +373,16 @@ async function applyPlatformData(projectName, project, options)
             let targetKey = getTargetKey(projectName, options.build.template, platformI, configI);
 
             // ***** compiler
-            compilerContent += targetKey + `: ${PROJECT_NAME}_CC += -arch ${platform}\n`
+            let cc = getCC(project);
+            let platformName = platform;
+
+            if (cc in Globals.ARCHS_MAP && platformName in Globals.ARCHS_MAP[cc])
+                platformName = Globals.ARCHS_MAP[cc][platformName];
+
+            if (cc.indexOf("clang") != -1)
+                compilerContent += targetKey + `: ${PROJECT_NAME}_CC += -arch ${platformName}\n`;
+            else
+                compilerContent += targetKey + `: ${PROJECT_NAME}_CC += -march=${platformName}\n`;
 
             // ***** include
             includePathsContent += targetKey + `: ${PROJECT_NAME}_INCLUDES += `
@@ -410,9 +463,6 @@ async function applyProjectSettings(projectName, project, options)
         let val = Globals.DEFAULT_BUILD_SETTINGS[settingsKey];
         if ('settings' in project && settingsKey in project.settings)
             val = project.settings[settingsKey];
-
-        if (val.indexOf('-') != 0 && val != "")
-            val = '-' + val;
 
         await replace({files: files, from: new RegExp(`#${settingsKey}#`, 'g'), to: val.trim()});
     }
