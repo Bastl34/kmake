@@ -79,18 +79,6 @@ let outputPath = kmakeRoot + '/' + args.output;
 if(path.isAbsolute(args.output))
     outputPath = args.output;
 
-try
-{
-    if (!fs.existsSync(outputPath))
-        fs.mkdirSync(outputPath);
-}
-catch(e)
-{
-    Logging.error('error while creating output dir: ' + outputPath);
-    Logging.log(e);
-    process.exit();
-}
-
 
 // ******************** load yaml ********************
 let options = {};
@@ -474,8 +462,10 @@ for(let optionKey in options)
 Logging.info('resolving build archs (makefile only)...');
 
 if (options.build.arch.length == 0 && options.build.template == 'makefile')
+{
     options.build.arch = Globals.ARCHS[options.build.template];
-Logging.info(' - ' + options.build.arch.join(','));
+    Logging.info(' - ' + options.build.arch.join(','));
+}
 
 
 // ******************** make ********************

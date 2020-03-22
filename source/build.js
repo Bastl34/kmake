@@ -3,6 +3,8 @@ const util = require('util');
 const path = require('path');
 const exec = util.promisify(require('child_process').exec);
 
+const MakeHelper = require('./helper/makeHelper');
+
 const Globals = require('./globals');
 
 async function build(options)
@@ -10,8 +12,8 @@ async function build(options)
     let res = null;
     if (os.platform() == 'darwin')
         res = await buildXcodeMac(options);
-    //else if (os.platform() == 'win32')
-    //    res = await buildVisualStudio(options);
+    else if (os.platform() == 'win32')
+        res = await buildVisualStudio(options);
     else if (os.platform() == 'linux')
         res = await buildMakefile(options);
 
@@ -58,15 +60,30 @@ function findBuildProject(options)
     throw Error('no build project found');
 }
 
-/*
+
 async function buildVisualStudio(options)
 {
+    const workspaceName = options.workspace.name;
+    const mainProjectName = findBuildProject(options);
+    const workspacePath = path.join(options.build.outputPath, workspaceName);
+    const outDir = path.resolve(path.join(options.build.outputPath, options.build.binOutputDir));
+
+    const solutionPath = path.resolve(path.join(options.build.outputPath, workspaceName) + '.sln');
+    const configName = 'Release';
+    const arch = 'x64';
+    //const binPath = path.join(outDir, arch, configName, mainProjectName + '.exe');
+    const jobs = os.cpus().length;
+    const msBuild = MakeHelper.findMsBuild();
+    const buildCmd = `"${msBuild}" "${solutionPath}" /p:Configuration=${configName} /p:Platform=${arch} /m:${jobs} /p:BuildInParallel=true /p:OutputPath=${outDir}`;
+
+    //build
+    let res = await exec(buildCmd);
+    console.log(res.stdout);
+    console.log(res.stderr);  
 }
-*/
 
 async function buildMakefile(options)
 {
-    const workspaceName = options.workspace.name;
     const mainProjectName = findBuildProject(options);
 
     //const outDir = path.join(options.build.outputPath, options.build.binOutputDir);

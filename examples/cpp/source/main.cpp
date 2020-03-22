@@ -10,7 +10,10 @@
 
 #include <fstream>
 #include <string>
+
+#ifndef _WIN32
 #include <libgen.h>
+#endif
 
 #include <filesystem>
 
