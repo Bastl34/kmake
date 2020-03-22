@@ -470,6 +470,14 @@ for(let optionKey in options)
 }
 
 
+// ******************** resolve arch ********************
+Logging.info('resolving build archs (makefile only)...');
+
+if (options.build.arch.length == 0 && options.build.template == 'makefile')
+    options.build.arch = Globals.ARCHS[options.build.template];
+Logging.info(' - ' + options.build.arch.join(','));
+
+
 // ******************** make ********************
 (async () =>
 {

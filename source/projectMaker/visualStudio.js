@@ -627,7 +627,6 @@ async function applyAssets(projectName, project, options)
     }
 
     fs.writeFileSync(copyScriptOutPath, scriptContent);
-    //fs.chmodSync(copyScriptOutPath, 0o744);
 
     let cmd = 'cmd.exe /c "copyAssets.cmd"'
 

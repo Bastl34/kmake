@@ -12,8 +12,8 @@ async function build(options)
         res = await buildXcodeMac(options);
     //else if (os.platform() == 'win32')
     //    res = await buildVisualStudio(options);
-    //else if (os.platform() == 'linux')
-    //    res = await buildMakefile(options);
+    else if (os.platform() == 'linux')
+        res = await buildMakefile(options);
 
     return res;
 }
@@ -64,11 +64,25 @@ async function buildVisualStudio(options)
 }
 */
 
-/*
 async function buildMakefile(options)
 {
+    const workspaceName = options.workspace.name;
+    const mainProjectName = findBuildProject(options);
+
+    //const outDir = path.join(options.build.outputPath, options.build.binOutputDir);
+
+    const configName = options.build.release ? 'release' : 'debug';
+    const archName = options.build.arch[0];
+
+    const targetKey = mainProjectName + "_" + archName + '_' + configName;
+
+    //build
+    let res = await exec(`make ${targetKey}`, {cwd: options.build.outputPath});
+    console.log(res.stdout);
+    console.log(res.stderr);
+
+    return true;
 }
-*/
 
 async function buildXcodeMac(options)
 {

@@ -69,9 +69,9 @@ function getDefineEntry(item)
         return item;
 }
 
-function getTargetKey(projectName, template, archIndex, configIndex)
+function getTargetKey(projectName, arch, archIndex, configIndex)
 {
-    return projectName + "_" + Globals.ARCHS[template][archIndex] + '_' + Globals.CONFIGURATIONS[configIndex];
+    return projectName + "_" + arch[archIndex] + '_' + Globals.CONFIGURATIONS[configIndex];
 }
 
 function getBinDir(platform, config)
@@ -201,8 +201,6 @@ async function makeMakefile(options)
                     languageSettings = '$(' + LNG_FLAG_MAP[lng] + ')';
             }
 
-
-
             sourceFileContent += `${outPath}: ${relativePath}\n`;
             sourceFileContent += `	$(${PROJECT_NAME}_CC) $(${PROJECT_NAME}_PRE_FLAGS) ${languageSettings} ${language} ${relativePath} -c -o ${outPath} $(${PROJECT_NAME}_POST_FLAGS)\n\n`;
 
@@ -211,15 +209,15 @@ async function makeMakefile(options)
 
         // ********** platform specific targets
         let targets = ''
-        for(let platformI in Globals.ARCHS[options.build.template])
+        for(let platformI in options.build.arch)
         {
-            let platform = Globals.ARCHS[options.build.template][platformI];
+            let platform = options.build.arch[platformI];
 
             for(let configI in Globals.CONFIGURATIONS)
             {
                 let config = Globals.CONFIGURATIONS[configI];
 
-                let targetKey = getTargetKey(projectName, options.build.template, platformI, configI);
+                let targetKey = getTargetKey(projectName, options.build.arch, platformI, configI);
                 let preBuildHook = targetKey + '_preBuild';
                 let postBuildHook = targetKey + '_postBuild';
                 let copyTarget = targetKey + '_copy';
@@ -251,7 +249,7 @@ async function makeMakefile(options)
                         //libsContent += ' -L' + path.dirname(path.join(outDir, lib + libOutputType));
                         //libsContent += ' -l' + path.basename(lib);
 
-                        targetDepsContent += getTargetKey(lib, options.build.template, platformI, configI) + ' ';
+                        targetDepsContent += getTargetKey(lib, options.build.arch, platformI, configI) + ' ';
                     }
                     else
                     {
@@ -290,7 +288,7 @@ async function makeMakefile(options)
         // ********** includes (makefile includes)
         let include = '';
 
-        let platform0 = Globals.ARCHS[options.build.template][0];
+        let platform0 = options.build.arch[0];
         let config0 = Globals.CONFIGURATIONS[0];
 
         let libsArray = ('dependencies' in project) ? project['dependencies'][platform0][config0] : [];
@@ -303,7 +301,7 @@ async function makeMakefile(options)
         if (include)
             include = 'include ' + include;
 
-        let defaultTarget = getTargetKey(projectName, options.build.template, 0, 0);
+        let defaultTarget = getTargetKey(projectName, options.build.arch, 0, 0);
 
         // ********** replacements
         Logging.log('generating ' + projectName + '.mk');
@@ -362,15 +360,15 @@ async function applyPlatformData(projectName, project, options)
     let buildFlagsContent = '';
     let linkerFlagsContent = '';
 
-    for(let platformI in Globals.ARCHS[options.build.template])
+    for(let platformI in options.build.arch)
     {
-        let platform = Globals.ARCHS[options.build.template][platformI];
+        let platform = options.build.arch[platformI];
 
         for(let configI in Globals.CONFIGURATIONS)
         {
             let config = Globals.CONFIGURATIONS[configI];
 
-            let targetKey = getTargetKey(projectName, options.build.template, platformI, configI);
+            let targetKey = getTargetKey(projectName, options.build.arch, platformI, configI);
 
             // ***** compiler
             let cc = getCC(project);
@@ -482,14 +480,14 @@ async function applyHooks(projectName, project, options)
     {
         let hookName = hooks[hookI];
 
-        for(let platformI in Globals.ARCHS[options.build.template])
+        for(let platformI in options.build.arch)
         {
-            let platform = Globals.ARCHS[options.build.template][platformI];
+            let platform = options.build.arch[platformI];
 
             for(let configI in Globals.CONFIGURATIONS)
             {
                 let config = Globals.CONFIGURATIONS[configI];
-                let targetKey = getTargetKey(projectName, options.build.template, platformI, configI);
+                let targetKey = getTargetKey(projectName, options.build.arch, platformI, configI);
                 let hookKey = targetKey + '_' + hookName;
 
                 hookContent += hookKey + ':\n';
@@ -517,14 +515,14 @@ async function applyCopyStep(projectName, project, options)
 
     let copyContent = '';
 
-    for(let platformI in Globals.ARCHS[options.build.template])
+    for(let platformI in options.build.arch)
     {
-        let platform = Globals.ARCHS[options.build.template][platformI];
+        let platform = options.build.arch[platformI];
 
         for(let configI in Globals.CONFIGURATIONS)
         {
             let config = Globals.CONFIGURATIONS[configI];
-            let targetKey = getTargetKey(projectName, options.build.template, platformI, configI);
+            let targetKey = getTargetKey(projectName, options.build.arch, platformI, configI);
             let copyKey = targetKey + '_copy';
 
             copyContent += copyKey + ':\n';

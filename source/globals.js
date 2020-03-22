@@ -60,6 +60,7 @@ let globals =
         'lib': [],
         'includePath': [],
         'libPath': [],
+        'arch': [],
 
         //build arguments
         'build': false,
