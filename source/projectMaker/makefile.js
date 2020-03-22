@@ -274,7 +274,7 @@ async function makeMakefile(options)
                 //set execution path for lib
                 let installName = `-dynamiclib -install_name "@executable_path/${outBaseName}"`;
                 if (os.platform() == 'linux')
-                    installName = `-Wl,-soname,${outBaseName}`;
+                    installName = '-Wl,-soname,\'$$$$ORIGIN/'+outBaseName+'\'';
 
                 if (outputType == 'static')
                     targets += `	$(AR) $(ARFLAGS) ${outPath} ${objectList.join(' ')}\n\n`;
