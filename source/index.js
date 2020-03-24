@@ -102,6 +102,8 @@ options.build =
     outputPath: FileHelper.normalize(outputPath)
 };
 
+console.log(options.build)
+
 
 // ******************** get inputs ********************
 Logging.info('getting input data...');

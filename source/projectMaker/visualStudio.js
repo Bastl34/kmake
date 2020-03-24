@@ -596,34 +596,37 @@ async function applyAssets(projectName, project, options)
     await fs.mkdirSync(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR));
 
     //generate copy script
-    for(let i in project.assets)
+    if (!options.build.skipAssets)
     {
-        let excludeFile = 'copyAssetsExclude_' + i + '.txt';
-        let asset = project.assets[i];
-
-        let source = path.normalize(path.resolve(path.join(project.workingDir, asset.source)));
-        let dest = path.normalize(path.resolve(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR, asset.destination)) + '/');
-
-        let assetDir = path.normalize(path.resolve(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR, asset.destination)));
-
-        scriptContent += 'if exist "' + assetDir + '" rmdir "' + assetDir + '\\" /s /Q\n';
-        scriptContent += 'md "' + assetDir + '/"\r\n';
-
-        let exclude = '';
-        if ('exclude' in asset)
+        for(let i in project.assets)
         {
-            asset.exclude.forEach(excludeItem =>
+            let excludeFile = 'copyAssetsExclude_' + i + '.txt';
+            let asset = project.assets[i];
+
+            let source = path.normalize(path.resolve(path.join(project.workingDir, asset.source)));
+            let dest = path.normalize(path.resolve(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR, asset.destination)) + '/');
+
+            let assetDir = path.normalize(path.resolve(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR, asset.destination)));
+
+            scriptContent += 'if exist "' + assetDir + '" rmdir "' + assetDir + '\\" /s /Q\n';
+            scriptContent += 'md "' + assetDir + '/"\r\n';
+
+            let exclude = '';
+            if ('exclude' in asset)
             {
-                excludeItem = excludeItem.replace("*.", ".").replace(".*", ".");
+                asset.exclude.forEach(excludeItem =>
+                {
+                    excludeItem = excludeItem.replace("*.", ".").replace(".*", ".");
 
-                exclude += `${excludeItem}\r\n`;
-            });
+                    exclude += `${excludeItem}\r\n`;
+                });
+            }
+
+            fs.writeFileSync(options.build.outputPath + '/' + projectName + '/' + excludeFile, exclude);
+
+            let xcopy = `xcopy "${source}" "${dest}" /E /I /Y /exclude:${excludeFile}\r\n`;
+            scriptContent += xcopy +'\r\n';
         }
-
-        fs.writeFileSync(options.build.outputPath + '/' + projectName + '/' + excludeFile, exclude);
-
-        let xcopy = `xcopy "${source}" "${dest}" /E /I /Y /exclude:${excludeFile}\r\n`;
-        scriptContent += xcopy +'\r\n';
     }
 
     fs.writeFileSync(copyScriptOutPath, scriptContent);

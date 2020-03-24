@@ -34,7 +34,7 @@ function platformResolver(options, buildOptions)
         }
 
         //add to array
-        if (newOption)
+        if (newOption !== undefined)
         {
             if (isArray)
                 newOptions.push(newOption);

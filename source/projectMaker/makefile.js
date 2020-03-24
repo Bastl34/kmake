@@ -552,7 +552,7 @@ async function applyAssets(projectName, project, options)
 {
     let assetsContent = projectName + '_assets:\n';
 
-    if ('assets' in project)
+    if ('assets' in project && !options.build.skipAssets)
     {
         let copyScript = 'copyAssets.sh';
         let copyScriptOutPath = options.build.outputPath + '/' + copyScript;

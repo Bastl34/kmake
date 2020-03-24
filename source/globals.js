@@ -55,6 +55,7 @@ let globals =
     {
         'useInputCache': false,
         'cleanOutputDir': true,
+        'skipAssets': false,
 
         'define': [],
         'lib': [],

@@ -634,24 +634,27 @@ async function applyAssets(projectName, project, options)
     await fs.mkdirSync(path.join(options.build.outputPath, projectName, Globals.DEFAULT_ASSET_DIR));
 
     //generate copy script
-    for(let i in project.assets)
+    if (!options.build.skipAssets)
     {
-        let asset = project.assets[i];
-
-        let source = path.resolve(path.join(project.workingDir, asset.source)) + '/';
-        let dest = path.join(projectName, Globals.DEFAULT_ASSET_DIR, asset.destination);
-
-        let exclude = '';
-        if ('exclude' in asset)
+        for(let i in project.assets)
         {
-            asset.exclude.forEach(excludeItem =>
-            {
-                exclude += `--exclude "${excludeItem}" `;
-            });
-        }
+            let asset = project.assets[i];
 
-        let rsync = `rsync -av ${exclude.trim()} "${source}" "${dest}"\n`;
-        scriptContent += rsync;
+            let source = path.resolve(path.join(project.workingDir, asset.source)) + '/';
+            let dest = path.join(projectName, Globals.DEFAULT_ASSET_DIR, asset.destination);
+
+            let exclude = '';
+            if ('exclude' in asset)
+            {
+                asset.exclude.forEach(excludeItem =>
+                {
+                    exclude += `--exclude "${excludeItem}" `;
+                });
+            }
+
+            let rsync = `rsync -av ${exclude.trim()} "${source}" "${dest}"\n`;
+            scriptContent += rsync;
+        }
     }
 
     fs.writeFileSync(copyScriptOutPath, scriptContent);
