@@ -56,7 +56,7 @@ function argParser()
             if (type == 'boolean')
             {
                 arg = arg.toLocaleLowerCase();
-                obj[lastOptionKey] = (arg == '1' || 'true');
+                obj[lastOptionKey] = (arg == '1' || arg == 'true');
             }
             else if (type == 'number')
             {

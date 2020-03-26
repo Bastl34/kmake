@@ -4,6 +4,7 @@ const Logging = require('./helper/logging');
 const Helper = require('./helper/helper');
 const FileHelper = require('./helper/fileHelper');
 
+
 const makeXcode = require('./projectMaker/xcode');
 const makeVisualStudio = require('./projectMaker/visualStudio');
 const makeMakefile = require('./projectMaker/makefile');
@@ -29,7 +30,7 @@ async function make(options)
     if (options.build.cleanOutputDir && fs.existsSync(path.normalize(options.build.outputPath)))
     {
         Logging.info('clearing output dir...');
-        fs.rmdirSync(path.normalize(options.build.outputPath), {recursive: true});
+        await fs.promises.rmdir(path.normalize(options.build.outputPath), {recursive: true});
 
         //wait some tome -> otherwise mkdir will fail on windows
         await Helper.sleep(100);
@@ -39,7 +40,7 @@ async function make(options)
     if (!fs.existsSync(path.normalize(options.build.outputPath)))
     {
         Logging.info('creating output dir...');
-        fs.mkdirSync(path.normalize(options.build.outputPath));
+        await fs.promises.mkdir(path.normalize(options.build.outputPath));
     }
 
     let res = false;

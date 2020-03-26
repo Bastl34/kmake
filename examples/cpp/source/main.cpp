@@ -74,6 +74,7 @@ int readAsset()
 int main(int const argc, const char* const argv[], char* envv[])
 {
     std::cout << "main" << std::endl;
+    std::cout << "TEST_TEST value: " << TEST_TEST << std::endl;
 
     std::string cwd = getWorkingDir();
 

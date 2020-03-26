@@ -74,7 +74,6 @@ let globals =
 
         //watch arguments
         'watch': false,
-        'watchCmd': '',
 
         //export arguments
         'export': false,

@@ -53,6 +53,7 @@ bla:
         - DEBUG_APP: 1
         - TEST_APP
         - TEST_DEFINE
+        - TEST_TEST: 1
 
     replacements:
         plist:
@@ -111,6 +112,8 @@ bla:
         -
             source: ./assets2/test
             destination: 'test'
+            exclude:
+                - '*.data'
 
     sources:
         - source/main.cpp

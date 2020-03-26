@@ -18,6 +18,8 @@ function ymlLoader(ymlPath)
 
     content = addWorkingDir(content, path.dirname(ymlPath));
 
+    content['projectFiles'] = [ymlPath];
+
     //load imports
     if ('imports' in parsed)
     {
@@ -32,7 +34,10 @@ function ymlLoader(ymlPath)
 
             let importOptions = ymlLoader(importPath);
 
+            let projectFiles = [...content.projectFiles, ...importOptions.projectFiles];
+
             content = {...content, ...importOptions};
+            content.projectFiles = projectFiles;
         });
     }
 
