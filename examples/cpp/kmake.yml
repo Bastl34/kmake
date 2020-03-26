@@ -9,7 +9,7 @@ variables:
     NAME: Example
     ORGANIZATION: Example Corp
     VERSION: 1.1.1
-    MAC_OS_TARGET: '10.15'
+    MAC_OS_TARGET: '10.14'
     PACKAGE_NAME: 'test.test.test'
     COPYRIGHT: 'Copyright by Tester'
 
@@ -38,14 +38,14 @@ workspace:
 # main App
 bla:
     type: project
-    outputType: app #main
+    outputType: main #main
     #outputType: framework
     projectType: source
     icon: 'assets/icon/icon.png'
 
     settings:
         DISPLAY_NAME: 'Awesome App'
-        MACOSX_DEPLOYMENT_TARGET: '10.15'
+        MACOSX_DEPLOYMENT_TARGET: '10.14'
         VS_C_RUNTIME: 'MT' #MT or MD
 
     defines:

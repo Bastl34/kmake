@@ -618,10 +618,7 @@ async function applyAssets(projectName, project, options)
         return;
 
     if (!(fs.existsSync(options.build.outputPath + '/' + projectName)))
-    {
-        Logging.warning('there is no content directory (assets) for this type of project: '+project.outputType);
-        return;
-    }
+        fs.mkdirSync(options.build.outputPath + '/' + projectName);
 
     let copyScript = projectName + '/copyAssets.sh';
     let copyScriptOutPath = options.build.outputPath + '/' + copyScript;

@@ -63,6 +63,9 @@ let globals =
         'libPath': [],
         'arch': [],
 
+        //make arguments
+        'make': true,
+
         //build arguments
         'build': false,
         'release': true,
@@ -74,9 +77,10 @@ let globals =
         'watchCmd': '',
 
         //export arguments
-        'export': false
+        'export': false,
 
         //run arguments
+        'run': false
     },
 
     DEFAULT_TEMPLATE_BY_PLATFORM:
@@ -147,7 +151,7 @@ let globals =
     ASSET_DIRS_BY_TEMPLATE:
     {
         'vs2019': '../..',
-        'xcodeMac': '../Resources',
+        'xcodeMac': {generic: '.', app: '../Resources', framework: '../Resources'},
         'makefile': '../../..',
     },
 

@@ -9,62 +9,20 @@ const Globals = require('./globals');
 
 async function build(options)
 {
-    let res = null;
-    if (os.platform() == 'darwin')
+    if (options.build.template == 'xcodeMac')
         res = await buildXcodeMac(options);
-    else if (os.platform() == 'win32')
+    else if (options.build.template == 'vs2019')
         res = await buildVisualStudio(options);
-    else if (os.platform() == 'linux')
+    else if (options.build.template == 'makefile')
         res = await buildMakefile(options);
 
     return res;
 }
 
-function findBuildProject(options)
-{
-    //if build project is set
-    if (options.buildProject)
-    {
-        if (!(options.buildProject in options))
-        {
-            throw Error('project ' + options.buildProject + ' not found');
-        }
-        return options.buildProject;
-    }
-
-    //find main project
-    if (!('workspace' in options))
-        throw Error('workspace not found');
-
-    if (!('content' in options.workspace))
-        throw Error('workspace has no content');
-
-    //sort projects by type
-    let projects = [...options.workspace.content];
-
-    //sort projects by output type -> to find the best matching project -> see globals -> PROJECT_TYPES for sorting order
-    projects.sort((a, b) =>
-    {
-        let aType = options[a]['outputType'];
-        let bType = options[b]['outputType'];
-
-        let aValue = Globals.PROJECT_TYPES[aType];
-        let bValue = Globals.PROJECT_TYPES[bType];
-
-        return aValue - bValue;
-    });
-
-    if (projects.length > 0)
-        return projects[0];
-
-    throw Error('no build project found');
-}
-
-
 async function buildVisualStudio(options)
 {
     const workspaceName = options.workspace.name;
-    const mainProjectName = findBuildProject(options);
+    const mainProjectName = MakeHelper.findBuildProject(options);
     const workspacePath = path.join(options.build.outputPath, workspaceName);
     const outDir = path.resolve(path.join(options.build.outputPath, options.build.binOutputDir));
 
@@ -79,12 +37,12 @@ async function buildVisualStudio(options)
     //build
     let res = await exec(buildCmd);
     console.log(res.stdout);
-    console.log(res.stderr);  
+    console.log(res.stderr);
 }
 
 async function buildMakefile(options)
 {
-    const mainProjectName = findBuildProject(options);
+    const mainProjectName = MakeHelper.findBuildProject(options);
 
     //const outDir = path.join(options.build.outputPath, options.build.binOutputDir);
 
@@ -104,7 +62,7 @@ async function buildMakefile(options)
 async function buildXcodeMac(options)
 {
     const workspaceName = options.workspace.name;
-    const mainProjectName = findBuildProject(options);
+    const mainProjectName = MakeHelper.findBuildProject(options);
     const workspacePath = path.join(options.build.outputPath, workspaceName);
 
     const outDir = path.join(options.build.outputPath, options.build.binOutputDir);

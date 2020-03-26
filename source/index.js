@@ -15,6 +15,7 @@ const platformResolver = require('./platformResolver');
 
 const make = require('./make');
 const build = require('./build');
+const run = require('./run');
 const watch = require('./watch');
 
 const kmakeRoot = fs.realpathSync(__dirname + '/..');
@@ -359,7 +360,18 @@ for(let optionKey in options)
         project.defines.push('PROJECT_' + optionKey.toUpperCase());
 
         //this is the relative path based on the execution file
-        project.defines.push({'ASSET_DIR': '"' + FileHelper.normalize(Globals.ASSET_DIRS_BY_TEMPLATE[args.template]) + '"'});
+        let assetDir = Globals.ASSET_DIRS_BY_TEMPLATE[args.template];
+        if (typeof assetDir !== "string")
+        {
+            if (project.outputType in assetDir)
+                assetDir = assetDir[project.outputType];
+            else if ('generic' in assetDir)
+                assetDir = assetDir['generic'];
+            else
+                throw Error("can not find asset dir for outputType");
+        }
+
+        project.defines.push({'ASSET_DIR': '"' + FileHelper.normalize(assetDir) + '"'});
 
         //absolute path to project
         project.defines.push({'PROJECT_PATH': '"' + FileHelper.resolve(project.workingDir + '"')});
@@ -475,7 +487,18 @@ if (options.build.arch.length == 0 && options.build.template == 'makefile')
 {
     try
     {
-        if (args.build)
+        if (args.run)
+        {
+            Logging.info('running project...');
+
+            let res = await run(options);
+
+            Logging.log('====================');
+
+            if (res)
+                Logging.rainbow("project built was successfully");
+        }
+        else if (args.build)
         {
             Logging.info('building project...');
 
@@ -496,7 +519,7 @@ if (options.build.arch.length == 0 && options.build.template == 'makefile')
         {
             //TODO
         }
-        else
+        else if (args.make)
         {
             Logging.info('generating project...');
 
