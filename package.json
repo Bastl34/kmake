@@ -7,6 +7,8 @@
         "dev-mac": "npm i && npx nodemon --ignore examples/* source/index.js examples/cpp xcodeMac examples/cpp/out --useInputCache 1 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF --lib OpenAL.framework --libPath /System/Library/Frameworks/",
         "dev-mac-build": "npm i && npx nodemon --ignore examples/* source/index.js examples/cpp xcodeMac examples/cpp/out --useInputCache 1 --build 1 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF",
         "dev-mac-run": "npm i && npx nodemon --ignore examples/* source/index.js examples/cpp xcodeMac examples/cpp/out --useInputCache 1 --run 1 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF",
+        "dev-mac-mbw": "npm i && npx nodemon --ignore examples/* --exec \"node source/index.js examples/cpp xcodeMac examples/cpp/out --useInputCache 1 --make 1 --build 1 --watch 1 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF\"",
+        "dev-mac-mbew": "npm i && npx nodemon --ignore examples/* --exec \"node source/index.js examples/cpp xcodeMac examples/cpp/out --useInputCache 1 --make 1 --build 1 --watch 1 --export 1 --exportDir examples/cpp/out/export.dmg --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF\"",
         "dev-vs": "npm i && npx nodemon --ignore examples/* source/index.js examples/cpp vs2019 examples/cpp/out --useInputCache 1 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF",
         "dev-vs-build": "npm i && npx nodemon --ignore examples/* source/index.js examples/cpp vs2019 examples/cpp/out --useInputCache 1 --build 1 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF",
         "dev-vs-run": "npm i && npx nodemon --ignore examples/* source/index.js examples/cpp vs2019 examples/cpp/out --useInputCache 1 --run 1 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF",
@@ -16,6 +18,7 @@
         "dev-mk-run": "npm i && npx nodemon --ignore examples/* source/index.js examples/cpp makefile examples/cpp/out --useInputCache 1 --run 1 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF --arch x86_64",
         "dev-mk-mbr": "npm i && npx nodemon --ignore examples/* source/index.js examples/cpp makefile examples/cpp/out --useInputCache 1 --make 1  --build 1  --run 1 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF --arch x86_64",
         "dev-mk-mbrw": "npm i && npx nodemon --ignore examples/* --exec \"node source/index.js examples/cpp makefile examples/cpp/out --useInputCache 1 --make 1  --build 1  --run 1 --watch 1 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF --arch x86_64\"",
+        "dev-mk-mbew": "npm i && npx nodemon --ignore examples/* --exec \"node source/index.js examples/cpp makefile examples/cpp/out --useInputCache 1 --make 1  --build 1 --export 1 --exportDest examples/cpp/export --watch 1 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF --arch x86_64\"",
         "dev-watch": "npm i && npx nodemon --ignore examples/* --exec \"node source/index.js examples/cpp makefile examples/cpp/out --useInputCache 1 --watch 1 --make 0 --define TEST_DEF=1 --define TEST_DEF3 --define TEST_DEF4=TEST_DEF --arch x86_64\"",
         "lint": "eslint source/",
         "test": "npm i && node source/tests.js",
@@ -29,10 +32,11 @@
         "replace-in-file": "^5.0.2",
         "micromatch": "^4.0.2",
         "colors": "^1.4.0",
-        "jimp": "^0.9.3",
+        "jimp": "^0.10.0",
         "plist": "^3.0.1",
         "escape-html": "^1.0.3",
-        "chokidar": "^3.3.1"
+        "chokidar": "^3.3.1",
+        "archiver": "^3.1.1"
     },
     "keywords": [],
     "devDependencies": {

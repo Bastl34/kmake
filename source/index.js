@@ -4,6 +4,7 @@ const getOptions = require('./options');
 
 const make = require('./make');
 const build = require('./build');
+const exp = require('./export');
 const run = require('./run');
 const Watcher = require('./watch');
 
@@ -65,7 +66,14 @@ const Watcher = require('./watch');
             // ********** export **********
             if (options.build.export && (!steps || steps.indexOf('export') != -1))
             {
-                //TODO
+                Logging.info('exporting project...');
+
+                let res = await exp(options);
+
+                Logging.log('====================');
+
+                if (res)
+                    Logging.rainbow("project was exported successfully");
             }
         }
         catch (e)

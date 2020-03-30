@@ -77,6 +77,7 @@ let globals =
 
         //export arguments
         'export': false,
+        'exportDest': null,
 
         //run arguments
         'run': false
@@ -92,6 +93,16 @@ let globals =
     DEFAULT_OUTPUT_DIR: './out',
     DEFAULT_BIN_DIR: './bin',
     DEFAULT_OBJECTS_DIR: './obj',
+
+    DEFAULT_EXPORT_DIR: './export',
+
+    DEFAULT_ASSET_DIR: 'assets',
+    ASSET_DIRS_BY_TEMPLATE:
+    {
+        'vs2019': '../..',
+        'xcodeMac': {generic: '.', app: '../Resources', framework: '../Resources'},
+        'makefile': '../../..',
+    },
 
     //the default target is based on the order
     CONFIGURATIONS: ['release', 'debug'],
@@ -145,14 +156,6 @@ let globals =
     },
 
     ICON: 'resources/defaultIcon.png',
-
-    DEFAULT_ASSET_DIR: 'assets',
-    ASSET_DIRS_BY_TEMPLATE:
-    {
-        'vs2019': '../..',
-        'xcodeMac': {generic: '.', app: '../Resources', framework: '../Resources'},
-        'makefile': '../../..',
-    },
 
     XCODE_ICONS:
     {

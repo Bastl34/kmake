@@ -1,6 +1,7 @@
 #kmake
 *.input.cache
 out/
+export/
 
 #node
 node_modules
