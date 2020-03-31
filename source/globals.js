@@ -115,6 +115,7 @@ let globals =
         'dependencies',
         'buildFlags',
         'linkerFlags',
+        'downloads',
 
         //hooks
         'beforePrepare',

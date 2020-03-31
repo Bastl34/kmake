@@ -1,0 +1,31 @@
+
+workspace:
+    name: 'SDL'
+
+    content:
+        - main
+
+main:
+    type: project
+    outputType: main
+    projectType: source
+
+    downloads:
+        - 'template:vs*':
+            -
+                url: https://www.libsdl.org/release/SDL2-devel-2.0.12-VC.zip
+                dest: SDL2-devel-2.0.12-VC.zip
+                extractTo: libs/sdl
+        - 'template:xcodeMac':
+            -
+                url: https://www.libsdl.org/release/SDL2-2.0.12.dmg
+                dest: SDL2-2.0.12.dmg
+                extractTo: libs/sdl
+        - 'template:makefile':
+            -
+                url: https://www.libsdl.org/release/SDL2-2.0.12.tar.gz
+                dest: SDL2-2.0.12.tar.gz
+                extractTo: libs/sdl
+
+    sources:
+        - source/main.cpp
