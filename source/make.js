@@ -1,8 +1,21 @@
 const fs = require('fs');
+const os = require('os');
 const path = require('path');
+const util = require('util');
+const exec = util.promisify(require('child_process').exec);
+
+const yaml = require('js-yaml');
+const dmg = require('dmg');
+const copy = require('recursive-copy');
+
+const dmgMount = util.promisify(dmg.mount);
+const dmgUnmount = util.promisify(dmg.unmount);
+const mkdirProm = util.promisify(fs.mkdir);
+const rmdirProm = util.promisify(fs.rmdir);
 
 const decompress = require('decompress');
 
+const Globals = require('./globals');
 const Logging = require('./helper/logging');
 const Helper = require('./helper/helper');
 const NetHelper = require('./helper/netHelper');
@@ -82,36 +95,83 @@ async function download(options)
                     for (let i in options[projectName].downloads[archKey][config])
                     {
                         let dl = options[projectName].downloads[archKey][config][i];
-                        downloadList[dl.url + '_' + dl.dest + '_' + dl.extractTo] = dl;
+                        dl.workingDir = options[projectName].workingDir;
+
+                        let dlKey = Helper.sha265(JSON.stringify(dl));
+                        downloadList[dlKey] = dl;
                     }
                 }
             }
         }
     }
 
+    //save download cache
+    let cachePath = options.build.project + Globals.CACHE_FILES.DOWNLOAD;
+    let cache = {};
+
+    if (fs.existsSync(cachePath) && options.build.useDownloadCache)
+        cache = yaml.safeLoad(fs.readFileSync(cachePath, 'utf8'));
+
     for (let i in downloadList)
     {
         let dl = downloadList[i];
+
+        if (options.build.useDownloadCache && cache[i])
+            continue;
 
         let size = await NetHelper.getDownloadSize(dl.url);
 
         Logging.info('downloading: ' + dl.url + ' (' + Helper.bytesToSize(size) +  ') ...');
 
-        let downloadFile = path.join(options.build.outputPath, dl.dest);
-        await NetHelper.download(dl.url, downloadFile);
+        await mkdirProm(path.dirname(dl.dest), {recursive: true});
+        await NetHelper.download(dl.url, dl.dest);
 
         if (dl.extractTo)
         {
             Logging.info('extracting to: ' + dl.extractTo + ' ...');
 
-            let extractTo = path.join(options.build.outputPath, dl.extractTo);
-
-            let files = await decompress(downloadFile, extractTo);
+            let files = await extract(dl.dest, dl.extractTo);
             Logging.info(files.length + ' extracted');
         }
+
+        if (dl.postCmd)
+        {
+            let {stdout, stderr} = await exec(dl.postCmd, {cwd: dl.workingDir});
+
+            if (stdout && stdout.trim())
+                console.log(stdout);
+
+            if (stderr && stderr.trim())
+                console.log(stderr);
+        }
+
+        cache[i] = true;
     }
 
-    process.exit();
+    //save cache
+    let dump = yaml.safeDump(cache);
+    fs.writeFileSync(cachePath, dump);
+}
+
+async function extract(file, extractTo)
+{
+    let files = 0;
+
+    let ext = path.extname(file);
+
+    if (ext == '.dmg')
+    {
+        if (os.platform() != 'darwin')
+            throw Error('dmg extracting is not supported on your platform');
+
+        let volume = await dmgMount(file);
+        files = await copy(volume, extractTo, {overwrite: true});
+        await dmgUnmount(volume);
+    }
+    else
+        files = await decompress(file, extractTo);
+
+    return files
 }
 
 function validate(options)

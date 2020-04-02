@@ -1,7 +1,11 @@
 #kmake
 *.input.cache
+*.download.cache
 out/
 export/
+
+#examples
+examples/sdl/libs/
 
 #node
 node_modules

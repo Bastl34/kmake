@@ -14,18 +14,20 @@ main:
         - 'template:vs*':
             -
                 url: https://www.libsdl.org/release/SDL2-devel-2.0.12-VC.zip
-                dest: SDL2-devel-2.0.12-VC.zip
-                extractTo: libs/sdl
+                dest: ${WORKING_DIR}/libs/SDL2-devel-2.0.12-VC.zip
+                extractTo: ${WORKING_DIR}/libs/sdl
         - 'template:xcodeMac':
             -
                 url: https://www.libsdl.org/release/SDL2-2.0.12.dmg
-                dest: SDL2-2.0.12.dmg
-                extractTo: libs/sdl
+                dest: ${WORKING_DIR}/libs/SDL2-2.0.12.dmg
+                extractTo: ${WORKING_DIR}/libs/sdl
+                postCmd: 'cd ${WORKING_DIR} && echo "my PWD: " && pwd'
         - 'template:makefile':
             -
                 url: https://www.libsdl.org/release/SDL2-2.0.12.tar.gz
-                dest: SDL2-2.0.12.tar.gz
-                extractTo: libs/sdl
+                dest: ${WORKING_DIR}/libs/SDL2-2.0.12.tar.gz
+                extractTo: ${WORKING_DIR}/libs/sdl
+                postCmd: 'cd ${WORKING_DIR}/libs/sdl && mkdir bin && cd bin && cmake ../ && make'
 
     sources:
         - source/main.cpp

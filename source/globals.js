@@ -56,6 +56,7 @@ let globals =
         'useInputCache': false,
         'cleanOutputDir': true,
         'skipAssets': false,
+        'useDownloadCache': true,
 
         'define': [],
         'lib': [],
@@ -81,6 +82,12 @@ let globals =
 
         //run arguments
         'run': false
+    },
+
+    CACHE_FILES:
+    {
+        INPUT: '.input.cache',
+        DOWNLOAD: '.download.cache',
     },
 
     DEFAULT_TEMPLATE_BY_PLATFORM:

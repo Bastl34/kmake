@@ -107,7 +107,7 @@ function getOptions()
         try
         {
             //save input cache
-            let inputCachePath = args.project + '.input.cache';
+            let inputCachePath = args.project + Globals.CACHE_FILES.INPUT;
 
             let inputCache = {};
 
@@ -245,22 +245,16 @@ function getOptions()
         // ********** WORKING_DIR
         if ('workingDir' in project)
         {
-            let workingDirAbsolute = path.resolve(project.workingDir);
-            let outputDirAbsolute = path.resolve(options.build.outputPath);
-
-            let relativePathToWorkingDir = FileHelper.relative(outputDirAbsolute, workingDirAbsolute);
-
-            replacements['WORKING_DIR'] = relativePathToWorkingDir;
-            replacements['WORKING_DIR_BACKSLASH'] = path.normalize(relativePathToWorkingDir);
-        }
-
-        // ********** WORKING_DIR_ABSOLUTE
-        if ('workingDir' in project)
-        {
             let workingDirAbsolute = FileHelper.normalize(path.resolve(project.workingDir));
-            replacements['WORKING_DIR_ABSOLUTE'] = workingDirAbsolute;
-            replacements['WORKING_DIR_ABSOLUTE_BACKSLASH'] = path.normalize(workingDirAbsolute);
+            replacements['WORKING_DIR'] = workingDirAbsolute;
+            replacements['WORKING_DIR_BACKSLASH'] = path.normalize(workingDirAbsolute);
         }
+
+        // ********** OUTPUT_DIR_ABSOLUTE
+        let outputDirAbsolute = path.resolve(options.build.outputPath);
+
+        replacements['OUTPUT_DIR'] = outputDirAbsolute;
+        replacements['OUTPUT_DIR_BACKSLASH'] = path.normalize(outputDirAbsolute);
 
         // ********** PROJECT_NAME
         replacements['PROJECT_NAME'] = optionKey;

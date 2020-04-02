@@ -1,3 +1,5 @@
+const crypto = require('crypto');
+
 let _RANDOM_STR_MAP = {};
 const _RANDOM_STR_MAX_RETRIES = 10;
 
@@ -106,6 +108,14 @@ let Helper =
 
         return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
      },
+
+     sha265(content)
+     {
+        const hash = crypto.createHash('sha256');
+
+        hash.update(content);
+        return hash.digest('hex');
+     }
 };
 
 
