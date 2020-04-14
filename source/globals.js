@@ -65,6 +65,8 @@ let globals =
 
     ARG_OPTIONS_DEFAULT:
     {
+        'verbose': true,
+
         'defaultConfig': false,
 
         'useInputCache': false,

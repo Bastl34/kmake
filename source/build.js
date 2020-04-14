@@ -5,7 +5,8 @@ const exec = util.promisify(require('child_process').exec);
 
 const MakeHelper = require('./helper/makeHelper');
 
-const Globals = require('./globals');
+const Logging = require('./helper/logging');
+
 
 async function build(options)
 {
@@ -36,8 +37,8 @@ async function buildVisualStudio(options)
 
     //build
     let res = await exec(buildCmd);
-    console.log(res.stdout);
-    console.log(res.stderr);
+    Logging.log(res.stdout);
+    Logging.log(res.stderr);
 }
 
 async function buildMakefile(options)
@@ -53,8 +54,8 @@ async function buildMakefile(options)
 
     //build
     let res = await exec(`make ${targetKey}`, {cwd: options.build.outputPath});
-    console.log(res.stdout);
-    console.log(res.stderr);
+    Logging.log(res.stdout);
+    Logging.log(res.stderr);
 
     return true;
 }
@@ -71,8 +72,8 @@ async function buildXcodeMac(options)
 
     //build
     let res = await exec(`xcodebuild build -configuration ${configName} -workspace ${workspacePath}.xcworkspace -scheme ${mainProjectName} -derivedDataPath ${outDir}`);
-    console.log(res.stdout);
-    console.log(res.stderr);
+    Logging.log(res.stdout);
+    Logging.log(res.stderr);
 
     return true;
 }

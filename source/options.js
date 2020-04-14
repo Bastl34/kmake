@@ -7,7 +7,6 @@ const readlineSync = require('readline-sync');
 const Helper = require('./helper/helper');
 const FileHelper = require('./helper/fileHelper');
 const Logging = require('./helper/logging');
-const argParser = require('./argParser');
 
 const Globals = require('./globals');
 const ymlLoader = require('./ymlLoader');
@@ -15,10 +14,8 @@ const platformResolver = require('./platformResolver');
 
 const kmakeRoot = fs.realpathSync(__dirname + '/..');
 
-//parse commandline arguments
-let args = argParser();
 
-function getOptions()
+function getOptions(args)
 {
     // ******************** find yaml ********************
     //let fileStat;

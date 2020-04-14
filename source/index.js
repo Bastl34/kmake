@@ -1,5 +1,6 @@
 const Logging = require('./helper/logging');
 
+const argParser = require('./argParser');
 const getOptions = require('./options');
 
 const make = require('./make');
@@ -14,6 +15,8 @@ const Watcher = require('./watch');
     let options = null;
     let running = false;
 
+    let args = argParser();
+
     let func = async (changeType, change = null, steps = null) =>
     {
         running = true;
@@ -22,19 +25,19 @@ const Watcher = require('./watch');
         {
             // ********** options **********
             if (!options || (steps && steps.indexOf('options') != -1))
-                options = getOptions();
+                options = getOptions(args);
 
-            // ********** create project files **********
+            // ********** create workspace files **********
             if (options.build.make && (!steps || steps.indexOf('make') != -1))
             {
-                Logging.info('generating project...');
+                Logging.info('generating workspace...');
 
                 let res = await make(options);
 
                 Logging.log('====================');
 
                 if (res)
-                    Logging.rainbow("project generation was successful");
+                    Logging.rainbow("workspace generation was successful");
             }
 
             // ********** build **********

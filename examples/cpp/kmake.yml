@@ -37,7 +37,7 @@ workspace:
 
 # main App
 bla:
-    outputType: main #main
+    outputType: app #main
     #outputType: framework
     icon: 'assets/icon/icon.png'
 

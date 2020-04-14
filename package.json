@@ -27,6 +27,9 @@
         "test": "npm i && node source/tests.js",
         "test-dev": "npm i && npx nodemon --ignore examples/ source/tests.js"
     },
+    "bin": {
+        "kmake": "source/index.js"
+    },
     "dependencies": {
         "js-yaml": "^3.13.1",
         "glob": "^7.1.6",

@@ -139,10 +139,10 @@ async function download(options)
             let {stdout, stderr} = await exec(dl.postCmd, {cwd: dl.workingDir});
 
             if (stdout && stdout.trim())
-                console.log(stdout);
+                Logging.log(stdout);
 
             if (stderr && stderr.trim())
-                console.log(stderr);
+                Logging.log(stderr);
         }
 
         cache[i] = true;

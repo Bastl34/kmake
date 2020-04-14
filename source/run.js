@@ -1,4 +1,3 @@
-const os = require('os');
 const util = require('util');
 const path = require('path');
 const exec = util.promisify(require('child_process').exec);
@@ -6,6 +5,7 @@ const exec = util.promisify(require('child_process').exec);
 const MakeHelper = require('./helper/makeHelper');
 
 const Globals = require('./globals');
+const Logging = require('./helper/logging');
 
 async function run(options)
 {
@@ -29,8 +29,8 @@ async function runVisualStudio(options)
     const binPath = path.join(outDir, arch, configName, mainProjectName + '.exe');
 
     res = await exec(`"${binPath}"`);
-    console.log(res.stdout);
-    console.log(res.stderr);
+    Logging.log(res.stdout);
+    Logging.log(res.stderr);
 
     return true;
 }
@@ -45,8 +45,8 @@ async function runMakefile(options)
 
     //run
     let res = await exec(`"${binPath}"`);
-    console.log(res.stdout);
-    console.log(res.stderr);
+    Logging.log(res.stdout);
+    Logging.log(res.stderr);
 
     return true;
 }
@@ -65,15 +65,15 @@ async function runXcodeMac(options)
     if (options[mainProjectName].outputType == 'app')
     {
         let res = await exec(`${binPath}`);
-        console.log(res.stdout);
-        console.log(res.stderr);
+        Logging.log(res.stdout);
+        Logging.log(res.stderr);
     }
     //main
     else
     {
         let res = await exec(`${mainPath}`);
-        console.log(res.stdout);
-        console.log(res.stderr);
+        Logging.log(res.stdout);
+        Logging.log(res.stderr);
     }
 
     return true;
