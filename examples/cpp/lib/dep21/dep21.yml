@@ -1,8 +1,6 @@
 
 # Dep 2.1
 dep21:
-    type: project
     outputType: static
-    projectType: source
 
     sources: ['*.cpp', '*.h']

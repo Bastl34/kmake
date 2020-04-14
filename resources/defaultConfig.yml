@@ -1,0 +1,11 @@
+
+workspace:
+    name: 'main'
+
+    content:
+        - main
+
+main:
+    outputType: main
+
+    sources: ['*.cpp', '*.h']

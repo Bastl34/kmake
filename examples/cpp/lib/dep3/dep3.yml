@@ -1,7 +1,5 @@
 # Dep 3
 dep3:
-    type: project
     outputType: static
-    projectType: source
 
     sources: ['*.cpp', '*.c', '*.h']

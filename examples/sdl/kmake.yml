@@ -6,9 +6,7 @@ workspace:
         - main
 
 main:
-    type: project
     outputType: main
-    projectType: source
 
     downloads:
         - 'template:vs*':

@@ -106,7 +106,7 @@ async function download(options)
     }
 
     //save download cache
-    let cachePath = options.build.project + Globals.CACHE_FILES.DOWNLOAD;
+    let cachePath = path.join(options.build.projectDir, Globals.CACHE_FILES.DOWNLOAD);
     let cache = {};
 
     if (fs.existsSync(cachePath) && options.build.useDownloadCache)

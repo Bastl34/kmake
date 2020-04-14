@@ -149,9 +149,6 @@ async function makeMakefile(options)
         let project = options[projectName];
         let PROJECT_NAME = projectName.toUpperCase();
 
-        if (project.type != 'project' && project.projectType != 'source')
-            continue;
-
         Logging.info('========== ' + projectName + ' ==========');
 
         // ********** beforePrepare hook

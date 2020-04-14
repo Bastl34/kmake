@@ -8,8 +8,6 @@ workspace:
 
 # prebuilt
 prebuiltDyn:
-    type: project
     outputType: dynamic
-    projectType: source
 
     sources: ['*.cpp', '*.h']

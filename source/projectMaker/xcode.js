@@ -122,8 +122,6 @@ async function makeXcode(options)
 
         let projectId = Helper.randomString(24, '0123456789ABCDEF', false);
 
-        if (project.type != 'project' && project.projectType != 'source')
-            continue;
 
         Logging.info('========== ' + projectName + ' ==========');
 
@@ -614,9 +612,6 @@ async function applyIcon(projectName, project, options)
 
 async function applyAssets(projectName, project, options)
 {
-    if (!('assets' in project))
-        return;
-
     if (!(fs.existsSync(options.build.outputPath + '/' + projectName)))
         fs.mkdirSync(options.build.outputPath + '/' + projectName);
 
@@ -631,7 +626,7 @@ async function applyAssets(projectName, project, options)
     await fs.mkdirSync(path.join(options.build.outputPath, projectName, Globals.DEFAULT_ASSET_DIR));
 
     //generate copy script
-    if (!options.build.skipAssets)
+    if (!options.build.skipAssets && 'assets' in project)
     {
         for(let i in project.assets)
         {

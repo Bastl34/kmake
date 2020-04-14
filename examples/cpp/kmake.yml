@@ -37,10 +37,8 @@ workspace:
 
 # main App
 bla:
-    type: project
     outputType: main #main
     #outputType: framework
-    projectType: source
     icon: 'assets/icon/icon.png'
 
     settings:

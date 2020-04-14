@@ -180,11 +180,7 @@ async function makeVisualStudio(options)
         if (outputType in OUTPUT_TYPE_MAP)
             outputType = OUTPUT_TYPE_MAP[outputType];
 
-        if (project.type != 'project' && project.projectType != 'source')
-            continue;
-
         Logging.info('========== ' + projectName + ' ==========');
-
 
         // ********** beforePrepare hook
 

@@ -21,13 +21,16 @@ let args = argParser();
 function getOptions()
 {
     // ******************** find yaml ********************
-    let fileStat;
-    try { fileStat = fs.statSync(args.project); }
-    catch(e) {}
+    //let fileStat;
+    //try { fileStat = fs.statSync(args.project); }
+    //catch(e) {}
 
-    if (!fileStat || !fileStat.isFile())
+    if (fs.existsSync(args.project) && !fs.statSync(args.project).isFile())
+    //if (!fileStat || !fileStat.isFile())
     {
         args.project += '/kmake.yml' ;
+        if (args.defaultConfig)
+            args.project = path.join(kmakeRoot, '/resources/defaultConfig.yml');
 
         fileStat = null;
         try { fileStat = fs.statSync(args.project); }
@@ -35,7 +38,7 @@ function getOptions()
 
         if (!fileStat || !fileStat.isFile())
         {
-            Logging.error('yaml not found');
+            Logging.error('kmake.yaml not found (use --defaultConfig to use the default config)');
             process.exit();
         }
     }
@@ -82,7 +85,7 @@ function getOptions()
     Logging.info('loading build settings...');
     try
     {
-        options = ymlLoader(args.project);
+        options = ymlLoader(args.project, args.projectDir);
     } catch (e)
     {
         Logging.error(e);
@@ -107,12 +110,12 @@ function getOptions()
         try
         {
             //save input cache
-            let inputCachePath = args.project + Globals.CACHE_FILES.INPUT;
+            let inputCachePath = path.join(args.projectDir, Globals.CACHE_FILES.INPUT);
 
             let inputCache = {};
 
             if (fs.existsSync(inputCachePath))
-                inputCache = ymlLoader(inputCachePath);
+                inputCache = ymlLoader(inputCachePath, args.projectDir);
 
             if (!args.useInputCache)
             {
@@ -182,7 +185,7 @@ function getOptions()
     {
         let project = options[optionKey];
 
-        if ('type' in project && project.type == 'project')
+        if (Globals.MAIN_CONFIG_ITEMS.indexOf(optionKey) === -1)
         {
             commandLineOptionMapping.forEach(item =>
             {
@@ -337,8 +340,9 @@ function getOptions()
     for(let optionKey in options)
     {
         let project = options[optionKey];
+        let isProject = Globals.MAIN_CONFIG_ITEMS.indexOf(optionKey) === -1;
 
-        if ('type' in project && project.type == 'project')
+        if (isProject)
         {
             if (!('defines' in project))
                 project.defines = [];

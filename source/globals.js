@@ -14,6 +14,14 @@ let globals =
         dynamic: 5
     },
 
+    MAIN_CONFIG_ITEMS:
+    [
+        'workspace',
+        'imports',
+        'variables',
+        'inputs'
+    ],
+
     TEMPLATES:
     {
         'vs': 'vs2019',
@@ -57,6 +65,8 @@ let globals =
 
     ARG_OPTIONS_DEFAULT:
     {
+        'defaultConfig': false,
+
         'useInputCache': false,
         'cleanOutputDir': true,
         'skipAssets': false,
@@ -86,6 +96,13 @@ let globals =
 
         //run arguments
         'run': false
+    },
+
+    ARG_OPTIONS_REQUREMENTS:
+    {
+        'export': ['make', 'build'],
+        'run': ['make', 'build'],
+        'build': ['make']
     },
 
     CACHE_FILES:

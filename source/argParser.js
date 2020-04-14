@@ -1,5 +1,6 @@
 const os = require('os');
 const path = require('path');
+const fs = require('fs');
 
 const Globals = require('./globals');
 const Logging = require('./helper/logging');
@@ -23,11 +24,13 @@ function argParser()
     let lastOptionKey = null;
 
     //find all options
-    for(let i in args)
+    for(let i=0; i<args.length; ++i)
     {
         let arg = args[i];
 
         let isOptionKey = arg.indexOf('--') == 0;
+        let isLastOption = i + 1 == args.length
+        let isNextOptionKey = !isLastOption && args[i + 1].indexOf('--') == 0;
         let optionKeyName = isOptionKey ? arg.substr(2) : null;
 
         //error check
@@ -69,6 +72,8 @@ function argParser()
             else
                 obj[lastOptionKey] = arg;
         }
+        else if (isOptionKey && (isNextOptionKey || isLastOption))
+            obj[optionKeyName] = true;
 
         lastOptionKey = optionKeyName;
     }
@@ -76,6 +81,11 @@ function argParser()
     //use current dir as project dir if not set
     if (!obj.project)
         obj.project = './';
+
+    if (fs.existsSync(obj.project) && fs.lstatSync(obj.project).isFile())
+        obj.projectDir = path.dirname(obj.project);
+    else
+        obj.projectDir = obj.project;
 
     //find template for the current platform (if not set)
     if (!obj.template)
@@ -86,7 +96,7 @@ function argParser()
 
     //use default output dir if not set
     if (!obj.output)
-        obj.output = path.join(obj.project, Globals.DEFAULT_OUTPUT_DIR);
+        obj.output = path.join(obj.projectDir, Globals.DEFAULT_OUTPUT_DIR);
 
     //check if something is missing
     if ((!obj.project || !obj.template || !obj.output))
@@ -95,6 +105,9 @@ function argParser()
         process.exit();
     }
 
+    //resolve requirements
+    resolveRequirements(obj);
+
     //appy defines
     applyDefines(obj);
 
@@ -102,6 +115,25 @@ function argParser()
     applyPathItems(obj);
 
     return obj;
+}
+
+function resolveRequirements(obj)
+{
+    //requrements example: run needs make and build
+
+    let objCopy = {...obj};
+
+    for(let key in Globals.ARG_OPTIONS_REQUREMENTS)
+    {
+        if (key in objCopy && objCopy[key] == true)
+        {
+            //apply all requirements to original obj
+            Globals.ARG_OPTIONS_REQUREMENTS[key].forEach(item =>
+            {
+                obj[item] = true;
+            });
+        }
+    }
 }
 
 function applyDefines(obj)
