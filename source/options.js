@@ -462,9 +462,11 @@ function getOptions(args)
 
 
     // ******************** resolve arch ********************
-    Logging.info('resolving build archs (makefile only)...');
+    //Logging.info('resolving build archs (makefile only)...');
+    Logging.info('resolving build archs...');
 
-    if (options.build.arch.length == 0 && options.build.template == 'makefile')
+    //if (options.build.arch.length == 0 && options.build.template == 'makefile')
+    if (options.build.arch.length == 0)
     {
         options.build.arch = Globals.ARCHS[options.build.template];
         Logging.info(' - ' + options.build.arch.join(','));

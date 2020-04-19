@@ -24,16 +24,14 @@ async function buildVisualStudio(options)
 {
     const workspaceName = options.workspace.name;
     const mainProjectName = MakeHelper.findBuildProject(options);
-    const workspacePath = path.join(options.build.outputPath, workspaceName);
-    const outDir = path.resolve(path.join(options.build.outputPath, options.build.binOutputDir));
 
     const solutionPath = path.resolve(path.join(options.build.outputPath, workspaceName) + '.sln');
-    const configName = 'Release';
-    const arch = 'x64';
-    //const binPath = path.join(outDir, arch, configName, mainProjectName + '.exe');
+    const configName = options.build.release ? 'Release' : 'Debug';
+    const arch = options.build.arch[0];
+
     const jobs = os.cpus().length;
     const msBuild = MakeHelper.findMsBuild();
-    const buildCmd = `"${msBuild}" "${solutionPath}" /p:Configuration=${configName} /p:Platform=${arch} /m:${jobs} /p:BuildInParallel=true /p:OutputPath=${outDir}`;
+    const buildCmd = `"${msBuild}" "${solutionPath}" /t:${mainProjectName} /p:Configuration=${configName} /p:Platform=${arch} /m:${jobs} /p:BuildInParallel=true`;
 
     //build
     let res = await exec(buildCmd);

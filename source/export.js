@@ -21,15 +21,12 @@ async function exp(options)
     else if (options.build.template == 'makefile')
         paths = await getMakefilePaths(options);
 
-    options.build.exportDest = "examples/cpp/out/export.zip";
-
     let exportDest = options.build.exportDest;
     if (!exportDest)
         exportDest = path.join(options.build.outputPath, Globals.DEFAULT_EXPORT_DIR);
 
     exportDest = path.resolve(options.build.exportDest);
     let exportDestExt = path.extname(exportDest);
-
 
     if (exportDestExt == '.zip')
         return await compress(paths, exportDest, 'zip');
@@ -101,15 +98,29 @@ async function getVisualStudioPaths(options)
 {
     let paths = [];
 
-    const outDir = path.join(options.build.outputPath, options.build.binOutputDir);
+    const outDir = path.join(options.build.outputPath);
 
     //assets
     let assetDir = path.join(outDir, Globals.DEFAULT_ASSET_DIR);
     paths.push({relative: Globals.DEFAULT_ASSET_DIR, absolute: path.resolve(assetDir)});
 
     //bins
-    let binDir = path.join(outDir, Globals.DEFAULT_BIN_DIR);
-    paths.push({relative: path.basename(Globals.DEFAULT_BIN_DIR), absolute: path.resolve(binDir)});
+    for(let i in options.build.arch)
+    {
+        let arch = options.build.arch[i];
+        let binDir = path.join(outDir, arch);
+
+        if (!fs.existsSync(binDir))
+            continue;
+
+        let dirAbssolute = path.resolve(binDir);
+        let tempDir = path.resolve(path.join(outDir, Globals.DEFAULT_TEMP_DIR, arch));
+
+        //copy to a temp dir first to filter out unneeded files
+        await copy(dirAbssolute, tempDir, {overwrite: true, dot: false, filter: ['**/*.dll', '**/*.exe']});
+
+        paths.push({relative: arch, absolute: tempDir});
+    }
 
     return paths;
 }

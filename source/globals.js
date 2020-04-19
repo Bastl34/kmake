@@ -123,6 +123,7 @@ let globals =
     DEFAULT_OUTPUT_DIR: './out',
     DEFAULT_BIN_DIR: './bin',
     DEFAULT_OBJECTS_DIR: './obj',
+    DEFAULT_TEMP_DIR: './tmp',
 
     DEFAULT_EXPORT_DIR: './export',
 
