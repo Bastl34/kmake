@@ -51,7 +51,6 @@ int readAsset()
         std::filesystem::current_path(fs::path(path).parent_path());
     }
 #else
-
     #include <unistd.h>
 
     std::string getWorkingDir()
@@ -64,6 +63,19 @@ int readAsset()
 
     void changeWorkingDirFromExecPath(std::string path)
     {
+        //get PWD env var
+        char* pwd = std::getenv("PWD");
+
+        //add PWD as prefix if needed
+        if (pwd && path.substr(0,1) != "/")
+        {
+            //remove . if it's a relative path
+            if (path.substr(0,1) == ".")
+                path = path.substr(1);
+
+            path = std::string(pwd) + path;
+        }
+
         char* dir = &path[0];
         dir = dirname(dir);
 

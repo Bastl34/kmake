@@ -24,8 +24,8 @@ const BIN_DIR = 'bin';
     }
     catch (e)
     {
-        console.log(colors.red('❌❌❌ tests failed ❌❌❌'));
-        console.error(e);
+        Logging.error(colors.red('❌❌❌ tests failed ❌❌❌'));
+        Logging.error(e);
     }
 })();
 
@@ -38,7 +38,7 @@ async function runTests()
     else if (os.platform() == 'linux')
         await linux();
 
-    console.log(colors.rainbow('✔✔✔ all tests successful ✔✔✔'));
+    Logging.log(colors.rainbow('✔✔✔ all tests successful ✔✔✔'));
 }
 
 async function xcodeMac()
@@ -109,13 +109,13 @@ async function testVisualStudioSolution(project, template, workspaceName, mainPr
 
     //build
     let res = await exec(buildCmd);
-    console.log(res.stdout);
-    console.log(res.stderr);
+    Logging.log(res.stdout);
+    Logging.log(res.stderr);
 
     //test bin
     res = await exec(`"${binPath}"`);
-    console.log(res.stdout);
-    console.log(res.stderr);
+    Logging.log(res.stdout);
+    Logging.log(res.stderr);
 }
 
 async function testMakefile(project, template, workspaceName, mainProjectName)
@@ -132,11 +132,11 @@ async function testMakefile(project, template, workspaceName, mainProjectName)
 
     //build
     let res = await exec(`make -j${jobs} ${targetKey}`, {cwd: outDir});
-    console.log(res.stdout);
-    console.log(res.stderr);
+    Logging.log(res.stdout);
+    Logging.log(res.stderr);
 
     //test bin
     res = await exec(`"${binPath}"`);
-    console.log(res.stdout);
-    console.log(res.stderr);
+    Logging.log(res.stdout);
+    Logging.log(res.stderr);
 }
