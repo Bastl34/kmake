@@ -18,12 +18,7 @@ const kmakeRoot = fs.realpathSync(__dirname + '/..');
 function getOptions(args)
 {
     // ******************** find yaml ********************
-    //let fileStat;
-    //try { fileStat = fs.statSync(args.project); }
-    //catch(e) {}
-
     if (fs.existsSync(args.project) && !fs.statSync(args.project).isFile())
-    //if (!fileStat || !fileStat.isFile())
     {
         args.project += '/kmake.yml' ;
         if (args.defaultConfig)
@@ -178,8 +173,9 @@ function getOptions(args)
         {cmdKey: 'libPath', projectKey: 'libPaths'}
     ];
 
-    for(let optionKey in options)
+    for(let i in options.workspace.content)
     {
+        let optionKey = options.workspace.content[i];
         let project = options[optionKey];
 
         if (Globals.MAIN_CONFIG_ITEMS.indexOf(optionKey) === -1)
@@ -334,8 +330,9 @@ function getOptions(args)
     Logging.info('add additional defines to each project...');
     Logging.info(' - PROJECT_NAME, PROJECT_[PROJECT_NAME], ASSET_DIR, PROJECT_PATH');
 
-    for(let optionKey in options)
+    for(let i in options.workspace.content)
     {
+        let optionKey = options.workspace.content[i];
         let project = options[optionKey];
         let isProject = Globals.MAIN_CONFIG_ITEMS.indexOf(optionKey) === -1;
 
@@ -435,8 +432,9 @@ function getOptions(args)
 
     let resolvingItems = ['includePaths', 'libPaths'];
 
-    for(let optionKey in options)
+    for(let i in options.workspace.content)
     {
+        let optionKey = options.workspace.content[i];
         let option = options[optionKey];
 
         for(let propKey in option)
@@ -462,14 +460,31 @@ function getOptions(args)
 
 
     // ******************** resolve arch ********************
-    //Logging.info('resolving build archs (makefile only)...');
     Logging.info('resolving build archs...');
 
-    //if (options.build.arch.length == 0 && options.build.template == 'makefile')
     if (options.build.arch.length == 0)
     {
         options.build.arch = Globals.ARCHS[options.build.template];
         Logging.info(' - ' + options.build.arch.join(','));
+    }
+
+    // ******************** resolve single asset entry ********************
+    Logging.info('resolving single asset entries...');
+
+    for(let itemKey in options)
+    {
+        let item = options[itemKey];
+        if ('assets' in item)
+        {
+            if (typeof item.assets == 'string')
+            {
+                item.assets =
+                [{
+                    source: item.assets,
+                    destination: ''
+                }];
+            }
+        }
     }
 
     return options;

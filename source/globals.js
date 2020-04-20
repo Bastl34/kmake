@@ -130,9 +130,9 @@ let globals =
     DEFAULT_ASSET_DIR: 'assets',
     ASSET_DIRS_BY_TEMPLATE:
     {
-        'vs2019': '../..',
-        'xcodeMac': {generic: '.', app: '../Resources', framework: '../Resources'},
-        'makefile': '../../..',
+        'vs2019': '../../assets',
+        'xcodeMac': {generic: 'assets', app: '../Resources/assets', framework: '../Resources/assets'},
+        'makefile': '../../../assets',
     },
 
     //the default target is based on the order

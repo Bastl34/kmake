@@ -427,6 +427,13 @@ async function applyPlatformData(projectName, project, options)
 
             // ***** linkerFlags
             linkerFlagsContent += targetKey + `: ${PROJECT_NAME}_LDFLAGS += `
+
+            let rpath = `-Wl,-rpath,"@executable_path"`;
+            if (os.platform() == 'linux')
+                rpath = '-Wl,-rpath,\'$$$$ORIGIN\'';
+
+            linkerFlagsContent += rpath;
+
             let linkerFlagsArray = ('linkerFlags' in project) ? project['linkerFlags'][platform][config] : [];
             linkerFlagsArray.forEach(item =>
             {

@@ -86,7 +86,7 @@ bla:
                 config:debug:
                     - '/MacDebug2'
         - 'template:makefile':
-                - '/mkInclude'
+            - '/mkInclude'
 
     libPaths:
         - 'template:vs*':

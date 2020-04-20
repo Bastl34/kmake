@@ -19,6 +19,7 @@ const Globals = require('./globals');
 const Logging = require('./helper/logging');
 const Helper = require('./helper/helper');
 const NetHelper = require('./helper/netHelper');
+const ImageHelper = require('./helper/imageHelper');
 
 const makeXcode = require('./projectMaker/xcode');
 const makeVisualStudio = require('./projectMaker/visualStudio');
@@ -119,12 +120,21 @@ async function download(options)
         if (options.build.useDownloadCache && cache[i])
             continue;
 
-        let size = await NetHelper.getDownloadSize(dl.url);
+        let size = 0;
+        try { size = await NetHelper.getDownloadSize(dl.url); } catch(e) { Logging.warning('can not get download size') };
 
         Logging.info('downloading: ' + dl.url + ' (' + Helper.bytesToSize(size) +  ') ...');
 
         await mkdirProm(path.dirname(dl.dest), {recursive: true});
         await NetHelper.download(dl.url, dl.dest);
+
+        if (dl.convertTo)
+        {
+            Logging.info('converting to: ' + dl.convertTo + ' ...');
+
+            await ImageHelper.convert(dl.dest, dl.convertTo);
+            Logging.info('image converted');
+        }
 
         if (dl.extractTo)
         {
@@ -136,6 +146,7 @@ async function download(options)
 
         if (dl.postCmd)
         {
+            Logging.info('running postCmd...');
             let {stdout, stderr} = await exec(dl.postCmd, {cwd: dl.workingDir});
 
             if (stdout && stdout.trim())

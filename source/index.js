@@ -1,3 +1,5 @@
+const colors = require('colors');
+
 const Logging = require('./helper/logging');
 
 const argParser = require('./argParser');
@@ -23,9 +25,12 @@ const Watcher = require('./watch');
 
         try
         {
+            Logging.setVerbose(args.verbose);
+
             // ********** options **********
             if (!options || (steps && steps.indexOf('options') != -1))
                 options = getOptions(args);
+
 
             // ********** create workspace files **********
             if (options.build.make && (!steps || steps.indexOf('make') != -1))
@@ -38,6 +43,14 @@ const Watcher = require('./watch');
 
                 if (res)
                     Logging.rainbow("workspace generation was successful");
+
+                if (!Logging.isVerbose())
+                {
+                    if (res)
+                        Logging.out('workspace ' + options.workspace.name + ': ' + colors.green('success'));
+                    else
+                        Logging.out('workspace ' + options.workspace.name + ': ' + colors.green('error'));
+                }
             }
 
             // ********** build **********
@@ -51,6 +64,14 @@ const Watcher = require('./watch');
 
                 if (res)
                     Logging.rainbow("project built was successfully");
+
+                if (!Logging.isVerbose())
+                {
+                    if (res)
+                        Logging.out('build: ' + colors.green('success'));
+                    else
+                        Logging.out('build: ' + colors.green('error'));
+                }
             }
 
             // ********** run **********
@@ -64,6 +85,14 @@ const Watcher = require('./watch');
 
                 if (res)
                     Logging.rainbow("project run was successfully");
+
+                if (!Logging.isVerbose())
+                {
+                    if (res)
+                        Logging.out('run: ' + colors.green('success'));
+                    else
+                        Logging.out('run: ' + colors.green('error'));
+                }
             }
 
             // ********** export **********
@@ -77,6 +106,14 @@ const Watcher = require('./watch');
 
                 if (res)
                     Logging.rainbow("project was exported successfully");
+
+                if (!Logging.isVerbose())
+                {
+                    if (res)
+                        Logging.out('export: ' + colors.green('success'));
+                    else
+                        Logging.out('export: ' + colors.green('error'));
+                }
             }
         }
         catch (e)
@@ -88,19 +125,11 @@ const Watcher = require('./watch');
         // ********** watch **********
         if (options.build.watch)
         {
-            /*
-            if (watcher)
-                await watcher.close();
-            else
-                Logging.info('watching...');
-            */
-
-
-            Logging.info('watching...');
+            Logging.out('watching...');
 
             await watcher.watch(options, (changeType, change, steps) =>
             {
-                Logging.info('change detected (type=' + changeType + '): ' + change);
+                Logging.out('change detected (type=' + changeType + '): ' + change);
 
                 //TODO enqueue if running
                 if (!running)

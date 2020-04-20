@@ -21,7 +21,7 @@ namespace fs = std::filesystem;
 
 int readAsset()
 {
-    std::string assetDir = std::string(ASSET_DIR) + "/assets/test/test2/test.txt";
+    std::string assetDir = std::string(ASSET_DIR) + "/test/test2/test.txt";
     std::cout << "asset dir: " << assetDir.c_str() << std::endl;
 
     std::ifstream file(assetDir);

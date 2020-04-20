@@ -102,7 +102,8 @@ async function getVisualStudioPaths(options)
 
     //assets
     let assetDir = path.join(outDir, Globals.DEFAULT_ASSET_DIR);
-    paths.push({relative: Globals.DEFAULT_ASSET_DIR, absolute: path.resolve(assetDir)});
+    if (fs.existsSync(path.resolve(assetDir)))
+        paths.push({relative: Globals.DEFAULT_ASSET_DIR, absolute: path.resolve(assetDir)});
 
     //bins
     for(let i in options.build.arch)
@@ -133,7 +134,8 @@ async function getMakefilePaths(options)
 
     //assets
     let assetDir = path.join(outDir, Globals.DEFAULT_ASSET_DIR);
-    paths.push({relative: Globals.DEFAULT_ASSET_DIR, absolute: path.resolve(assetDir)});
+    if (fs.existsSync(path.resolve(assetDir)))
+        paths.push({relative: Globals.DEFAULT_ASSET_DIR, absolute: path.resolve(assetDir)});
 
     //bins
     let binDir = path.join(outDir, Globals.DEFAULT_BIN_DIR);

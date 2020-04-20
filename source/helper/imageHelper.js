@@ -10,4 +10,11 @@ async function iconGenerator(fromPath, toPath, res)
     await icon.resize(res, res).write(toPath);
 }
 
-module.exports = iconGenerator;
+async function convert(fromPath, toPath)
+{
+    let image = await Jimp.read(fromPath);
+
+    await image.write(toPath);
+}
+
+module.exports = {iconGenerator, convert};

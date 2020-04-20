@@ -10,7 +10,7 @@ const Helper = require('../helper/helper');
 const FileHelper = require('../helper/fileHelper');
 const MakeHelper = require('../helper/makeHelper');
 const Logging = require('../helper/logging');
-const iconGenerator = require('../helper/iconGenerator');
+const ImageHelper = require('../helper/imageHelper');
 
 const Globals = require('../globals');
 
@@ -308,14 +308,19 @@ async function makeXcode(options)
         {
             //get the relative path from output dir to source
             let absolutePath = path.resolve(lib.path);
+
+console.log(lib.path)
+
             let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + lib.name;
             if (lib.isWorkspaceLib)
                 relativePath = lib.name;
 
             sourceFileContent += '		' + lib.uid2 + ' /* ' + lib.name + ' in Frameworks */ = {isa = PBXBuildFile; fileRef = ' + lib.uid + ' /* ' + lib.name + ' */; };\n';
 
+            console.log(lib.name)
+
             //add to embed
-            if (lib.name.indexOf('dylib') != -1)
+            if (lib.name.indexOf('.dylib') != -1 || lib.name.indexOf('.framework') != -1)
                 sourceFileContent += '		' + lib.uid3 + ' /* ' + lib.name + ' in Embed Libraries */ = {isa = PBXBuildFile; fileRef = ' + lib.uid + ' /* ' + lib.name + ' */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };\n';
 
             let fileTypeStr = '';
@@ -340,7 +345,7 @@ async function makeXcode(options)
             libBuildList += '				' + lib.uid2 + ' /* ' + lib.name + ' in Frameworks */,\n';
 
             //add to embed
-            if (lib.name.indexOf('dylib') != -1)
+            if (lib.name.indexOf('.dylib') != -1 || lib.name.indexOf('.framework') != -1)
                 libEmbedList += '				' + lib.uid3 + ' /* ' + lib.name + ' in Embed Libraries */,\n';
         });
 
@@ -590,7 +595,7 @@ async function applyIcon(projectName, project, options)
             let outputIcon = 'icon_' + iconItem.name + '_' + iconItem.scale + '.png';
             let outputIconPath = path.dirname(iconJson) + '/' + outputIcon;
 
-            await iconGenerator(iconPath, outputIconPath, iconItem.size);
+            await ImageHelper.iconGenerator(iconPath, outputIconPath, iconItem.size);
 
             iconContent += `    {\n`;
             iconContent += `      "size" : "${iconItem.name}",\n`;

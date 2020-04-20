@@ -1,25 +1,38 @@
 const colors = require('colors');
-
 let Logging =
 {
+    setVerbose(verbose)
+    {
+        global.loggingVerbose = verbose;
+    },
+
+    isVerbose()
+    {
+        return !!global.loggingVerbose;
+    },
+
     log(...args)
     {
-        console.log(...args);
+        if (global.loggingVerbose)
+            console.log(...args);
     },
 
     info(...args)
     {
-        console.log(colors.cyan(...args));
+        if (global.loggingVerbose)
+            console.log(colors.cyan(...args));
     },
 
     notice(...args)
     {
-        console.log(colors.cyan(...args));
+        if (global.loggingVerbose)
+            console.log(colors.cyan(...args));
     },
 
     success(...args)
     {
-        console.log(colors.green(...args));
+        if (global.loggingVerbose)
+            console.log(colors.green(...args));
     },
 
     error(...args)
@@ -29,12 +42,20 @@ let Logging =
 
     warning(...args)
     {
-        console.log(colors.yellow(...args));
+        if (global.loggingVerbose)
+            console.log(colors.yellow(...args));
     },
 
     rainbow(...args)
     {
-        console.log(colors.rainbow(...args));
+        if (global.loggingVerbose)
+            console.log(colors.rainbow(...args));
+    },
+
+    //ignore verbose flag
+    out(...args)
+    {
+        console.log(...args);
     }
 };
 

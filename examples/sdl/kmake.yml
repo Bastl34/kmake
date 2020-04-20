@@ -8,7 +8,13 @@ workspace:
 main:
     outputType: main
 
+    assets: ./assets
+
     downloads:
+        -
+            url: https://upload.wikimedia.org/wikipedia/commons/e/ee/Grumpy_Cat_by_Gage_Skidmore.jpg
+            dest: ${WORKING_DIR}/assets/grumpyCat.jpg
+            convertTo: ${WORKING_DIR}/assets/grumpyCat.bmp
         - 'template:vs*':
             -
                 url: https://www.libsdl.org/release/SDL2-devel-2.0.12-VC.zip
@@ -25,7 +31,24 @@ main:
                 url: https://www.libsdl.org/release/SDL2-2.0.12.tar.gz
                 dest: ${WORKING_DIR}/libs/SDL2-2.0.12.tar.gz
                 extractTo: ${WORKING_DIR}/libs/sdl
-                postCmd: 'cd ${WORKING_DIR}/libs/sdl && mkdir bin && cd bin && cmake ../ && make'
+                postCmd: 'cd ${WORKING_DIR}/libs/sdl/SDL2-2.0.12 && mkdir bin && cd bin && cmake ../ && make -j4'
+
+    includePaths:
+        - 'template:makefile':
+            - 'libs/sdl/SDL2-2.0.12/include'
+        - 'template:xcodeMac':
+            - 'libs/sdl/SDL2.framework/Headers'
+
+    libPaths:
+        - 'template:xcodeMac*':
+            - 'libs/sdl'
+
+    dependencies:
+        - 'template:makefile':
+            - 'libs/sdl/SDL2-2.0.12/bin/libSDL2-2.0.dylib'
+            - 'libs/sdl/SDL2-2.0.12/bin/libSDL2.a'
+        - 'template:xcodeMac':
+            - 'libs/sdl/SDL2.framework'
 
     sources:
         - source/main.cpp
