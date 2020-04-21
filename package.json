@@ -50,7 +50,8 @@
         "archiver": "^4.0.1",
         "axios": "^0.19.2",
         "decompress": "^4.2.1",
-        "dmg": "^0.1.0"
+        "dmg": "^0.1.0",
+        "tree-kill": "^1.2.2"
     },
     "keywords": [],
     "devDependencies": {
