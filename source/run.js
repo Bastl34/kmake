@@ -22,13 +22,13 @@ async function run(options)
 async function runVisualStudio(options)
 {
     const mainProjectName = MakeHelper.findBuildProject(options);
-    const outDir = path.join(options.build.outputPath, options.build.binOutputDir);
+    const outDir = path.resolve(options.build.outputPath);
 
     const configName = options.build.release ? 'Release' : 'Debug';
     const arch = options.build.arch[0];
     const binPath = path.join(outDir, arch, configName, mainProjectName + '.exe');
 
-    res = await exec(`"${binPath}"`);
+    res = await exec(`"${binPath}"`, {cwd: path.dirname(binPath)});
     Logging.log(res.stdout);
     Logging.log(res.stderr);
 

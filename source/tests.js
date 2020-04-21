@@ -20,6 +20,7 @@ const BIN_DIR = 'bin';
 {
     try
     {
+        Logging.setVerbose(true);
         await runTests();
     }
     catch (e)

@@ -36,6 +36,8 @@ main:
     includePaths:
         - 'template:makefile':
             - 'libs/sdl/SDL2-2.0.12/include'
+        - 'template:vs*':
+            - 'libs/sdl/SDL2-2.0.12/include'
         - 'template:xcodeMac':
             - 'libs/sdl/SDL2.framework/Headers'
 
@@ -49,6 +51,15 @@ main:
             - 'libs/sdl/SDL2-2.0.12/bin/libSDL2.a'
         - 'template:xcodeMac':
             - 'libs/sdl/SDL2.framework'
+        - 'template:vs*':
+            arch:win32:
+                - 'libs/sdl/SDL2-2.0.12/lib/x86/SDL2.dll'
+                - 'libs/sdl/SDL2-2.0.12/lib/x86/SDL2.lib'
+                - 'libs/sdl/SDL2-2.0.12/lib/x86/SDL2main.lib'
+            arch:x64:
+                - 'libs/sdl/SDL2-2.0.12/lib/x64/SDL2.dll'
+                - 'libs/sdl/SDL2-2.0.12/lib/x64/SDL2.lib'
+                - 'libs/sdl/SDL2-2.0.12/lib/x64/SDL2main.lib'
 
     sources:
         - source/main.cpp

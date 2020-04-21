@@ -439,6 +439,7 @@ async function applyPlatformData(projectName, project, options)
             //dependencies
             let libsContent = '';
             let libsArray = ('dependencies' in project) ? project['dependencies'][platform][config] : [];
+            let ddlsAdded = {}
             libsArray.forEach(lib =>
             {
                 if (lib in options)
@@ -456,19 +457,22 @@ async function applyPlatformData(projectName, project, options)
                 {
                     //check if there is a dll and copy the dll on post build
                     let dllPath = lib.replace('.lib', '.dll');
-                    if (fs.existsSync(dllPath))
+                    if (fs.existsSync(dllPath) && !(dllPath in ddlsAdded))
                     {
                         dllPathRelative = FileHelper.relative(path.join(options.build.outputPath, projectName), dllPath);
                         let dllName = path.basename(dllPath);
                         hookPostBuildContent += `        copy /Y "$(ProjectDir)\\${path.normalize(dllPathRelative)}" "$(SolutionDir)$(Platform)\\$(Configuration)\\${dllName}"\r\n`;
+
+                        ddlsAdded[dllPath] = true;
                     }
 
                     //change lib path relative to output dir
                     if (!path.isAbsolute(lib))
-                        lib = FileHelper.relative(path.join(options.build.outputPath, projectName), lib);
+                        lib = FileHelper.relative(path.join(options.build.outputPath, projectName), path.resolve(lib));
                 }
 
-                libsContent += '"' + lib + '";';
+                if (lib.indexOf('.dll') === -1)
+                    libsContent += '"' + lib + '";';
             });
 
             //buildFlags
