@@ -5,6 +5,9 @@ workspace:
     content:
         - main
 
+    settings:
+        build: true
+
 main:
     outputType: main
 

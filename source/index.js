@@ -19,6 +19,8 @@ const Watcher = require('./watch');
 
     let args = argParser();
 
+    Logging.setVerbose(args.verbose);
+
     let func = async (changeType, change = null, steps = null) =>
     {
         running = true;
@@ -26,8 +28,6 @@ const Watcher = require('./watch');
 
         try
         {
-            Logging.setVerbose(args.verbose);
-
             // ********** options **********
             if (!options || (steps && steps.indexOf('options') != -1))
                 options = getOptions(args);

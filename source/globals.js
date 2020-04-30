@@ -67,7 +67,8 @@ let globals =
     {
         'verbose': true,
 
-        'defaultConfig': false,
+        //use the default config if no config was provided
+        'defaultConfig': true,
 
         'useInputCache': false,
         'cleanOutputDir': true,

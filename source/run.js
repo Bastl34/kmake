@@ -1,6 +1,4 @@
-const util = require('util');
 const path = require('path');
-const exec = util.promisify(require('child_process').exec);
 
 const MakeHelper = require('./helper/makeHelper');
 
@@ -64,15 +62,15 @@ async function runXcodeMac(options, runAsync)
 
 async function runExecutable(cmd, runAsync, cwd = null)
 {
-    const process = new Exec(`"${cmd}"`, cwd);
-    process.on('stdout', out => Logging.log(out));
-    process.on('stderr', out => Logging.log(out));
-    process.on('exit', code => Logging.log('exit with code: ' + code));
+    const p = new Exec(`"${cmd}"`, cwd);
+    p.on('stdout', out => process.stdout.write(out));
+    p.on('stderr', out => process.stderr.write(out));
+    p.on('exit', code => Logging.log('exit with code: ' + code));
 
     if (!runAsync)
-        return await process.waitForExit();
+        return await p.waitForExit();
 
-    return process;
+    return p;
 }
 
 

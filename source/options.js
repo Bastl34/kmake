@@ -21,8 +21,12 @@ function getOptions(args)
     if (fs.existsSync(args.project) && !fs.statSync(args.project).isFile())
     {
         args.project += '/kmake.yml' ;
-        if (args.defaultConfig)
+
+        if (!fs.existsSync(args.project) && args.defaultConfig)
+        {
             args.project = path.join(kmakeRoot, '/resources/defaultConfig.yml');
+            Logging.info('using default config..');
+        }
 
         fileStat = null;
         try { fileStat = fs.statSync(args.project); }
@@ -93,6 +97,23 @@ function getOptions(args)
         projectPath: FileHelper.normalize(kmakeRoot + '/' + args.project),
         outputPath: FileHelper.normalize(outputPath)
     };
+
+
+    // ******************** apply workspace settings to build settings ********************
+    if ('settings' in options.workspace)
+    {
+        for(let key in options.workspace.settings)
+        {
+            let item = options.workspace.settings[key];
+
+            //not not overwrite if the setting was set by commandline params
+            if (key in Globals.ARG_OPTIONS_DEFAULT && JSON.stringify(options.build[key]) == JSON.stringify(Globals.ARG_OPTIONS_DEFAULT[key]))
+                options.build[key] = item;
+        }
+
+        //apply verbose setting
+        Logging.setVerbose(options.build.verbose);
+    }
 
 
     // ******************** get inputs ********************
