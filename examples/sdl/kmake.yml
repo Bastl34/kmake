@@ -3,18 +3,27 @@ workspace:
     name: 'SDL'
 
     content:
-        - main
+        - sdlTest
 
-main:
-    outputType: main
+sdlTest:
+    outputType: app
+
+    icon: 'assets/icon.png'
 
     assets: ./assets
+
+    settings:
+        MACOSX_DEPLOYMENT_TARGET: '10.14'
 
     downloads:
         -
             url: https://upload.wikimedia.org/wikipedia/commons/e/ee/Grumpy_Cat_by_Gage_Skidmore.jpg
             dest: ${WORKING_DIR}/assets/grumpyCat.jpg
             convertTo: ${WORKING_DIR}/assets/grumpyCat.bmp
+        -
+            url: https://upload.wikimedia.org/wikipedia/commons/e/ee/Grumpy_Cat_by_Gage_Skidmore.jpg
+            dest: ${WORKING_DIR}/assets/grumpyCat.jpg
+            convertTo: ${WORKING_DIR}/assets/icon.png
         - 'template:vs*':
             -
                 url: https://www.libsdl.org/release/SDL2-devel-2.0.12-VC.zip

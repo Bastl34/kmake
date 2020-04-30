@@ -97,7 +97,9 @@ let globals =
         'exportDest': null,
 
         //run arguments
-        'run': false
+        'run': false,
+        'killable': true,
+        'runAsync': false
     },
 
     ARG_OPTIONS_REQUREMENTS:

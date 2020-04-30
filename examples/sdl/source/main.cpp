@@ -3,6 +3,8 @@
 
 int main(int argc, char** argv)
 {
+    std::cout << "SDL example" << std::endl;
+
     SDL_Init(SDL_INIT_VIDEO);
 
     SDL_Window* window = SDL_CreateWindow("SDL TEST", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 650, SDL_WINDOW_RESIZABLE);
@@ -29,6 +31,8 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
+    int angle = 0;
+
     while (true)
     {
         SDL_Event e;
@@ -41,9 +45,11 @@ int main(int argc, char** argv)
         }
 
         SDL_RenderClear(ren);
-        SDL_RenderCopy(ren, tex, nullptr, nullptr);
+        SDL_RenderCopyEx(ren, tex, nullptr, nullptr, angle, NULL, SDL_FLIP_NONE);
         SDL_RenderPresent(ren);
-        SDL_Delay(100);
+        SDL_Delay(10);
+
+        angle += 3 % 360;
     }
 
     SDL_FreeSurface(bmp);

@@ -22,6 +22,7 @@ const Watcher = require('./watch');
     let func = async (changeType, change = null, steps = null) =>
     {
         running = true;
+        let process = null;
 
         try
         {
@@ -79,19 +80,26 @@ const Watcher = require('./watch');
             {
                 Logging.info('running project...');
 
-                let res = await run(options);
+                let res = await run(options, options.build.runAsync);
 
-                Logging.log('====================');
-
-                if (res)
-                    Logging.rainbow("project run was successfully");
-
-                if (!Logging.isVerbose())
+                if (options.build.runAsync)
                 {
+                    process = res
+                }
+                else
+                {
+                    Logging.log('====================');
+
                     if (res)
-                        Logging.out('run: ' + colors.green('success'));
-                    else
-                        Logging.out('run: ' + colors.green('error'));
+                        Logging.rainbow("project run was successfully");
+
+                    if (!Logging.isVerbose())
+                    {
+                        if (res)
+                            Logging.out('run: ' + colors.green('success'));
+                        else
+                            Logging.out('run: ' + colors.green('error'));
+                    }
                 }
             }
 
@@ -130,6 +138,13 @@ const Watcher = require('./watch');
             await watcher.watch(options, (changeType, change, steps) =>
             {
                 Logging.out('change detected (type=' + changeType + '): ' + change);
+
+                if (process && options.build.killable)
+                    process.kill();
+                else if (process && !options.build.killable)
+                    process.detach();
+
+                process = null;
 
                 //TODO enqueue if running
                 if (!running)
