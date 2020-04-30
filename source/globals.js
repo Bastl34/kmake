@@ -100,14 +100,27 @@ let globals =
         //run arguments
         'run': false,
         'killable': true,
-        'runAsync': false
+        'runAsync': false,
+
+        //the dev option will enable some settings: see ARG_OPTIONS_REQUREMENTS
+        'dev': false
     },
 
     ARG_OPTIONS_REQUREMENTS:
     {
         'export': ['make', 'build'],
         'run': ['make', 'build'],
-        'build': ['make']
+        'build': ['make'],
+
+        'dev':
+        {
+            'build': true,
+            'run': true,
+            'watch': true,
+            'release': false,
+            'verbose': false,
+            'runAsync': true,
+        }
     },
 
     CACHE_FILES:

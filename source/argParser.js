@@ -123,15 +123,21 @@ function resolveRequirements(obj)
 
     let objCopy = {...obj};
 
-    for(let key in Globals.ARG_OPTIONS_REQUREMENTS)
+    for(let argKey in Globals.ARG_OPTIONS_REQUREMENTS)
     {
-        if (key in objCopy && objCopy[key] == true)
+        if (argKey in objCopy && objCopy[argKey] == true)
         {
-            //apply all requirements to original obj
-            Globals.ARG_OPTIONS_REQUREMENTS[key].forEach(item =>
+            let isArray = Globals.ARG_OPTIONS_REQUREMENTS[argKey] instanceof Array;
+
+            for(let itemKey in Globals.ARG_OPTIONS_REQUREMENTS[argKey])
             {
-                obj[item] = true;
-            });
+                let item = Globals.ARG_OPTIONS_REQUREMENTS[argKey][itemKey];
+
+                if (isArray)
+                    obj[item] = true;
+                else
+                    obj[itemKey] = item;
+            }
         }
     }
 }

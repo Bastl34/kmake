@@ -61,7 +61,7 @@ class Exec extends EventEmitter
 
         this.process.on('error', data =>
         {
-            this.emit('exit', code);
+            this.emit('exit', data);
         });
 
         this.process.on('exit', code =>

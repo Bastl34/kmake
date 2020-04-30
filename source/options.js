@@ -393,6 +393,7 @@ function getOptions(args)
 
     // ******************** resolve source files ********************
     Logging.info('resolving source files...');
+    let sourcesFound = 0;
     for(let itemKey in options)
     {
         let item = options[itemKey];
@@ -413,7 +414,15 @@ function getOptions(args)
             }
 
             item.sources = sources;
+
+            sourcesFound += sources.length;
         }
+    }
+
+    if (sourcesFound == 0)
+    {
+        Logging.error('no sources found');
+        process.exit();
     }
 
 
