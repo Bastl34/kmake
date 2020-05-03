@@ -11,6 +11,22 @@ function argParser()
 {
     let args = process.argv.slice(2);
 
+    //repacing short params and synonyms with full one
+    for(let i=0; i<args.length; ++i)
+    {
+        let arg = args[i];
+
+        let isShortArg = arg.indexOf('-') == 0;
+        let isLongArg = arg.indexOf('--') == 0;
+
+        let argName = arg.substr(1);
+        if (isLongArg)
+            argName = arg.substr(2);
+
+        if (argName in Globals.ARG_OPTIONS_SYNONYMS)
+            args[i] = '--' + Globals.ARG_OPTIONS_SYNONYMS[argName];
+    }
+
     let obj =
     {
         project: null,

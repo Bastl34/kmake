@@ -32,7 +32,6 @@ const Watcher = require('./watch');
             if (!options || (steps && steps.indexOf('options') != -1))
                 options = getOptions(args);
 
-
             // ********** create workspace files **********
             if (options.build.make && (!steps || steps.indexOf('make') != -1))
             {

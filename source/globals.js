@@ -106,6 +106,50 @@ let globals =
         'dev': false
     },
 
+    ARG_OPTIONS_SYNONYMS:
+    {
+        'v': 'verbose',
+
+        //use the default config if no config was provided
+        'dc': 'defaultConfig',
+
+        'ic': 'useInputCache',
+        'c': 'cleanOutputDir',
+        'sa': 'skipAssets',
+        'dlc': 'useDownloadCache',
+
+        'D': 'define',
+        'l': 'lib',
+        'I': 'includePath',
+        'L': 'libPath',
+        'a': 'arch',
+
+        //make arguments
+        'm': 'make',
+
+        //build arguments
+        'b': 'build',
+        'r': 'release',
+        'bp': 'buildProject',
+        'o': 'binOutputDir',
+
+        //watch arguments
+        'w': 'watch',
+        'observe': 'watch', //this is because it's somehow not possible to use 'watch' or 'w' on windows in combination with nodemon
+
+        //export arguments
+        'e': 'export',
+        'eout': 'exportDest',
+
+        //run arguments
+        'r': 'run',
+        'k': 'killable',
+        'ra': 'runAsync',
+
+        //the dev option will enable some settings: see ARG_OPTIONS_REQUREMENTS
+        'd': 'dev'
+    },
+
     ARG_OPTIONS_REQUREMENTS:
     {
         'export': ['make', 'build'],
