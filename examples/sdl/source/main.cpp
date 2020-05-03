@@ -31,6 +31,8 @@ int main(int argc, char** argv)
         return EXIT_FAILURE;
     }
 
+    SDL_SetWindowIcon(window, bmp);
+
     int angle = 0;
 
     while (true)
