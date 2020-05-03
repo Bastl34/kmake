@@ -1,4 +1,5 @@
 const crypto = require('crypto');
+const fs = require('fs');
 
 let _RANDOM_STR_MAP = {};
 const _RANDOM_STR_MAX_RETRIES = 10;
@@ -109,13 +110,40 @@ let Helper =
         return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
      },
 
-     sha265(content)
-     {
+    sha265(content)
+    {
         const hash = crypto.createHash('sha256');
 
         hash.update(content);
         return hash.digest('hex');
-     }
+    },
+
+    fileHash(filePath, algorithm = 'sha256')
+    {
+        return new Promise((resolve, reject) =>
+        {
+            let shasum = crypto.createHash(algorithm);
+
+            try
+            {
+                let s = fs.ReadStream(filePath);
+                s.on('data', (data) =>
+                {
+                    shasum.update(data)
+                });
+
+                s.on('end', () =>
+                {
+                    const hash = shasum.digest('hex')
+                    return resolve(hash);
+                });
+            }
+            catch (error)
+            {
+                return reject('faile hash failed');
+            }
+        });
+    }
 };
 
 

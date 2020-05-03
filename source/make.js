@@ -1,5 +1,6 @@
 const fs = require('fs');
 const os = require('os');
+const crypto = require('crypto');
 const path = require('path');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
@@ -127,6 +128,26 @@ async function download(options)
 
         await mkdirProm(path.dirname(dl.dest), {recursive: true});
         await NetHelper.download(dl.url, dl.dest);
+
+        // hash check
+        let hashAlgos = crypto.getHashes();
+        for(let key in dl)
+        {
+            if (hashAlgos.includes(key))
+            {
+                Logging.info(`checking ${key} hash ${dl[key]} ...`);
+
+                let hash = await Helper.fileHash(dl.dest, key);
+
+                if (hash != dl[key])
+                {
+                    Logging.error('hash check failed got: ' + hash + ' but should be ' + dl[key]);
+                    process.exit(0);
+                }
+
+                Logging.info('hash checked');
+            }
+        }
 
         if (dl.convertTo)
         {
