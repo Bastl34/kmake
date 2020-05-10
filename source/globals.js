@@ -74,6 +74,7 @@ let globals =
         'cleanOutputDir': true,
         'skipAssets': false,
         'useDownloadCache': true,
+        'allowNoSourceFiles': false,
 
         'define': [],
         'lib': [],
@@ -117,6 +118,7 @@ let globals =
         'c': 'cleanOutputDir',
         'sa': 'skipAssets',
         'dlc': 'useDownloadCache',
+        'ns': 'allowNoSourceFiles',
 
         'D': 'define',
         'l': 'lib',
@@ -164,6 +166,7 @@ let globals =
             'release': false,
             'verbose': false,
             'runAsync': true,
+            'allowNoSourceFiles': true
         }
     },
 

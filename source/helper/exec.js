@@ -74,7 +74,7 @@ class Exec extends EventEmitter
 
     kill()
     {
-        if (this.process)
+        if (this.process && this.process.pid)
             kill(this.process.pid);
 
         this.process = null;

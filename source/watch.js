@@ -8,6 +8,7 @@ const FileHelper = require('./helper/fileHelper');
 const projectFileSteps = ['options', 'make', 'build', 'run', 'export', 'test'];
 const sourceFileSteps = ['build', 'run', 'export', 'test'];
 const assetFileSteps = ['build', 'run', 'export', 'test'];
+const addedOrDeletedAdditionalSteps = ['options', 'make'];
 
 const TIMEOUT = 200;
 
@@ -90,7 +91,11 @@ class Watcher
                 this.lastChange = Date.now();
                 this.timeout = setTimeout(() =>
                 {
-                    callback(changeType, changedPath, found.steps);
+                    let steps = found.steps;
+                    if (changeType != 'change')
+                        steps = [...steps, ...addedOrDeletedAdditionalSteps];
+
+                    callback(changeType, changedPath, steps);
 
                     this.timeout = null;
                 },TIMEOUT);

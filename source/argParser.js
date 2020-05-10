@@ -112,7 +112,7 @@ function argParser()
 
     //use default output dir if not set
     if (!obj.output)
-        obj.output = path.join(obj.projectDir, Globals.DEFAULT_OUTPUT_DIR);
+        obj.output = path.resolve(path.join(obj.projectDir, Globals.DEFAULT_OUTPUT_DIR));
 
     //check if something is missing
     if ((!obj.project || !obj.template || !obj.output))

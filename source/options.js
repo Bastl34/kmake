@@ -94,7 +94,7 @@ function getOptions(args)
     {
         ...args,
         templatePath: FileHelper.normalize(templatePath),
-        projectPath: FileHelper.normalize(kmakeRoot + '/' + args.project),
+        projectPath: FileHelper.normalize(args.project),
         outputPath: FileHelper.normalize(outputPath)
     };
 
@@ -416,12 +416,11 @@ function getOptions(args)
             }
 
             item.sources = sources;
-
             sourcesFound += sources.length;
         }
     }
 
-    if (sourcesFound == 0)
+    if (sourcesFound == 0 && !options.build.allowNoSourceFiles)
     {
         Logging.error('no sources found');
         process.exit();
