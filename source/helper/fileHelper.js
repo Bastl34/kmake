@@ -76,7 +76,17 @@ let Helper =
     relative(from, to)
     {
         return path.relative(from, to).replace(/\\/g, '/');
-    }
+    },
+
+    unixPath(input)
+    {
+        return input.replace(/\\/g, '/');
+    },
+
+    winPath(input)
+    {
+        return input.replace(/\//g, '\\');
+    },
 };
 
 

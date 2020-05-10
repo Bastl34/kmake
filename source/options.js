@@ -403,6 +403,8 @@ function getOptions(args)
 
             let workingDir = item.workingDir;
 
+            item.sourcesBase = [...item.sources];
+
             for(let key in item.sources)
             {
                 let file = item.sources[key];

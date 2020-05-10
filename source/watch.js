@@ -1,9 +1,9 @@
 const path = require('path');
 const micromatch = require('micromatch');
-
 const chokidar = require('chokidar');
 
 const Logging = require('./helper/logging');
+const FileHelper = require('./helper/fileHelper');
 
 const projectFileSteps = ['options', 'make', 'build', 'run', 'export', 'test'];
 const sourceFileSteps = ['build', 'run', 'export', 'test'];
@@ -38,9 +38,12 @@ class Watcher
             let project = options[projectName];
 
             //sources
-            project.sources.forEach(file =>
+            project.sourcesBase.forEach(file =>
             {
-                this.files.push({path: path.resolve(file), exclude: null, steps: sourceFileSteps});
+                file = FileHelper.resolve(path.join(project.workingDir, file));
+                file = FileHelper.unixPath(file);
+
+                this.files.push({path: file, exclude: null, steps: sourceFileSteps});
             });
 
             //assets
@@ -48,8 +51,8 @@ class Watcher
             {
                 project.assets.forEach(asset =>
                 {
-                    let sourcePath = path.resolve(path.join(project.workingDir, asset.source));
-                    this.files.push({path: sourcePath, exclude: asset.exclude, steps: assetFileSteps});
+                    let assetPath = FileHelper.resolve(path.join(project.workingDir, asset.source));
+                    this.files.push({path: assetPath, exclude: asset.exclude, steps: assetFileSteps});
                 });
             }
         }
@@ -59,6 +62,8 @@ class Watcher
 
         let func = (changeType, changedPath) =>
         {
+            const absolutePath = FileHelper.resolve(changedPath);
+
             let found = null;
 
             for(let i in this.files)
@@ -69,7 +74,7 @@ class Watcher
                 if (file.exclude)
                     exclude = micromatch.isMatch(path.basename(changedPath), file.exclude) || micromatch.isMatch(changedPath, file.exclude);
 
-                if (changedPath.indexOf(file.path) != -1 && !exclude)
+                if (micromatch.isMatch(absolutePath, file.path) && !exclude)
                 {
                     found = file;
                     break;
