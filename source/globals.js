@@ -74,7 +74,6 @@ let globals =
         'cleanOutputDir': true,
         'skipAssets': false,
         'useDownloadCache': true,
-        'allowNoSourceFiles': false,
 
         'define': [],
         'lib': [],
@@ -118,7 +117,6 @@ let globals =
         'c': 'cleanOutputDir',
         'sa': 'skipAssets',
         'dlc': 'useDownloadCache',
-        'ns': 'allowNoSourceFiles',
 
         //gcc style args
         //WARNING: other short/synonym parameters are not allowed to start with the first letter of the following
@@ -168,8 +166,7 @@ let globals =
             'watch': true,
             'release': false,
             'verbose': false,
-            'runAsync': true,
-            'allowNoSourceFiles': true
+            'runAsync': true
         }
     },
 

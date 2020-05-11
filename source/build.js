@@ -9,6 +9,8 @@ const Logging = require('./helper/logging');
 
 async function build(options)
 {
+    await validate(options);
+
     if (options.build.template == 'xcodeMac')
         res = await buildXcodeMac(options);
     else if (options.build.template == 'vs2019')
@@ -17,6 +19,23 @@ async function build(options)
         res = await buildMakefile(options);
 
     return res;
+}
+
+function validate(options)
+{
+    let sourcesFound = 0;
+    for(let itemKey in options)
+    {
+        let item = options[itemKey];
+
+        if (item.sources && item.sources.length > 0)
+            sourcesFound += item.sources.length;
+    }
+
+    if (sourcesFound == 0)
+        return Promise.reject('no sources found');
+    else
+        return Promise.resolve();
 }
 
 async function buildVisualStudio(options)
@@ -63,18 +82,24 @@ async function buildXcodeMac(options)
     const configName = options.build.release ? 'Release' : 'Debug';
 
     //build
-    const cmd = `xcodebuild build -configuration ${configName} -workspace ${workspacePath}.xcworkspace -scheme ${mainProjectName} -derivedDataPath ${outDir}`
+    const cmd = `xcodebuild build -configuration ${configName} -workspace ${workspacePath}.xcworkspace -scheme ${mainProjectName} -derivedDataPath ${outDir}`;
     return buildExecutable(cmd);
 }
 
 async function buildExecutable(cmd, cwd = null)
 {
     const p = new Exec(cmd, cwd);
-    p.on('stdout', out => process.stdout.write(out));
-    p.on('stderr', out => process.stderr.write(out));
+    p.on('stdout', out => Logging.log(out.trimRight()));
+    p.on('stderr', out => Logging.log(out.trimRight()));
+    p.on('error', out => Logging.error(out));
     p.on('exit', code => Logging.log('exit with code: ' + code));
 
-    return await p.waitForExit();
+    const res = await p.waitForExit();
+
+    if (!res && !Logging.isVerbose())
+        Logging.error(p.out);
+
+    return res;
 }
 
 module.exports = build;

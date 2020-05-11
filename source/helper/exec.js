@@ -10,6 +10,10 @@ class Exec extends EventEmitter
 
         this.process = null;
 
+        this.out = "";
+        this.stdout = "";
+        this.stderr = "";
+
         this.run(cmd, cwd);
     }
 
@@ -27,16 +31,20 @@ class Exec extends EventEmitter
         this.process.stdout.on('data', data =>
         {
             this.emit('stdout', data.toString());
+            this.stdout += data.toString();
+            this.out += data.toString();
         });
 
         this.process.stderr.on('data', data =>
         {
             this.emit('stdout', data.toString());
+            this.stderr += data.toString();
+            this.out += data.toString();
         });
 
         this.process.on('error', data =>
         {
-            this.emit('exit', data);
+            this.emit('error', data);
         });
 
         this.process.on('exit', code =>
@@ -53,6 +61,9 @@ class Exec extends EventEmitter
             kill(this.process.pid);
 
         this.process = null;
+        this.out = "";
+        this.stdout = "";
+        this.stderr = "";
     }
 
     detach()

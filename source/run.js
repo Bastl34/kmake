@@ -65,6 +65,7 @@ async function runExecutable(cmd, runAsync, cwd = null)
     const p = new Exec(`"${cmd}"`, cwd);
     p.on('stdout', out => process.stdout.write(out));
     p.on('stderr', out => process.stderr.write(out));
+    p.on('error', out => process.stderr.write(out));
     p.on('exit', code => Logging.log('exit with code: ' + code));
 
     if (!runAsync)

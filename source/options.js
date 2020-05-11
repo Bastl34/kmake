@@ -402,13 +402,14 @@ async function getAndApplyOptions(args)
     Logging.info('resolving platform specific settings...');
     options = platformResolver(options, options.build);
 
+
     // ******************** download ********************
     Logging.info('downloading...');
     await download(options);
 
+
     // ******************** resolve source files ********************
     Logging.info('resolving source files...');
-    let sourcesFound = 0;
     for(let itemKey in options)
     {
         let item = options[itemKey];
@@ -431,14 +432,7 @@ async function getAndApplyOptions(args)
             }
 
             item.sources = sources;
-            sourcesFound += sources.length;
         }
-    }
-
-    if (sourcesFound == 0 && !options.build.allowNoSourceFiles)
-    {
-        Logging.error('no sources found');
-        process.exit();
     }
 
 
@@ -636,6 +630,7 @@ async function download(options)
                     const p = new Exec(cmd.cmd, dl.workingDir);
                     p.on('stdout', out => Logging.log(out.trimRight()));
                     p.on('stderr', out => Logging.log(out.trimRight()));
+                    p.on('error', out => Logging.error(out));
                     p.on('exit', code => Logging.log('exit with code: ' + code));
 
                     const res = await p.waitForExit();
