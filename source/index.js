@@ -3,7 +3,7 @@ const colors = require('colors');
 const Logging = require('./helper/logging');
 
 const argParser = require('./argParser');
-const getOptions = require('./options');
+const getAndApplyOptions = require('./options');
 
 const make = require('./make');
 const build = require('./build');
@@ -30,7 +30,7 @@ const Watcher = require('./watch');
         {
             // ********** options **********
             if (!options || (steps && steps.indexOf('options') != -1))
-                options = getOptions(args);
+                options = await getAndApplyOptions(args);
 
             // ********** create workspace files **********
             if (options.build.make && (!steps || steps.indexOf('make') != -1))
@@ -58,9 +58,7 @@ const Watcher = require('./watch');
             {
                 Logging.info('building project...');
 
-                console.log("ok")
                 let res = await build(options);
-                console.log("ok2")
 
                 Logging.log('====================');
 

@@ -1,26 +1,7 @@
 const fs = require('fs');
-const os = require('os');
-const crypto = require('crypto');
 const path = require('path');
-const util = require('util');
-const exec = util.promisify(require('child_process').exec);
-
-const yaml = require('js-yaml');
-const dmg = require('dmg');
-const copy = require('recursive-copy');
-
-const dmgMount = util.promisify(dmg.mount);
-const dmgUnmount = util.promisify(dmg.unmount);
-const mkdirProm = util.promisify(fs.mkdir);
-const rmdirProm = util.promisify(fs.rmdir);
-
-const decompress = require('decompress');
-
-const Globals = require('./globals');
 const Logging = require('./helper/logging');
 const Helper = require('./helper/helper');
-const NetHelper = require('./helper/netHelper');
-const ImageHelper = require('./helper/imageHelper');
 
 const makeXcode = require('./projectMaker/xcode');
 const makeVisualStudio = require('./projectMaker/visualStudio');
@@ -44,7 +25,6 @@ async function make(options)
     }
 
     await createOutputDir(options);
-    await download(options);
 
     let res = false;
 
@@ -77,133 +57,6 @@ async function createOutputDir(options)
         Logging.info('creating output dir...');
         await fs.promises.mkdir(path.normalize(options.build.outputPath));
     }
-}
-
-async function download(options)
-{
-    let downloadList = {}
-
-    // check projects and goup
-    for(let i in options.workspace.content)
-    {
-        let projectName = options.workspace.content[i];
-
-        if ('downloads' in options[projectName])
-        {
-            for (let archKey in options[projectName].downloads)
-            {
-                for (let config in options[projectName].downloads[archKey])
-                {
-                    for (let i in options[projectName].downloads[archKey][config])
-                    {
-                        let dl = options[projectName].downloads[archKey][config][i];
-                        dl.workingDir = options[projectName].workingDir;
-
-                        let dlKey = Helper.sha265(JSON.stringify(dl));
-                        downloadList[dlKey] = dl;
-                    }
-                }
-            }
-        }
-    }
-
-    //save download cache
-    let cachePath = path.join(options.build.projectDir, Globals.CACHE_FILES.DOWNLOAD);
-    let cache = {};
-
-    if (fs.existsSync(cachePath) && options.build.useDownloadCache)
-        cache = yaml.safeLoad(fs.readFileSync(cachePath, 'utf8'));
-
-    for (let i in downloadList)
-    {
-        let dl = downloadList[i];
-
-        if (options.build.useDownloadCache && cache[i])
-            continue;
-
-        let size = 0;
-        try { size = await NetHelper.getDownloadSize(dl.url); } catch(e) { Logging.warning('can not get download size') };
-
-        Logging.info('downloading: ' + dl.url + ' (' + Helper.bytesToSize(size) +  ') ...');
-
-        await mkdirProm(path.dirname(dl.dest), {recursive: true});
-        await NetHelper.download(dl.url, dl.dest);
-
-        // hash check
-        let hashAlgos = crypto.getHashes();
-        for(let key in dl)
-        {
-            if (hashAlgos.includes(key))
-            {
-                Logging.info(`checking ${key} hash ${dl[key]} ...`);
-
-                let hash = await Helper.fileHash(dl.dest, key);
-
-                if (hash != dl[key])
-                {
-                    Logging.error('hash check failed got: ' + hash + ' but should be ' + dl[key]);
-                    process.exit(0);
-                }
-
-                Logging.info('hash checked');
-            }
-        }
-
-        if (dl.convertTo)
-        {
-            Logging.info('converting to: ' + dl.convertTo + ' ...');
-
-            await ImageHelper.convert(dl.dest, dl.convertTo);
-            Logging.info('image converted');
-        }
-
-        if (dl.extractTo)
-        {
-            Logging.info('extracting to: ' + dl.extractTo + ' ...');
-
-            let files = await extract(dl.dest, dl.extractTo);
-            Logging.info(files.length + ' extracted');
-        }
-
-        if (dl.postCmd)
-        {
-            Logging.info('running postCmd...');
-            let {stdout, stderr} = await exec(dl.postCmd, {cwd: dl.workingDir});
-
-            if (stdout && stdout.trim())
-                Logging.log(stdout);
-
-            if (stderr && stderr.trim())
-                Logging.log(stderr);
-        }
-
-        cache[i] = true;
-    }
-
-    //save cache
-    let dump = yaml.safeDump(cache);
-    fs.writeFileSync(cachePath, dump);
-}
-
-async function extract(file, extractTo)
-{
-    let files = 0;
-
-    let ext = path.extname(file);
-
-    if (ext == '.dmg')
-    {
-        if (os.platform() != 'darwin')
-            throw Error('dmg extracting is not supported on your platform');
-
-        let volume = await dmgMount(file);
-        files = await copy(volume, extractTo, {overwrite: true});
-        await dmgUnmount(volume);
-    }
-    else
-        files = await decompress(file, extractTo);
-
-    return files
 }
 
 function validate(options)

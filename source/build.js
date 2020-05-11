@@ -1,7 +1,6 @@
 const os = require('os');
-const util = require('util');
 const path = require('path');
-const exec = util.promisify(require('child_process').exec);
+const Exec = require('./helper/exec');
 
 const MakeHelper = require('./helper/makeHelper');
 
@@ -31,12 +30,10 @@ async function buildVisualStudio(options)
 
     const jobs = os.cpus().length;
     const msBuild = MakeHelper.findMsBuild();
-    const buildCmd = `"${msBuild}" "${solutionPath}" /t:${mainProjectName} /p:Configuration=${configName} /p:Platform=${arch} /m:${jobs} /p:BuildInParallel=true`;
 
     //build
-    let res = await exec(buildCmd);
-    Logging.log(res.stdout);
-    Logging.log(res.stderr);
+    const cmd = `"${msBuild}" "${solutionPath}" /t:${mainProjectName} /p:Configuration=${configName} /p:Platform=${arch} /m:${jobs} /p:BuildInParallel=true`;
+    return buildExecutable(cmd);
 }
 
 async function buildMakefile(options)
@@ -51,11 +48,8 @@ async function buildMakefile(options)
     const targetKey = mainProjectName + "_" + archName + '_' + configName;
 
     //build
-    let res = await exec(`make ${targetKey}`, {cwd: options.build.outputPath});
-    Logging.log(res.stdout);
-    Logging.log(res.stderr);
-
-    return true;
+    const cmd = `make ${targetKey}`
+    return buildExecutable(cmd, options.build.outputPath);
 }
 
 async function buildXcodeMac(options)
@@ -69,11 +63,18 @@ async function buildXcodeMac(options)
     const configName = options.build.release ? 'Release' : 'Debug';
 
     //build
-    let res = await exec(`xcodebuild build -configuration ${configName} -workspace ${workspacePath}.xcworkspace -scheme ${mainProjectName} -derivedDataPath ${outDir}`);
-    Logging.log(res.stdout);
-    Logging.log(res.stderr);
+    const cmd = `xcodebuild build -configuration ${configName} -workspace ${workspacePath}.xcworkspace -scheme ${mainProjectName} -derivedDataPath ${outDir}`
+    return buildExecutable(cmd);
+}
 
-    return true;
+async function buildExecutable(cmd, cwd = null)
+{
+    const p = new Exec(cmd, cwd);
+    p.on('stdout', out => process.stdout.write(out));
+    p.on('stderr', out => process.stderr.write(out));
+    p.on('exit', code => Logging.log('exit with code: ' + code));
+
+    return await p.waitForExit();
 }
 
 module.exports = build;

@@ -19,31 +19,31 @@ sdlTest:
         -
             url: https://upload.wikimedia.org/wikipedia/commons/e/ee/Grumpy_Cat_by_Gage_Skidmore.jpg
             dest: ${WORKING_DIR}/assets/grumpyCat.jpg
-            convertTo: ${WORKING_DIR}/assets/grumpyCat.bmp
-        -
-            url: https://upload.wikimedia.org/wikipedia/commons/e/ee/Grumpy_Cat_by_Gage_Skidmore.jpg
-            dest: ${WORKING_DIR}/assets/grumpyCat.jpg
-            convertTo: ${WORKING_DIR}/assets/icon.png
+            postCmds:
+                - convertTo: ${WORKING_DIR}/assets/grumpyCat.bmp
+                - convertTo: ${WORKING_DIR}/assets/icon.png
         - 'template:vs*':
             -
                 url: https://www.libsdl.org/release/SDL2-devel-2.0.12-VC.zip
                 dest: ${WORKING_DIR}/libs/SDL2-devel-2.0.12-VC.zip
                 sha256: 00c55a597cebdb9a4eb2723f2ad2387a4d7fd605e222c69b46099b15d5d8b32d
-                extractTo: ${WORKING_DIR}/libs/sdl
+                postCmds:
+                    - extractTo: ${WORKING_DIR}/libs/sdl
         - 'template:xcodeMac':
             -
                 url: https://www.libsdl.org/release/SDL2-2.0.12.dmg
                 dest: ${WORKING_DIR}/libs/SDL2-2.0.12.dmg
                 sha256: 672f2f2a5edb6f108d30bb83584e7d40658667e0f88a39c2a8e1d48a41fa2ab2
-                extractTo: ${WORKING_DIR}/libs/sdl
-                postCmd: 'cd ${WORKING_DIR} && echo "my PWD: " && pwd'
+                postCmds:
+                    - extractTo: ${WORKING_DIR}/libs/sdl
         - 'template:makefile':
             -
                 url: https://www.libsdl.org/release/SDL2-2.0.12.tar.gz
                 dest: ${WORKING_DIR}/libs/SDL2-2.0.12.tar.gz
                 sha256: 349268f695c02efbc9b9148a70b85e58cefbbf704abd3e91be654db7f1e2c863
-                extractTo: ${WORKING_DIR}/libs/sdl
-                postCmd: 'cd ${WORKING_DIR}/libs/sdl/SDL2-2.0.12 && mkdir bin && cd bin && cmake ../ && make -j4'
+                postCmds:
+                    - extractTo: ${WORKING_DIR}/libs/sdl
+                    - cmd: 'cd ${WORKING_DIR}/libs/sdl/SDL2-2.0.12 && mkdir bin && cd bin && cmake ../ && make -j4'
 
     includePaths:
         - 'template:makefile':
