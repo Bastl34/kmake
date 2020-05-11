@@ -58,7 +58,9 @@ const Watcher = require('./watch');
             {
                 Logging.info('building project...');
 
+                console.log("ok")
                 let res = await build(options);
+                console.log("ok2")
 
                 Logging.log('====================');
 
@@ -126,7 +128,7 @@ const Watcher = require('./watch');
         catch (e)
         {
             Logging.error("make failed");
-            Logging.log(e);
+            Logging.out(e);
         }
 
         // ********** watch **********

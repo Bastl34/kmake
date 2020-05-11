@@ -120,6 +120,9 @@ let globals =
         'dlc': 'useDownloadCache',
         'ns': 'allowNoSourceFiles',
 
+        //gcc style args
+        //WARNING: other short/synonym parameters are not allowed to start with the first letter of the following
+        //(because of the arg parser logic)
         'D': 'define',
         'l': 'lib',
         'I': 'includePath',

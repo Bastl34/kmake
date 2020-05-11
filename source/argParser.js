@@ -25,6 +25,31 @@ function argParser()
 
         if (argName in Globals.ARG_OPTIONS_SYNONYMS)
             args[i] = '--' + Globals.ARG_OPTIONS_SYNONYMS[argName];
+
+        //gcc style args (-DMYDEF=1 --> --define MYDEF=1)
+        if (isShortArg && !isLongArg)
+        {
+            let shortArg = null;
+
+            for(let argKey in Globals.ARG_OPTIONS_SYNONYMS)
+            {
+                if (argName.indexOf(argKey) === 0 && argName != argKey)
+                {
+                    shortArg = argKey;
+                    break;
+                }
+            }
+
+            if (shortArg)
+            {
+                let key = '--' + Globals.ARG_OPTIONS_SYNONYMS[shortArg];
+                let value = argName.substr(shortArg.length);
+
+                args[i] = key;
+                args.splice(i + 1, 0, value);
+                ++i;
+            }
+        }
     }
 
     let obj =
