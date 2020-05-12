@@ -63,6 +63,15 @@ let globals =
         }
     },
 
+    ARCHS_FLAG_MAP:
+    {
+        'g++':
+        {
+            'x86_64': '-m64',
+            'x86': '-m32'
+        }
+    },
+
     ARG_OPTIONS_DEFAULT:
     {
         'verbose': true,

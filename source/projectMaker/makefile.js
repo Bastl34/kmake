@@ -370,14 +370,18 @@ async function applyPlatformData(projectName, project, options)
             // ***** compiler
             let cc = getCC(project);
             let platformName = platform;
+            let platformFlags = ""
+
+            if (cc in Globals.ARCHS_FLAG_MAP && platformName in Globals.ARCHS_FLAG_MAP[cc])
+                platformFlags = Globals.ARCHS_FLAG_MAP[cc][platformName];
 
             if (cc in Globals.ARCHS_MAP && platformName in Globals.ARCHS_MAP[cc])
                 platformName = Globals.ARCHS_MAP[cc][platformName];
 
             if (cc.indexOf("clang") != -1)
-                compilerContent += targetKey + `: ${PROJECT_NAME}_CC += -arch ${platformName}\n`;
+                compilerContent += targetKey + `: ${PROJECT_NAME}_CC += -arch ${platformName} ${platformFlags}\n`;
             else
-                compilerContent += targetKey + `: ${PROJECT_NAME}_CC += -march=${platformName}\n`;
+                compilerContent += targetKey + `: ${PROJECT_NAME}_CC += -march=${platformName} ${platformFlags}\n`;
 
             // ***** include
             includePathsContent += targetKey + `: ${PROJECT_NAME}_INCLUDES += `
