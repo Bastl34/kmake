@@ -3,6 +3,7 @@
 *.download.cache
 out/
 export/
+testTemp/
 
 #examples
 examples/sdl/libs/

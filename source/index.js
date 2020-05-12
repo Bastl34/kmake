@@ -17,7 +17,7 @@ const Watcher = require('./watch');
     let watcher = new Watcher();
     let options = null;
     let running = false;
-    let process = null;
+    let proc = null;
 
     let args = argParser();
 
@@ -28,6 +28,7 @@ const Watcher = require('./watch');
     let func = async (steps = null) =>
     {
         running = true;
+        let success = true;
 
         try
         {
@@ -36,28 +37,28 @@ const Watcher = require('./watch');
                 options = await getAndApplyOptions(args);
 
             // ********** killing process if needed **********
-            if (process && options.build.killable)
-                process.kill();
-            else if (process && !options.build.killable)
-                process.detach();
+            if (proc && options.build.killable)
+                proc.kill();
+            else if (proc && !options.build.killable)
+                proc.detach();
 
-            process = null;
+            proc = null;
 
             // ********** create workspace files **********
             if (options.build.make && (!steps || steps.indexOf('make') != -1))
             {
                 Logging.info('generating workspace...');
 
-                let res = await make(options);
+                success = !!(await make(options));
 
                 Logging.log('====================');
 
-                if (res)
+                if (success)
                     Logging.rainbow("workspace generation was successful");
 
                 if (!Logging.isVerbose())
                 {
-                    if (res)
+                    if (success)
                         Logging.out('workspace ' + options.workspace.name + ': ' + colors.green('success'));
                     else
                         Logging.out('workspace ' + options.workspace.name + ': ' + colors.green('error'));
@@ -65,20 +66,20 @@ const Watcher = require('./watch');
             }
 
             // ********** build **********
-            if (options.build.build && (!steps || steps.indexOf('build') != -1))
+            if (success && options.build.build && (!steps || steps.indexOf('build') != -1))
             {
                 Logging.info('building project...');
 
-                let res = await build(options);
+                success = !!(await build(options));
 
                 Logging.log('====================');
 
-                if (res)
+                if (success)
                     Logging.rainbow("project built was successfully");
 
                 if (!Logging.isVerbose())
                 {
-                    if (res)
+                    if (success)
                         Logging.out('build: ' + colors.green('success'));
                     else
                         Logging.out('build: ' + colors.green('error'));
@@ -86,7 +87,7 @@ const Watcher = require('./watch');
             }
 
             // ********** run **********
-            if (options.build.run && (!steps || steps.indexOf('run') != -1))
+            if (success && options.build.run && (!steps || steps.indexOf('run') != -1))
             {
                 Logging.info('running project...');
 
@@ -94,18 +95,21 @@ const Watcher = require('./watch');
 
                 if (options.build.runAsync)
                 {
-                    process = res
+                    proc = res;
+                    success = true;
                 }
                 else
                 {
+                    success = !!(res);
+
                     Logging.log('====================');
 
-                    if (res)
+                    if (success)
                         Logging.rainbow("project run was successfully");
 
                     if (!Logging.isVerbose())
                     {
-                        if (res)
+                        if (success)
                             Logging.out('run: ' + colors.green('success'));
                         else
                             Logging.out('run: ' + colors.green('error'));
@@ -114,20 +118,20 @@ const Watcher = require('./watch');
             }
 
             // ********** export **********
-            if (options.build.export && (!steps || steps.indexOf('export') != -1))
+            if (success && options.build.export && (!steps || steps.indexOf('export') != -1))
             {
                 Logging.info('exporting project...');
 
-                let res = await exp(options);
+                success = !!(await exp(options));
 
                 Logging.log('====================');
 
-                if (res)
+                if (success)
                     Logging.rainbow("project was exported successfully");
 
                 if (!Logging.isVerbose())
                 {
-                    if (res)
+                    if (success)
                         Logging.out('export: ' + colors.green('success'));
                     else
                         Logging.out('export: ' + colors.green('error'));
@@ -154,6 +158,10 @@ const Watcher = require('./watch');
         }
 
         running = false;
+
+        //end process if needed (if watcher is not runing)
+        if (!options.build.watch)
+            process.exit(success ? 0 : 1)
     }
 
     setInterval(() =>

@@ -1,143 +1,96 @@
-const os = require('os');
-const util = require('util');
-const path = require('path');
+const fs = require('fs');
+
 const colors = require('colors');
 
-const Globals = require('./globals');
+const Exec = require('./helper/exec');
 
-const Helper = require('./helper/helper');
-const Logging = require('./helper/logging');
-const MakeHelper = require('./helper/makeHelper');
+const tempDir = 'testTemp';
 
-const exec = util.promisify(require('child_process').exec);
+async function run(cmd)
+{
+    const p = new Exec(cmd);
+    //p.on('stdout', out => console.log(out.trimRight()));
+    //p.on('stderr', out => console.log(out.trimRight()));
+    //p.on('error', out => console.error(out));
+    //p.on('exit', code => console.log('exit with code: ' + code));
 
-const MAIN = 'source/index.js';
+    return await p.waitForExit();
+}
 
-const OUT_DIR = 'out';
-const BIN_DIR = 'bin';
+const tests =
+{
+    fullExample: async () =>
+    {
+        return await run(`node kmake.js examples/full --run --useInputCache --verbose 0`);
+    },
+    noConfig: async () =>
+    {
+        return await run(`node kmake.js examples/noConfig --run --useInputCache --verbose 0`);
+    },
+    sdl: async () =>
+    {
+        return await run(`node kmake.js examples/sdl --build --useInputCache --verbose 0`);
+    },
+    export: async () =>
+    {
+        return await run(`node kmake.js examples/noConfig --export --exportDest ${tempDir}/export.zip --useInputCache --verbose 0`);
+    },
+};
 
 (async () =>
 {
     try
     {
-        Logging.setVerbose(true);
-        await runTests();
+        let successful = 0;
+        let testAmount = Object.keys(tests).length;
+
+        for(let testName in tests)
+        {
+            //prepare data dir
+            if (fs.existsSync(tempDir))
+                await fs.promises.rmdir(tempDir, {recursive: true});
+            await fs.promises.mkdir(tempDir);
+
+            //run test
+            try
+            {
+                process.stdout.write(`test "${testName}" running... `);
+                const res = await tests[testName]();
+
+                if (!res)
+                {
+                    console.log(colors.red('FAILED'));
+                    continue;
+                }
+
+                console.log(colors.green('SUCCESS'));
+
+                ++successful;
+            }
+            catch(e)
+            {
+                console.log(colors.red('FAILED'));
+            }
+        }
+
+        console.log(`[${successful}/${testAmount}] tests successful`);
+
+        if (successful == testAmount)
+            console.log(colors.rainbow('✔✔✔ all tests successful ✔✔✔'));
+        else
+            console.error(colors.red('❌❌❌ tests failed ❌❌❌'));
+
+        //cleanup
+        if (fs.existsSync(tempDir))
+            await fs.promises.rmdir(tempDir, {recursive: true});
+
+        process.exit(successful == testAmount ? 0 : 1);
     }
     catch (e)
     {
-        Logging.error(colors.red('❌❌❌ tests failed ❌❌❌'));
-        Logging.error(e);
+        console.error(colors.red('❌❌❌ tests failed ❌❌❌'));
+        console.error(e);
+
+        process.exit(1);
     }
 })();
-
-async function runTests()
-{
-    if (os.platform() == 'darwin')
-        await xcodeMac();
-    else if (os.platform() == 'win32')
-        await visualStudio();
-    else if (os.platform() == 'linux')
-        await linux();
-
-    Logging.log(colors.rainbow('✔✔✔ all tests successful ✔✔✔'));
-}
-
-async function xcodeMac()
-{
-    const project = 'examples/full';
-    const template = 'xcodeMac';
-    const workspaceName = 'Example';
-    const mainProjectName = 'bla';
-
-    Logging.info(' ========== ' + testXcodeWorkspace.name + ' ==========');
-    await testXcodeWorkspace(project, template, workspaceName, mainProjectName);
-}
-
-async function visualStudio()
-{
-    const project = 'examples/full';
-    const template = 'vs2019';
-    const workspaceName = 'Example';
-    const mainProjectName = 'bla';
-
-    Logging.info(' ========== ' + testVisualStudioSolution.name + ' ==========');
-    await testVisualStudioSolution(project, template, workspaceName, mainProjectName);
-}
-
-async function linux()
-{
-    const project = 'examples/full';
-    const template = 'makefile';
-    const workspaceName = 'Example';
-    const mainProjectName = 'bla';
-
-    Logging.info(' ========== ' + testMakefile.name + ' ==========');
-    await testMakefile(project, template, workspaceName, mainProjectName);
-}
-
-async function testXcodeWorkspace(project, template, workspaceName, mainProjectName)
-{
-    const outDir = path.join(project, OUT_DIR);
-    const binDir = path.join(outDir, BIN_DIR);
-    const configName = 'Release';
-    const workspacePath = path.join(outDir, workspaceName);
-    const binPath = path.join(binDir, 'Build/Products', configName, mainProjectName + '.app', 'Contents/MacOS', mainProjectName);
-
-    //create project (workspace)
-    await exec(`node ${MAIN} ${project} ${template} ${outDir} --useInputCache 1`);
-
-    //build
-    await exec(`xcodebuild build -configuration ${configName} -workspace ${workspacePath}.xcworkspace -scheme ${mainProjectName} -derivedDataPath ${binDir}`);
-
-    //test bin
-    await exec(`./${binPath}`);
-}
-
-async function testVisualStudioSolution(project, template, workspaceName, mainProjectName)
-{
-    const outDir = path.join(project, OUT_DIR);
-    const solutionPath = path.resolve(path.join(outDir, workspaceName) + '.sln');
-    const configName = 'Release';
-    const arch = 'x64';
-    const binPath = path.join(outDir, arch, configName, mainProjectName + '.exe');
-    const jobs = os.cpus().length;
-    const msBuild = MakeHelper.findMsBuild();
-    const buildCmd = `"${msBuild}" "${solutionPath}" /p:Configuration=${configName} /p:Platform=${arch} /m:${jobs} /p:BuildInParallel=true`;
-
-    //build project (solution)
-    await exec(`node ${MAIN} ${project} ${template} ${outDir} --useInputCache 1`);
-    await Helper.sleep(10000);
-
-    //build
-    let res = await exec(buildCmd);
-    Logging.log(res.stdout);
-    Logging.log(res.stderr);
-
-    //test bin
-    res = await exec(`"${binPath}"`);
-    Logging.log(res.stdout);
-    Logging.log(res.stderr);
-}
-
-async function testMakefile(project, template, workspaceName, mainProjectName)
-{
-    const outDir = path.join(project, OUT_DIR);
-    const configName = 'release';
-    const arch = 'x86_64';
-    const binPath = path.join(outDir, Globals.DEFAULT_BIN_DIR, arch, configName, mainProjectName);
-    const jobs = os.cpus().length;
-    const targetKey = mainProjectName + "_" + arch + '_' + configName;
-
-    //build project (solution)
-    await exec(`node ${MAIN} ${project} ${template} ${outDir} --useInputCache 1`);
-
-    //build
-    let res = await exec(`make -j${jobs} ${targetKey}`, {cwd: outDir});
-    Logging.log(res.stdout);
-    Logging.log(res.stderr);
-
-    //test bin
-    res = await exec(`"${binPath}"`);
-    Logging.log(res.stdout);
-    Logging.log(res.stderr);
-}
