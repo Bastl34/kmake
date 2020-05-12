@@ -1,12 +1,15 @@
 # kmake
 
-kmake is a build tool for c++ projects
+kmake is a build tool with live rebuild support for c++ projects.
+
+![Live Build](./resources/doc/liveBuild.gif "Live Build")
+
 
 ## Features
 * generate project files for different IDE's
 * `kmake.yml` file based configuration
 * command line config support
-* file watcher with livereload
+* file watcher with live rebuild
   * add/edit/delete files and kmake will add the files to the project and compiles again
 * export to directory/zip/tar/tar.gz/...
 * assets support

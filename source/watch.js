@@ -95,7 +95,9 @@ class Watcher
                     if (changeType != 'change')
                         steps = [...steps, ...addedOrDeletedAdditionalSteps];
 
-                    callback(changeType, changedPath, steps);
+                    const relativePath = path.relative(options.build.projectDir, changedPath);
+
+                    callback(changeType, relativePath, steps);
 
                     this.timeout = null;
                 },TIMEOUT);
