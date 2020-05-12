@@ -89,6 +89,7 @@ let globals =
         'release': true,
         'buildProject': null,
         'binOutputDir': './bin',
+        'buildAllArchs': false,
 
         //watch arguments
         'watch': false,
@@ -135,6 +136,7 @@ let globals =
         'r': 'release',
         'bp': 'buildProject',
         'o': 'binOutputDir',
+        'baa': 'buildAllArchs',
 
         //watch arguments
         'w': 'watch',

@@ -52,7 +52,7 @@ async function buildVisualStudio(options)
 
     //build
     const cmd = `"${msBuild}" "${solutionPath}" /t:${mainProjectName} /p:Configuration=${configName} /p:Platform=${arch} /m:${jobs} /p:BuildInParallel=true`;
-    return buildExecutable(cmd);
+    return await buildExecutable(cmd);
 }
 
 async function buildMakefile(options)
@@ -61,14 +61,29 @@ async function buildMakefile(options)
 
     //const outDir = path.join(options.build.outputPath, options.build.binOutputDir);
 
-    const configName = options.build.release ? 'release' : 'debug';
-    const archName = options.build.arch[0];
+    for(let i in options.build.arch)
+    {
+        const configName = options.build.release ? 'release' : 'debug';
+        const archName = options.build.arch[i];
 
-    const targetKey = mainProjectName + "_" + archName + '_' + configName;
+        const targetKey = mainProjectName + "_" + archName + '_' + configName;
 
-    //build
-    const cmd = `make ${targetKey}`
-    return buildExecutable(cmd, options.build.outputPath);
+        //build
+        const cmd = `make ${targetKey}`
+        let success = await buildExecutable(cmd, options.build.outputPath);
+
+        if (!options.build.buildAllArchs)
+            return success;
+
+        //clean obj files
+        if (options.build.arch.length > 1)
+            await buildExecutable("make clean_obj", options.build.outputPath);
+
+        if (!success)
+            return false;
+    }
+
+    return true;
 }
 
 async function buildXcodeMac(options)
@@ -83,7 +98,7 @@ async function buildXcodeMac(options)
 
     //build
     const cmd = `xcodebuild build -configuration ${configName} -workspace ${workspacePath}.xcworkspace -scheme ${mainProjectName} -derivedDataPath ${outDir}`;
-    return buildExecutable(cmd);
+    return await buildExecutable(cmd);
 }
 
 async function buildExecutable(cmd, cwd = null)

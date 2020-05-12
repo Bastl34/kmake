@@ -27,6 +27,7 @@
         "dev-mac-sdl": "npm i && npx nodemon --ignore examples/ --exec \"node source/index.js examples/sdl xcodeMac examples/sdl/out --useInputCache 1\"",
         "dev-vs-sdl-rw": "npm i && npx nodemon --ignore examples/ --exec \"node source/index.js examples/sdl vs2019 examples/sdl/out --useInputCache --run --observe --runAsync --release 0\"",
         "dev-vs-sdl": "npm i && npx nodemon --ignore examples/ --exec \"node source/index.js examples/sdl vs2019 examples/sdl/out --useInputCache\"",
+        "dev-mk-build-no-config-all": "npm i && npx nodemon --ignore examples/ source/index.js examples/noConfig makefile --build --buildAllArchs ",
         "dev-no-config": "npm i && npx nodemon --ignore examples/ source/index.js examples/noConfig --dev",
         "lint": "eslint source/",
         "test": "npm i && node source/tests.js",
