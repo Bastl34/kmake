@@ -25,7 +25,6 @@ async function exp(options)
     if (!exportDest)
         exportDest = path.join(options.build.outputPath, Globals.DEFAULT_EXPORT_DIR);
 
-    exportDest = path.resolve(options.build.exportDest);
     let exportDestExt = path.extname(exportDest);
 
     if (exportDestExt == '.zip')

@@ -45,21 +45,29 @@ async function buildVisualStudio(options)
 
     const solutionPath = path.resolve(path.join(options.build.outputPath, workspaceName) + '.sln');
     const configName = options.build.release ? 'Release' : 'Debug';
-    const arch = options.build.arch[0];
 
-    const jobs = os.cpus().length;
-    const msBuild = MakeHelper.findMsBuild();
+    for(let i in options.build.arch)
+    {
+        const arch = options.build.arch[i];
 
-    //build
-    const cmd = `"${msBuild}" "${solutionPath}" /t:${mainProjectName} /p:Configuration=${configName} /p:Platform=${arch} /m:${jobs} /p:BuildInParallel=true`;
-    return await buildExecutable(cmd);
+        const jobs = os.cpus().length;
+        const msBuild = MakeHelper.findMsBuild();
+    
+        //build
+        const cmd = `"${msBuild}" "${solutionPath}" /t:${mainProjectName} /p:Configuration=${configName} /p:Platform=${arch} /m:${jobs} /p:BuildInParallel=true`;
+        const success = await buildExecutable(cmd);
+
+        //break if it's only needed to build one arch
+        if (!options.build.buildAllArchs || !success)
+            return success;
+    }
+
+    return true;
 }
 
 async function buildMakefile(options)
 {
     const mainProjectName = MakeHelper.findBuildProject(options);
-
-    //const outDir = path.join(options.build.outputPath, options.build.binOutputDir);
 
     for(let i in options.build.arch)
     {
@@ -70,17 +78,15 @@ async function buildMakefile(options)
 
         //build
         const cmd = `make ${targetKey}`
-        let success = await buildExecutable(cmd, options.build.outputPath);
+        const success = await buildExecutable(cmd, options.build.outputPath);
 
-        if (!options.build.buildAllArchs)
+        //break if it's only needed to build one arch
+        if (!options.build.buildAllArchs || !success)
             return success;
 
         //clean obj files
         if (options.build.arch.length > 1)
             await buildExecutable("make clean_obj", options.build.outputPath);
-
-        if (!success)
-            return false;
     }
 
     return true;
