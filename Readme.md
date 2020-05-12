@@ -22,7 +22,7 @@ you can define platform settings for:
 ## Tips and tricks
 
 * define strings via command line
-  * `kmake examples/cpp vs2019 examples/cpp/out --define TEST_DEFINE=\"test\"`
+  * `kmake examples/full vs2019 examples/full/out --define TEST_DEFINE=\"test\"`
 
 * makefile: building for archs which are not on your system.
   * use: install: `gcc-multilib` and `g++-multilib`

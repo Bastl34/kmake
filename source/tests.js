@@ -44,7 +44,7 @@ async function runTests()
 
 async function xcodeMac()
 {
-    const project = 'examples/cpp';
+    const project = 'examples/full';
     const template = 'xcodeMac';
     const workspaceName = 'Example';
     const mainProjectName = 'bla';
@@ -55,7 +55,7 @@ async function xcodeMac()
 
 async function visualStudio()
 {
-    const project = 'examples/cpp';
+    const project = 'examples/full';
     const template = 'vs2019';
     const workspaceName = 'Example';
     const mainProjectName = 'bla';
@@ -66,7 +66,7 @@ async function visualStudio()
 
 async function linux()
 {
-    const project = 'examples/cpp';
+    const project = 'examples/full';
     const template = 'makefile';
     const workspaceName = 'Example';
     const mainProjectName = 'bla';
