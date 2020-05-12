@@ -1,6 +1,7 @@
 const colors = require('colors');
 
 const Logging = require('./helper/logging');
+const Helper = require('./helper/helper');
 
 const argParser = require('./argParser');
 const getAndApplyOptions = require('./options');
@@ -16,21 +17,31 @@ const Watcher = require('./watch');
     let watcher = new Watcher();
     let options = null;
     let running = false;
+    let process = null;
 
     let args = argParser();
 
+    let queueSteps = [];
+
     Logging.setVerbose(args.verbose);
 
-    let func = async (changeType, change = null, steps = null) =>
+    let func = async (steps = null) =>
     {
         running = true;
-        let process = null;
 
         try
         {
             // ********** options **********
             if (!options || (steps && steps.indexOf('options') != -1))
                 options = await getAndApplyOptions(args);
+
+            // ********** killing process if needed **********
+            if (process && options.build.killable)
+                process.kill();
+            else if (process && !options.build.killable)
+                process.detach();
+
+            process = null;
 
             // ********** create workspace files **********
             if (options.build.make && (!steps || steps.indexOf('make') != -1))
@@ -132,30 +143,31 @@ const Watcher = require('./watch');
         // ********** watch **********
         if (options.build.watch)
         {
-            Logging.out('watching...');
+            Logging.out(colors.blue('watching...'));
 
             await watcher.watch(options, (changeType, change, steps) =>
             {
-                Logging.out('change detected (type=' + changeType + '): ' + change);
+                Logging.out(colors.blue('change detected (type=' + changeType + '): ' + change));
 
-                if (process && options.build.killable)
-                    process.kill();
-                else if (process && !options.build.killable)
-                    process.detach();
-
-                process = null;
-
-                //TODO enqueue if running
-                if (!running)
-                    func(changeType, change, steps);
-                else
-                    Logging.error('⚠️⚠️ changing files while running is not supported at the moment ⚠️⚠️');
+                queueSteps = Helper.uniqueArrayItems([...steps, queueSteps])
             });
         }
 
         running = false;
     }
 
-    await func('init');
+    setInterval(() =>
+    {
+        if (!running && queueSteps.length > 0)
+        {
+            const steps = [...queueSteps];
+            queueSteps = [];
+
+            func(steps);
+        }
+    },100);
+
+    //initial run
+    await func();
 
 })();

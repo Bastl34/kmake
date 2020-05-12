@@ -114,8 +114,8 @@ bla:
                 - '*.data'
 
     sources:
-        - source/main.cpp
-        - source/main.h
+        - source/*.cpp
+        - source/*.h
         - source/stuff/**/*.*
 
     dependencies:

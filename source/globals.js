@@ -177,7 +177,9 @@ let globals =
             'watch': true,
             'release': false,
             'verbose': false,
-            'runAsync': true
+            'runAsync': true,
+            'cleanOutputDir': false,
+            'useInputCache': true
         }
     },
 

@@ -143,6 +143,11 @@ let Helper =
                 return reject('faile hash failed');
             }
         });
+    },
+
+    uniqueArrayItems(array)
+    {
+        return [...new Set(array)];
     }
 };
 

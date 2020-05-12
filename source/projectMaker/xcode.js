@@ -309,15 +309,11 @@ async function makeXcode(options)
             //get the relative path from output dir to source
             let absolutePath = path.resolve(lib.path);
 
-console.log(lib.path)
-
             let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + lib.name;
             if (lib.isWorkspaceLib)
                 relativePath = lib.name;
 
             sourceFileContent += '		' + lib.uid2 + ' /* ' + lib.name + ' in Frameworks */ = {isa = PBXBuildFile; fileRef = ' + lib.uid + ' /* ' + lib.name + ' */; };\n';
-
-            console.log(lib.name)
 
             //add to embed
             if (lib.name.indexOf('.dylib') != -1 || lib.name.indexOf('.framework') != -1)
@@ -617,7 +613,7 @@ async function applyIcon(projectName, project, options)
 
 async function applyAssets(projectName, project, options)
 {
-    if (!(fs.existsSync(options.build.outputPath + '/' + projectName)))
+    if (!fs.existsSync(options.build.outputPath + '/' + projectName))
         fs.mkdirSync(options.build.outputPath + '/' + projectName);
 
     let copyScript = projectName + '/copyAssets.sh';
@@ -628,7 +624,9 @@ async function applyAssets(projectName, project, options)
     scriptContent += 'mkdir "' + path.join(projectName, Globals.DEFAULT_ASSET_DIR) + '/"\n\n';
 
     //create asset dir
-    await fs.mkdirSync(path.join(options.build.outputPath, projectName, Globals.DEFAULT_ASSET_DIR));
+    const assetDir = path.join(options.build.outputPath, projectName, Globals.DEFAULT_ASSET_DIR)
+    if (!fs.existsSync(assetDir))
+        await fs.mkdirSync(assetDir);
 
     //generate copy script
     if (!options.build.skipAssets && 'assets' in project)
