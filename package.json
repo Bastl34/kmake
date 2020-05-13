@@ -1,6 +1,6 @@
 {
     "name": "kmake",
-    "version": "0.0.1",
+    "version": "0.1.0",
     "description": "build tool for c++ projects (node js based)",
     "main": "index.js",
     "scripts": {

@@ -113,12 +113,15 @@ let globals =
         'runAsync': false,
 
         //the dev option will enable some settings: see ARG_OPTIONS_REQUREMENTS
-        'dev': false
+        'dev': false,
+
+        'version': false,
+        'help': false
     },
 
     ARG_OPTIONS_SYNONYMS:
     {
-        'v': 'verbose',
+        've': 'verbose',
 
         //use the default config if no config was provided
         'dc': 'defaultConfig',
@@ -142,7 +145,7 @@ let globals =
 
         //build arguments
         'b': 'build',
-        'r': 'release',
+        'rel': 'release',
         'bp': 'buildProject',
         'o': 'binOutputDir',
         'baa': 'buildAllArchs',
@@ -161,7 +164,50 @@ let globals =
         'ra': 'runAsync',
 
         //the dev option will enable some settings: see ARG_OPTIONS_REQUREMENTS
-        'd': 'dev'
+        'd': 'dev',
+
+        'v': 'version',
+        'h': 'help'
+    },
+
+    ARG_DESC:
+    {
+        'verbose': 'printing out more infos',
+
+        'defaultConfig': 'if no config was set/found: use the default kmake.yml config',
+
+        'useInputCache': 'do not ask for user input everytime',
+        'cleanOutputDir': 'clear the output dir on workspace generation',
+        'skipAssets': 'do not use the assets',
+        'useDownloadCache': 'cache downloads',
+
+        'define': 'add preprocessor defines to all projects of the workspace',
+        'lib': 'add a custom library to the project',
+        'includePath': 'set include path\'s',
+        'libPath': 'set library search path\'',
+        'arch': 'specify the architecture of the output',
+
+        'make': 'create project configuration files',
+
+        'build': 'build the project',
+        'release': 'use the release configuration (false for debug)',
+        'buildProject': 'define the main project to be build',
+        'binOutputDir': 'output dir of the binary files (only for xCode at the moment)',
+        'buildAllArchs': 'build all possible architectures',
+
+        'watch': 'watch the workspace for changes - and rebuild if build was set',
+
+        'export': 'export the workspace/project to a zip or directory',
+        'exportDest': 'ouput destination of the export (supports: zip, tar, tar.gz, dmg)',
+
+        'run': 'run the project after a successful build',
+        'killable': 'if the process is allowed to be killed by kmake',
+        'runAsync': 'run the project async and to not wait for the process to end',
+
+        'dev': 'development option - this enabled a some other build options',
+
+        'version': 'prints the version',
+        'help': 'prints the help',
     },
 
     ARG_OPTIONS_REQUREMENTS:
