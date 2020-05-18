@@ -299,6 +299,7 @@ let globals =
 
         //makefile settings
         MK_CC: os.platform() == 'darwin' ? 'clang++' : 'g++',
+        MK_MAKE: os.platform() == 'win32' ? 'mingw32-make' : 'make',
         MK_DEFAULT_FLAGS: '-fPIC -Wall -Wno-unused-command-line-argument',
         MK_CPP_LANGUAGE_STANDARD: '-std=c++17',
         MK_C_LANGUAGE_STANDARD: '-std=c11',

@@ -148,6 +148,11 @@ bla:
                 arch:x86:
                     - 'lib/prebuilt/bin/makefile/linux/x86/prebuilt.a'
                     - 'lib/prebuiltDyn/bin/makefile/linux/x86/prebuiltDyn.so'
+        - 'platform:win32':
+            - 'template:makefile':
+                arch:x86:
+                    - 'lib/prebuilt/bin/makefile/win/x86/prebuilt.a'
+                    - 'lib/prebuiltDyn/bin/makefile/win/x86/prebuiltDyn.dll'
 
     hooks:
         beforePrepare:

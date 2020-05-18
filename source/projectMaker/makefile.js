@@ -46,8 +46,8 @@ const LNG_FLAG_MAP =
 const OUTPUT_BY_TYPE =
 {
     'static': '.a',
-    'dynamic': os.platform() == 'darwin' ? '.dylib' : '.so',
-    'main': '',
+    'dynamic': os.platform() == 'darwin' ? '.dylib' : os.platform() == 'win32' ? '.dll' : '.so',
+    'main': os.platform() == 'win32' ? '.exe' : '',
 };
 
 function getDefineEntry(item)
@@ -76,7 +76,7 @@ function getTargetKey(projectName, arch, archIndex, configIndex)
 
 function getBinDir(platform, config)
 {
-    return path.join(Globals.DEFAULT_BIN_DIR, platform, config);
+    return FileHelper.join(Globals.DEFAULT_BIN_DIR, platform, config);
 }
 
 function getCC(project)
@@ -177,12 +177,12 @@ async function makeMakefile(options)
                 filePathRelative = filePathRelative.substr(project.workingDir.length + 1);
 
             //get the relative path from output dir to source
-            let absolutePath = path.resolve(file);
+            let absolutePath = FileHelper.resolve(file);
             let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + path.basename(file);
             let extname = path.extname(relativePath);
 
-            let outPath = path.join(Globals.DEFAULT_OBJECTS_DIR, relativePath.replace(/\.\.\//g, '')) + '.o';
-            let outDir = path.dirname(path.join(options.build.outputPath,outPath));
+            let outPath = FileHelper.join(Globals.DEFAULT_OBJECTS_DIR, relativePath.replace(/\.\.\//g, '')) + '.o';
+            let outDir = path.dirname(FileHelper.join(options.build.outputPath,outPath));
 
             //create all output dirs
             fs.mkdirSync(outDir, { recursive: true });
@@ -226,8 +226,8 @@ async function makeMakefile(options)
                     outputType = OUTPUT_TYPE_MAP[outputType];
 
                 let outDir = getBinDir(platform, config);
-                let outPath = path.join(outDir, projectName + OUTPUT_BY_TYPE[outputType]);
-                let outPathAbsolute = path.resolve(path.join(options.build.outputPath, outPath));
+                let outPath = FileHelper.join(outDir, projectName + OUTPUT_BY_TYPE[outputType]);
+                let outPathAbsolute = FileHelper.resolve(FileHelper.join(options.build.outputPath, outPath));
                 let outBaseName = path.basename(outPath);
 
                 //dependencies
@@ -242,7 +242,7 @@ async function makeMakefile(options)
                         if (libOutputType in OUTPUT_BY_TYPE)
                             libOutputType = OUTPUT_BY_TYPE[libOutputType];
 
-                        libsContent += ' ' + path.join(outDir, lib + libOutputType);
+                        libsContent += ' ' + FileHelper.join(outDir, lib + libOutputType);
                         //libsContent += ' -L' + path.dirname(path.join(outDir, lib + libOutputType));
                         //libsContent += ' -l' + path.basename(lib);
 
@@ -252,7 +252,7 @@ async function makeMakefile(options)
                     {
                         if (fs.existsSync(lib))
                         {
-                            let libAbsolute = path.resolve(lib);
+                            let libAbsolute = FileHelper.resolve(lib);
                             pathRelative = FileHelper.relative(options.build.outputPath, libAbsolute);
                             libsContent += ' ' + pathRelative;
                         }
@@ -270,6 +270,8 @@ async function makeMakefile(options)
                 let installName = `-dynamiclib -install_name "@executable_path/${outBaseName}"`;
                 if (os.platform() == 'linux')
                     installName = '-Wl,-soname,\'$$$$ORIGIN/'+outBaseName+'\'';
+                else if (os.platform() == 'win32')
+                    installName = '';
 
                 if (outputType == 'static')
                     targets += `	$(AR) $(ARFLAGS) ${outPath} ${objectList.join(' ')}\n\n`;
@@ -435,6 +437,8 @@ async function applyPlatformData(projectName, project, options)
             let rpath = `-Wl,-rpath,"@executable_path"`;
             if (os.platform() == 'linux')
                 rpath = '-Wl,-rpath,\'$$$$ORIGIN\'';
+            else (os.platform() == 'win32')
+                rpath = '';
 
             linkerFlagsContent += rpath;
 
@@ -462,7 +466,7 @@ async function applyProjectSettings(projectName, project, options)
 
     files.push(options.build.outputPath + '/' + projectName + '.mk');
 
-    files.map(file => path.resolve(file));
+    files.map(file => FileHelper.resolve(file));
 
     for(let settingsKey in Globals.DEFAULT_BUILD_SETTINGS)
     {
@@ -543,7 +547,7 @@ async function applyCopyStep(projectName, project, options)
                     if (fs.existsSync(lib) && lib.indexOf(OUTPUT_BY_TYPE.dynamic) != -1)
                     {
                         let from = FileHelper.relative(options.build.outputPath, lib);
-                        let to = path.join(getBinDir(platform, config), path.basename(from));
+                        let to = FileHelper.join(getBinDir(platform, config), path.basename(from));
 
                         copyContent += `	cp -f ${from} ${to}\n`;
                     }
@@ -562,41 +566,66 @@ async function applyAssets(projectName, project, options)
 
     if ('assets' in project && !options.build.skipAssets)
     {
-        let copyScript = 'copyAssets.sh';
+        let copyScript = os.platform() == 'win32' ? 'copyAssets.cmd' : 'copyAssets.sh';
         let copyScriptOutPath = options.build.outputPath + '/' + copyScript;
 
         let scriptContent = '';
-        scriptContent += 'rm  -rf "' + path.join(Globals.DEFAULT_ASSET_DIR) + '/"\n';
-        scriptContent += 'mkdir "' + path.join(Globals.DEFAULT_ASSET_DIR) + '/"\n\n';
+        if (os.platform() == 'win32')
+        {
+            scriptContent += 'rmdir "' + path.join(Globals.DEFAULT_ASSET_DIR) + ' /s /Q "\n';
+            scriptContent += 'md "' + path.join(Globals.DEFAULT_ASSET_DIR) + '/"\n\n';
+        }
+        else
+        {
+            scriptContent += 'rm  -rf "' + FileHelper.join(Globals.DEFAULT_ASSET_DIR) + '/"\n';
+            scriptContent += 'mkdir "' + FileHelper.join(Globals.DEFAULT_ASSET_DIR) + '/"\n\n';
+        }
 
         //create asset dir
-        await fs.mkdirSync(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR));
+        await fs.mkdirSync(FileHelper.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR));
 
         //generate copy script
         for(let i in project.assets)
         {
             let asset = project.assets[i];
 
-            let source = path.resolve(path.join(project.workingDir, asset.source)) + '/';
+            let source = path.resolve(path.join(project.workingDir, asset.source));
+            if (FileHelper.isDir(source) && os.platform() != 'win32')
+                source += '/';
+
             let dest = path.join(Globals.DEFAULT_ASSET_DIR, asset.destination);
 
-            let exclude = '';
+            let excludeRSync = '';
+            let excludeXCopy = '';
             if ('exclude' in asset)
             {
                 asset.exclude.forEach(excludeItem =>
                 {
-                    exclude += `--exclude "${excludeItem}" `;
+                    excludeRSync += `--exclude "${excludeItem}" `;
+                    excludeXCopy += excludeItem.replace('*.', '.').replace('.*', '.')+'\r\n';
                 });
             }
 
-            let rsync = `rsync -av ${exclude.trim()} "${source}" "${dest}"\n`;
-            scriptContent += rsync;
+            const xCopyExcludeFile = projectName + '_' + i + '_excludes.txt';
+            const cXopyExcludeFilePath = path.join(options.build.outputPath, xCopyExcludeFile);
+            fs.writeFileSync(cXopyExcludeFilePath, excludeXCopy);
+
+            const rsync = `rsync -av ${excludeRSync.trim()} "${source}" "${dest}"\n`;
+            const cxopy = `call xcopy "${source}" "${dest}" /E /I /Y /exclude:${xCopyExcludeFile}\r\n`;
+
+            if (os.platform() == 'win32')
+                scriptContent += cxopy;
+            else
+                scriptContent += rsync;
         }
 
         fs.writeFileSync(copyScriptOutPath, scriptContent);
         fs.chmodSync(copyScriptOutPath, 0o744);
 
-        assetsContent += `	sh ${copyScript}\n\n`;
+        if (os.platform() == 'win32')
+            assetsContent += `	${copyScript}\n\n`;
+        else
+            assetsContent += `	sh ${copyScript}\n\n`;
     }
 
     let projectFilePath = options.build.outputPath + '/' + projectName + '.mk';

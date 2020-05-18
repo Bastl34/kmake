@@ -63,6 +63,12 @@ let Helper =
         return parentDirectoryPaths;
     },
 
+    isDir(path)
+    {
+        const fileStat = fs.statSync(path);
+        return fileStat.isDirectory();
+    },
+
     normalize(item)
     {
         return path.normalize(item).replace(/\\/g, '/');
@@ -71,6 +77,11 @@ let Helper =
     resolve(item)
     {
         return path.resolve(item).replace(/\\/g, '/');
+    },
+
+    join(...items)
+    {
+        return path.join(...items).replace(/\\/g, '/');
     },
 
     relative(from, to)

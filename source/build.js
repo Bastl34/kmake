@@ -2,8 +2,8 @@ const os = require('os');
 const path = require('path');
 const Exec = require('./helper/exec');
 
+const Globals = require('./globals');
 const MakeHelper = require('./helper/makeHelper');
-
 const Logging = require('./helper/logging');
 
 
@@ -65,9 +65,21 @@ async function buildVisualStudio(options)
     return true;
 }
 
+function getMake(project)
+{
+    let make = Globals.DEFAULT_BUILD_SETTINGS.MK_MAKE;
+
+    if (project.settings && 'MK_MAKE' in project.settings)
+        make = project.settings['MK_MAKE'];
+
+    return make;
+}
+
 async function buildMakefile(options)
 {
     const mainProjectName = MakeHelper.findBuildProject(options);
+
+    const make = getMake(options[mainProjectName]);
 
     for(let i in options.build.arch)
     {
@@ -77,7 +89,7 @@ async function buildMakefile(options)
         const targetKey = mainProjectName + "_" + archName + '_' + configName;
 
         //build
-        const cmd = `make ${targetKey}`
+        const cmd = `${make} ${targetKey}`
         const success = await buildExecutable(cmd, options.build.outputPath);
 
         //break if it's only needed to build one arch
@@ -86,7 +98,7 @@ async function buildMakefile(options)
 
         //clean obj files
         if (options.build.arch.length > 1)
-            await buildExecutable("make clean_obj", options.build.outputPath);
+            await buildExecutable(`${make} clean_obj`, options.build.outputPath);
     }
 
     return true;

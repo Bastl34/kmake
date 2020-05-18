@@ -4,4 +4,9 @@ clean:
 	rm -rf bin obj
 
 clean_obj:
-	find . -name "*.o" -type f -delete
+	ifeq ($(OS),Windows_NT)
+		#del /s *.o *.d *.elf *.map *.log
+		del /s *.o
+	else
+		find . -name "*.o" -type f -delete
+	endif

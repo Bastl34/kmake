@@ -6,8 +6,11 @@ const Exec = require('./helper/exec');
 
 const tempDir = 'testTemp';
 
+const additionalArgs = process.argv.splice(2).join(' ');
+
 async function run(cmd)
 {
+    cmd = (cmd + " " + additionalArgs).trim();
     const p = new Exec(cmd);
     //p.on('stdout', out => console.log(out.trimRight()));
     //p.on('stderr', out => console.log(out.trimRight()));
