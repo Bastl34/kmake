@@ -20,7 +20,7 @@ kmake is a build tool with live rebuild support for c++ projects.
 ## Requrements
 * node.js >=12
 * Windows:
-  * Visual Studio 2019
+  * Visual Studio 2019 or MinGW
 * Mac:
   * xCode or Clang
 * Linux:
@@ -35,7 +35,7 @@ kmake is a build tool with live rebuild support for c++ projects.
 ## Dev
 * `npm run dev-mac` (xCode)
 * `npm run dev-vs` (Visual Studio 2019)
-* `npm run dev-mk` (Makefile)
+* `npm run dev-mk` (Makefile - GCC, Clang, MinGW)
 
 ## Plaftorm settings
 * see `examples/full/kmake.yml` as a full example
