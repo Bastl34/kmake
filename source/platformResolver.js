@@ -19,12 +19,12 @@ function platformResolver(options, buildOptions)
 
         let hasResolvableKey = Globals.PLATFORM_RESOLVER.indexOf(optionKey) != -1;
 
-        //resolve
+        // resolve
         if (hasResolvableKey)
         {
             newOption = resolvePlatform(option, buildOptions);
         }
-        //recursive
+        // recursive
         else
         {
             if (option instanceof Object)
@@ -33,7 +33,7 @@ function platformResolver(options, buildOptions)
                 newOption = options[optionKey];
         }
 
-        //add to array
+        // add to array
         if (newOption !== undefined)
         {
             if (isArray)
@@ -54,7 +54,7 @@ function resolvePlatform(options, build)
     {
         let option = options[optionKey];
 
-        //check if option is an object -> otherwise add it directly
+        // check if option is an object -> otherwise add it directly
         if (!(option instanceof Object))
         {
             newContent.push(option);
@@ -99,7 +99,7 @@ function resolveTemplate(options, build)
     {
         let option = options[optionKey];
 
-        //check if option is an object -> otherwise add it directly
+        // check if option is an object -> otherwise add it directly
         if (!(option instanceof Object))
         {
             newContent.push(option);
@@ -120,7 +120,7 @@ function resolveTemplate(options, build)
                 if (match && match instanceof Array)
                     match = match[0];
 
-                //remove not matching archs
+                // remove not matching archs
                 if (match == build.template)
                 {
                     if (typeof option[keyName] === 'object' && option[keyName] instanceof Array)
@@ -153,7 +153,7 @@ function resolveArchitecture(options, build)
     {
         let option = options[optionKey];
 
-        //check if option is an object -> otherwise add it directly to gerneic
+        // check if option is an object -> otherwise add it directly to gerneic
         if (!(option instanceof Object))
         {
             newContent.generic.push(option);
@@ -205,12 +205,12 @@ function resolveConfiguration(options)
     let newContent = {generic: []};
     Globals.CONFIGURATIONS.forEach(config => { newContent[config] = []; });
 
-    //resolve all
+    // resolve all
     for(let optionKey in options)
     {
         let option = options[optionKey];
 
-        //check if option is an object -> otherwise add it directly to gerneric
+        // check if option is an object -> otherwise add it directly to gerneric
         if (!(option instanceof Object))
         {
             newContent.generic.push(option);

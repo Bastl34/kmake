@@ -49,12 +49,12 @@ const tests =
 
         for(let testName in tests)
         {
-            //prepare data dir
+            // prepare data dir
             if (fs.existsSync(tempDir))
                 await fs.promises.rmdir(tempDir, {recursive: true});
             await fs.promises.mkdir(tempDir);
 
-            //run test
+            // run test
             try
             {
                 process.stdout.write(`test "${testName}" running... `);
@@ -83,7 +83,7 @@ const tests =
         else
             console.error(colors.red('❌❌❌ tests failed ❌❌❌'));
 
-        //cleanup
+        // cleanup
         if (fs.existsSync(tempDir))
             await fs.promises.rmdir(tempDir, {recursive: true});
 

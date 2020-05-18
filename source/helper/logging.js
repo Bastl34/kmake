@@ -52,7 +52,7 @@ let Logging =
             console.log(colors.rainbow(...args));
     },
 
-    //ignore verbose flag
+    // ignore verbose flag
     out(...args)
     {
         console.log(...args);

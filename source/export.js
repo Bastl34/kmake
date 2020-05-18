@@ -99,12 +99,12 @@ async function getVisualStudioPaths(options)
 
     const outDir = path.join(options.build.outputPath);
 
-    //assets
+    // assets
     let assetDir = path.join(outDir, Globals.DEFAULT_ASSET_DIR);
     if (fs.existsSync(path.resolve(assetDir)))
         paths.push({relative: Globals.DEFAULT_ASSET_DIR, absolute: path.resolve(assetDir)});
 
-    //bins
+    // bins
     for(let i in options.build.arch)
     {
         let arch = options.build.arch[i];
@@ -116,7 +116,7 @@ async function getVisualStudioPaths(options)
         let dirAbssolute = path.resolve(binDir);
         let tempDir = path.resolve(path.join(outDir, Globals.DEFAULT_TEMP_DIR, arch));
 
-        //copy to a temp dir first to filter out unneeded files
+        // copy to a temp dir first to filter out unneeded files
         await copy(dirAbssolute, tempDir, {overwrite: true, dot: false, filter: ['**/*.dll', '**/*.exe']});
 
         paths.push({relative: arch, absolute: tempDir});
@@ -131,12 +131,12 @@ async function getMakefilePaths(options)
 
     const outDir = path.join(options.build.outputPath);
 
-    //assets
+    // assets
     let assetDir = path.join(outDir, Globals.DEFAULT_ASSET_DIR);
     if (fs.existsSync(path.resolve(assetDir)))
         paths.push({relative: Globals.DEFAULT_ASSET_DIR, absolute: path.resolve(assetDir)});
 
-    //bins
+    // bins
     let binDir = path.join(outDir, Globals.DEFAULT_BIN_DIR);
     paths.push({relative: path.basename(Globals.DEFAULT_BIN_DIR), absolute: path.resolve(binDir)});
 

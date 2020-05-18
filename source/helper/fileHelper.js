@@ -34,7 +34,7 @@ let Helper =
         outerDirPath = outerDirPath.replace(/\\/g, '/');
         subDirPath = subDirPath.replace(/\\/g, '/');
 
-        //if the paths are the same or the sub dir path is smaller -> it's not a subdir
+        // if the paths are the same or the sub dir path is smaller -> it's not a subdir
         if (outerDirPath == subDirPath || subDirPath.length < outerDirPath.length)
             return false;
 

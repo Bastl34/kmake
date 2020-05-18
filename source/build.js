@@ -53,11 +53,11 @@ async function buildVisualStudio(options)
         const jobs = os.cpus().length;
         const msBuild = MakeHelper.findMsBuild();
     
-        //build
+        // build
         const cmd = `"${msBuild}" "${solutionPath}" /t:${mainProjectName} /p:Configuration=${configName} /p:Platform=${arch} /m:${jobs} /p:BuildInParallel=true`;
         const success = await buildExecutable(cmd);
 
-        //break if it's only needed to build one arch
+        // break if it's only needed to build one arch
         if (!options.build.buildAllArchs || !success)
             return success;
     }
@@ -88,15 +88,15 @@ async function buildMakefile(options)
 
         const targetKey = mainProjectName + "_" + archName + '_' + configName;
 
-        //build
+        // build
         const cmd = `${make} ${targetKey}`
         const success = await buildExecutable(cmd, options.build.outputPath);
 
-        //break if it's only needed to build one arch
+        // break if it's only needed to build one arch
         if (!options.build.buildAllArchs || !success)
             return success;
 
-        //clean obj files
+        // clean obj files
         if (options.build.arch.length > 1)
             await buildExecutable(`${make} clean_obj`, options.build.outputPath);
     }
@@ -114,7 +114,7 @@ async function buildXcodeMac(options)
 
     const configName = options.build.release ? 'Release' : 'Debug';
 
-    //build
+    // build
     const cmd = `xcodebuild build -configuration ${configName} -workspace ${workspacePath}.xcworkspace -scheme ${mainProjectName} -derivedDataPath ${outDir}`;
     return await buildExecutable(cmd);
 }

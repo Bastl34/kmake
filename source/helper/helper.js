@@ -10,14 +10,14 @@ let Helper =
     {
         for (let i in o)
         {
-            //call function
+            // call function
             let res = fn.apply(this, [i, o[i]]);
 
-            //apply replacement if needed
+            // apply replacement if needed
             if (res != undefined)
                 o[i] = res;
 
-            //recursive only for objects
+            // recursive only for objects
             if (o[i] !== null && typeof (o[i]) === 'object')
                 Helper.recursiveReplace(o[i], fn);
         }
@@ -83,19 +83,19 @@ let Helper =
 
     getValueOfStringContent(value)
     {
-        //bool
+        // bool
         if (value == 'true')
             return true;
         else if (value == 'false')
             return false;
-        //float
+        // float
         else if (!isNaN(value) && !isNaN(parseFloat(value, 10)) && value.toString().indexOf('.') != -1)
             return parseFloat(value, 10);
-        //int
+        // int
         else if (!isNaN(value) && !isNaN(parseInt(value, 10)))
             return parseInt(value, 10);
 
-        //other (string)
+        // other (string)
         return value;
     },
 

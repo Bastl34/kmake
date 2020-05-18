@@ -175,7 +175,7 @@ const Watcher = require('./watch');
 
         running = false;
 
-        //end process if needed (if watcher is not runing)
+        // end process if needed (if watcher is not runing)
         if (!options.build.watch)
             process.exit(success ? 0 : 1)
     }

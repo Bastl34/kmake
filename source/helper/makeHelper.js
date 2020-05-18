@@ -1,10 +1,12 @@
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 
 const Logging = require('./logging');
 const Globals = require('../globals');
+const Exec = require('./exec');
 
 let MakeHelper =
 {
@@ -24,6 +26,50 @@ let MakeHelper =
             Logging.error('"' + command + '" failed');
             throw Error("hook failed");
         }
+    },
+
+    async findBuildTool()
+    {
+        // ************ windows ***********
+        if (os.platform('os'))
+        {
+            // visual studio
+            const vs = this.findMsBuild();
+            if (vs)
+                return 'vs';
+
+            // minGW
+            const found = await (new Exec(`${Globals.DEFAULT_BUILD_SETTINGS.MK_MAKE} -v`)).waitForExit();
+
+            if (found)
+                return 'mk';
+        }
+        // ************ mac ***********
+        else if (os.platform('darwin'))
+        {
+            // Xcode
+            let found = await (new Exec(`xcodebuild -version`)).waitForExit();
+
+            if (found)
+                return 'xcode';
+
+            // clang / make
+            found = await (new Exec(`clang --version`)).waitForExit();
+
+            if (found)
+                return 'mk';
+        }
+        // ************ linux ***********
+        else if (os.platform('linux'))
+        {
+            // gcc / make
+            const found = await (new Exec(`gcc --version`)).waitForExit();
+
+            if (found)
+                return 'mk';
+        }
+
+        return ''
     },
 
     findMsBuild()
@@ -47,7 +93,7 @@ let MakeHelper =
         const versions = fs.readdirSync(basePath);
         versions.sort((a, b) => { return b - a; });
 
-        //check all possibilites
+        // check all possibilites
         for(let i in versions)
         {
             const version = versions[i];
@@ -69,7 +115,7 @@ let MakeHelper =
 
     findBuildProject(options)
     {
-        //if build project is set
+        // if build project is set
         if (options.buildProject)
         {
             if (!(options.buildProject in options))
@@ -79,17 +125,17 @@ let MakeHelper =
             return options.buildProject;
         }
 
-        //find main project
+        // find main project
         if (!('workspace' in options))
             throw Error('workspace not found');
 
         if (!('content' in options.workspace))
             throw Error('workspace has no content');
 
-        //sort projects by type
+        // sort projects by type
         let projects = [...options.workspace.content];
 
-        //sort projects by output type -> to find the best matching project -> see globals -> PROJECT_TYPES for sorting order
+        // sort projects by output type -> to find the best matching project -> see globals -> PROJECT_TYPES for sorting order
         projects.sort((a, b) =>
         {
             let aType = options[a]['outputType'];

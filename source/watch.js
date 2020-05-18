@@ -27,7 +27,7 @@ class Watcher
     {
         await this.clear();
 
-        //kmake files
+        // kmake files
         options.projectFiles.forEach(file =>
         {
             this.files.push({path: path.resolve(file), exclude: null, steps: projectFileSteps});
@@ -38,7 +38,7 @@ class Watcher
             let projectName = options.workspace.content[i];
             let project = options[projectName];
 
-            //sources
+            // sources
             project.sourcesBase.forEach(file =>
             {
                 file = FileHelper.resolve(path.join(project.workingDir, file));
@@ -47,7 +47,7 @@ class Watcher
                 this.files.push({path: file, exclude: null, steps: sourceFileSteps});
             });
 
-            //assets
+            // assets
             if (project.assets)
             {
                 project.assets.forEach(asset =>
@@ -84,7 +84,7 @@ class Watcher
 
             if (found)
             {
-                //ignore if this was fired to fast
+                // ignore if this was fired to fast
                 if (this.timeout)
                     return;
 

@@ -118,12 +118,12 @@ async function getAndApplyOptions(args)
         {
             let item = options.workspace.settings[key];
 
-            //not not overwrite if the setting was set by commandline params
+            // not not overwrite if the setting was set by commandline params
             if (key in Globals.ARG_OPTIONS_DEFAULT && JSON.stringify(options.build[key]) == JSON.stringify(Globals.ARG_OPTIONS_DEFAULT[key]))
                 options.build[key] = item;
         }
 
-        //apply verbose setting
+        // apply verbose setting
         Logging.setVerbose(options.build.verbose);
     }
 
@@ -134,7 +134,7 @@ async function getAndApplyOptions(args)
     {
         try
         {
-            //save input cache
+            // save input cache
             let inputCachePath = path.join(args.projectDir, Globals.CACHE_FILES.INPUT);
 
             let inputCache = {};
@@ -152,7 +152,7 @@ async function getAndApplyOptions(args)
                     if (inputVar in inputCache)
                         nameStr = inputVar + ' (' + inputCache[inputVar] + '): ';
 
-                    //read value
+                    // read value
                     let value = readlineSync.question(nameStr);
 
                     if (!value && inputVar in inputCache)
@@ -173,7 +173,7 @@ async function getAndApplyOptions(args)
                 {
                     let inputVar = options.inputs[key];
 
-                    //read value from cache
+                    // read value from cache
                     let value = null;
                     if (inputVar in inputCache)
                         value = inputCache[inputVar];
@@ -182,7 +182,7 @@ async function getAndApplyOptions(args)
                 }
             }
 
-            //saving input data
+            // saving input data
             let dump = yaml.safeDump(inputCache);
             fs.writeFileSync(inputCachePath, dump);
         }
@@ -288,7 +288,7 @@ async function getAndApplyOptions(args)
         // ********** PROJECT_NAME
         replacements['PROJECT_NAME'] = optionKey;
 
-        //replace
+        // replace
         Helper.recursiveReplace(project, (key, object) =>
         {
             if (typeof object === "string")
@@ -320,7 +320,7 @@ async function getAndApplyOptions(args)
             if (!('settings' in options[project]))
                 options[project].settings = {};
 
-            //apply only if there is no project specific overwrite
+            // apply only if there is no project specific overwrite
             if (!(settingsKey in options[project].settings))
                 options[project].settings[settingsKey] = options.workspace.settings[settingsKey];
         }
@@ -378,7 +378,7 @@ async function getAndApplyOptions(args)
 
             project.defines.push('PROJECT_' + optionKey.toUpperCase());
 
-            //this is the relative path based on the execution file
+            // this is the relative path based on the execution file
             let assetDir = Globals.ASSET_DIRS_BY_TEMPLATE[args.template];
             if (typeof assetDir !== "string")
             {
@@ -392,7 +392,7 @@ async function getAndApplyOptions(args)
 
             project.defines.push({'ASSET_DIR': '"' + FileHelper.normalize(assetDir) + '"'});
 
-            //absolute path to project
+            // absolute path to project
             project.defines.push({'PROJECT_PATH': '"' + FileHelper.resolve(project.workingDir + '"')});
         }
     }
@@ -438,8 +438,8 @@ async function getAndApplyOptions(args)
 
     // ******************** resolve dependency files ********************
 
-    //this is basicly the same as the next part
-    //but for dependencies it could be that they are from the workspace -> so an extra check is needed
+    // this is basicly the same as the next part
+    // but for dependencies it could be that they are from the workspace -> so an extra check is needed
     Logging.info('resolving dependency files...');
     for(let itemKey in options)
     {
@@ -450,12 +450,12 @@ async function getAndApplyOptions(args)
             {
                 if (typeof object === "string")
                 {
-                    //only resolve paths for items not in workspace
+                    // only resolve paths for items not in workspace
                     if (options.workspace.content.indexOf(object) == -1)
                     {
                         let filePath = item.workingDir + '/' + object;
 
-                        //only resolve libs with paths
+                        // only resolve libs with paths
                         if (fs.existsSync(filePath))
                             object = FileHelper.normalize(filePath);
                     }
@@ -481,7 +481,7 @@ async function getAndApplyOptions(args)
         {
             let property = option[propKey];
 
-            //only for resolvingItems items
+            // only for resolvingItems items
             if (resolvingItems.indexOf(propKey) != -1)
             {
                 Helper.recursiveReplace(property, (key, object) =>
@@ -558,7 +558,7 @@ async function download(options)
         }
     }
 
-    //save download cache
+    // save download cache
     let cachePath = path.join(options.build.projectDir, Globals.CACHE_FILES.DOWNLOAD);
     let cache = {};
 
@@ -642,7 +642,7 @@ async function download(options)
         cache[i] = true;
     }
 
-    //save cache
+    // save cache
     let dump = yaml.safeDump(cache);
     fs.writeFileSync(cachePath, dump);
 }

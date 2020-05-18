@@ -4,7 +4,7 @@ let globals =
 {
     TEMPLATE_DIR: 'templates',
 
-    //keep the order -> the order is used to find the "main" project for the build command
+    // keep the order -> the order is used to find the "main" project for the build command
     PROJECT_TYPES:
     {
         main: 1,
@@ -29,25 +29,26 @@ let globals =
 
         'mac': 'xcodeMac',
         'xcodemac': 'xcodeMac',
+        'xcode': 'xcodeMac',
 
         'mk': 'makefile',
         'makefile': 'makefile',
         'Makefile': 'makefile'
     },
 
-    //all supported archs
-    //if archs is not supported -> not matching archs from kmake.yml are not applied
-    //if you want to add a new template/arch add it here
-    //the default target is based on the order
+    // all supported archs
+    // if archs is not supported -> not matching archs from kmake.yml are not applied
+    // if you want to add a new template/arch add it here
+    // the default target is based on the order
     ARCHS:
     {
         'xcodeMac': ['x86_64'],
         'vs2019': ['x64', 'win32'],
         'makefile': ['x86_64', 'x86'],
 
-        //TODO
-        //'android': ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'],
-        //'ios': ['armv7', 'arm64', 'i386', 'x86_64']
+        // TODO
+        // 'android': ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'],
+        // 'ios': ['armv7', 'arm64', 'i386', 'x86_64']
     },
 
     ARCHS_MAP:
@@ -79,7 +80,7 @@ let globals =
 
         'verbose': true,
 
-        //use the default config if no config was provided
+        // use the default config if no config was provided
         'defaultConfig': true,
 
         'useInputCache': false,
@@ -93,29 +94,29 @@ let globals =
         'libPath': [],
         'arch': [],
 
-        //make arguments
+        // make arguments
         'make': true,
 
-        //build arguments
+        // build arguments
         'build': false,
         'release': true,
         'buildProject': null,
         'binOutputDir': './bin',
         'buildAllArchs': false,
 
-        //watch arguments
+        // watch arguments
         'watch': false,
 
-        //export arguments
+        // export arguments
         'export': false,
         'exportDest': null,
 
-        //run arguments
+        // run arguments
         'run': false,
         'killable': true,
         'runAsync': false,
 
-        //the dev option will enable some settings: see ARG_OPTIONS_REQUREMENTS
+        // the dev option will enable some settings: see ARG_OPTIONS_REQUREMENTS
         'dev': false,
 
         'version': false,
@@ -129,7 +130,7 @@ let globals =
 
         've': 'verbose',
 
-        //use the default config if no config was provided
+        // use the default config if no config was provided
         'dc': 'defaultConfig',
 
         'ic': 'useInputCache',
@@ -137,39 +138,39 @@ let globals =
         'sa': 'skipAssets',
         'dlc': 'useDownloadCache',
 
-        //gcc style args
-        //WARNING: other short/synonym parameters are not allowed to start with the first letter of the following
-        //(because of the arg parser logic)
+        // gcc style args
+        // WARNING: other short/synonym parameters are not allowed to start with the first letter of the following
+        // (because of the arg parser logic)
         'D': 'define',
         'l': 'lib',
         'I': 'includePath',
         'L': 'libPath',
         'a': 'arch',
 
-        //make arguments
+        // make arguments
         'm': 'make',
 
-        //build arguments
+        // build arguments
         'b': 'build',
         'rel': 'release',
         'bp': 'buildProject',
         'bo': 'binOutputDir',
         'baa': 'buildAllArchs',
 
-        //watch arguments
+        // watch arguments
         'w': 'watch',
         'observe': 'watch', //this is because it's somehow not possible to use 'watch' or 'w' on windows in combination with nodemon
 
-        //export arguments
+        // export arguments
         'e': 'export',
         'eout': 'exportDest',
 
-        //run arguments
+        // run arguments
         'r': 'run',
         'k': 'killable',
         'ra': 'runAsync',
 
-        //the dev option will enable some settings: see ARG_OPTIONS_REQUREMENTS
+        // the dev option will enable some settings: see ARG_OPTIONS_REQUREMENTS
         'd': 'dev',
 
         'v': 'version',
@@ -219,7 +220,7 @@ let globals =
         'help': 'prints the help',
     },
 
-    //this references items of Global (this)
+    // this references items of Global (this)
     ARG_POSSIBILITIES:
     {
         'template': 'TEMPLATES',
@@ -273,7 +274,7 @@ let globals =
         'makefile': '../../../assets',
     },
 
-    //the default target is based on the order
+    // the default target is based on the order
     CONFIGURATIONS: ['release', 'debug'],
 
     PLATFORM_RESOLVER:
@@ -286,7 +287,7 @@ let globals =
         'linkerFlags',
         'downloads',
 
-        //hooks
+        // hooks
         'beforePrepare',
         'preBuild',
         'preLink',
@@ -296,10 +297,10 @@ let globals =
 
     DEFAULT_BUILD_SETTINGS:
     {
-        //some generics
+        // some generics
         DISPLAY_NAME: 'Test',
 
-        //xcode settings
+        // xcode settings
         MACOSX_DEPLOYMENT_TARGET: '10.15',
         GCC_C_LANGUAGE_STANDARD: 'gnu11',
         CLANG_CXX_LIBRARY: 'libc++',
@@ -309,11 +310,11 @@ let globals =
         HUMAN_READABLE_COPYRIGHT: 'Copyright',
         BUNDLE_VERSION: '1.0.0',
 
-        //visual studio settings
+        // visual studio settings
         VS_C_RUNTIME: 'MT', //MT or MD
         VS_LANGUAGE_STANDARD: 'stdcpp17',
 
-        //makefile settings
+        // makefile settings
         MK_CC: os.platform() == 'darwin' ? 'clang++' : 'g++',
         MK_MAKE: os.platform() == 'win32' ? 'mingw32-make' : 'make',
         MK_DEFAULT_FLAGS: '-fPIC -Wall -Wno-unused-command-line-argument',

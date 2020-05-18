@@ -68,8 +68,6 @@ function getDefineEntry(item)
     if (item instanceof Object)
     {
         let name = Object.keys(item)[0];
-        //let isStr = typeof item[name] === 'string';
-        //return name + "=" + (isStr ? '"' + item[name] + '"' : item[name]);
         return name + "=" + item[name];
     }
 
@@ -95,7 +93,7 @@ async function makeVisualStudio(options)
 
         await copy(sourcePath, destPath, {overwrite: true});
 
-        //rename project files
+        // rename project files
         fs.renameSync(path.join(destPath,outputType+'.vcxproj'), path.join(destPath,projectName+'.vcxproj'));
         fs.renameSync(path.join(destPath,outputType+'.vcxproj.filters'), path.join(destPath,projectName+'.vcxproj.filters'));
         fs.renameSync(path.join(destPath,outputType+'.vcxproj.user'), path.join(destPath,projectName+'.vcxproj.user'));
@@ -114,7 +112,7 @@ async function makeVisualStudio(options)
     let projectDef = '';
     let platformDef = '';
 
-    //generate project ids
+    // generate project ids
     let projectIds = {}
 
     for(let i in options.workspace.content)
@@ -125,13 +123,13 @@ async function makeVisualStudio(options)
         projectIds[projectName] = projectId;
     }
 
-    //generate solution file
+    // generate solution file
     for(let i in options.workspace.content)
     {
         let projectName = options.workspace.content[i];
         let projectId = projectIds[projectName];
 
-        //project definition with all dependencies
+        // project definition with all dependencies
         projectDef += `Project("{${solutionId1}}") = "${projectName}", ".\\${projectName}\\${projectName}.vcxproj", "{${projectId}}"\n`;
         projectDef += `	ProjectSection(ProjectDependencies) = postProject\n`;
 
@@ -139,7 +137,7 @@ async function makeVisualStudio(options)
         {
             let project = options[projectName];
 
-            //use win32 release
+            // use win32 release
             let libs = [];
             if ('dependencies' in project && 'win32' in project.dependencies)
                 libs = project.dependencies['win32']['release'];
@@ -184,7 +182,7 @@ async function makeVisualStudio(options)
 
         // ********** beforePrepare hook
 
-        //use win32 release
+        // use win32 release
         if (Helper.hasKeys(project, 'hooks', 'beforePrepare', 'win32', 'release'))
         {
             for(let i in project.hooks.beforePrepare.win32.release)
@@ -205,10 +203,10 @@ async function makeVisualStudio(options)
             if (ext in SOURCE_FILETYPE_MAP)
                 type = SOURCE_FILETYPE_MAP[ext];
 
-            //dirs
+            // dirs
             let directory = path.dirname(file);
 
-            //get relative paths
+            // get relative paths
             if (project.workingDir && project.workingDir.length > 0)
                 directory = directory.substr(project.workingDir.length + 1);
 
@@ -225,7 +223,7 @@ async function makeVisualStudio(options)
                 subDirs.forEach(subDir => { directoryList[subDir] = true; });
             }
 
-            //file
+            // file
             let sourceObj =
             {
                 name: path.basename(file),
@@ -240,14 +238,14 @@ async function makeVisualStudio(options)
             soucesList.push(sourceObj);
         });
 
-        //make array out of directory list
+        // make array out of directory list
         directoryList = Object.keys(directoryList);
         let directoryObjectList = [];
 
         // ********** directories
         directoryList.forEach(dir =>
         {
-            //file
+            // file
             let sourceObj =
             {
                 name: path.basename(dir),
@@ -260,7 +258,7 @@ async function makeVisualStudio(options)
 
         directoryList = directoryObjectList;
 
-        //sort
+        // sort
         soucesList.sort((a, b) =>
         {
             if (a.path.length < b.path.length) return -1;
@@ -287,7 +285,7 @@ async function makeVisualStudio(options)
 
         soucesList.forEach(file =>
         {
-            //get the relative path from output dir to source
+            // get the relative path from output dir to source
             let absolutePath = path.resolve(file.path);
             let relativePath = path.relative(path.join(options.build.outputPath, outputType) , path.dirname(absolutePath)) + '/' + file.name;
 
@@ -356,7 +354,7 @@ async function makeVisualStudio(options)
 
         // ********** afterPrepare hook
 
-        //use win32 release
+        // use win32 release
         if (Helper.hasKeys(project, 'hooks', 'afterPrepare', 'win32', 'release'))
         {
             for(let i in project.hooks.afterPrepare.win32.release)
@@ -384,7 +382,7 @@ async function applyPlatformData(projectName, project, options)
             let config = Globals.CONFIGURATIONS[configI];
             let configKey = config.toUpperCase();
 
-            //hook: pre build
+            // hook: pre build
             let hookPreBuildContent = '';
             let hookPreBuildArray = ('hooks' in project && 'preBuild' in project.hooks) ? project['hooks']['preBuild'][platform][config] : [];
             hookPreBuildArray.forEach(item =>
@@ -392,7 +390,7 @@ async function applyPlatformData(projectName, project, options)
                 hookPreBuildContent += '        ' + item + '\r\n';
             });
 
-            //hook: post build
+            // hook: post build
             let hookPostBuildContent = '';
             let hookPostBuildArray = ('hooks' in project && 'postBuild' in project.hooks) ? project['hooks']['postBuild'][platform][config] : [];
             hookPostBuildArray.forEach(item =>
@@ -400,7 +398,7 @@ async function applyPlatformData(projectName, project, options)
                 hookPostBuildContent += '        ' + item + '\r\n';
             });
 
-            //hook: pre link
+            // hook: pre link
             let hookPreLinkContent = '';
             let hookPreLinkArray = ('hooks' in project && 'preLink' in project.hooks) ? project['hooks']['preLink'][platform][config] : [];
             hookPreLinkArray.forEach(item =>
@@ -408,7 +406,7 @@ async function applyPlatformData(projectName, project, options)
                 hookPreLinkContent += '        ' + item + '\r\n';
             });
 
-            //include
+            // include
             let includePathsContent = '';
             let includesArray = ('includePaths' in project) ? project['includePaths'][platform][config] : [];
             includesArray.forEach(item =>
@@ -418,7 +416,7 @@ async function applyPlatformData(projectName, project, options)
                 includePathsContent += '"' + item + '";';
             });
 
-            //defines
+            // defines
             let definesContent = '';
             let definesArray = ('defines' in project) ? project['defines'][platform][config] : [];
             definesArray.forEach(item =>
@@ -426,7 +424,7 @@ async function applyPlatformData(projectName, project, options)
                 definesContent += getDefineEntry(item) + ';';
             });
 
-            //libPaths
+            // libPaths
             let libPathsContent = '';
             let libsPathsArray = ('libPaths' in project) ? project['libPaths'][platform][config] : [];
             libsPathsArray.forEach(item =>
@@ -436,7 +434,7 @@ async function applyPlatformData(projectName, project, options)
                 libPathsContent += item + ';';
             });
 
-            //dependencies
+            // dependencies
             let libsContent = '';
             let libsArray = ('dependencies' in project) ? project['dependencies'][platform][config] : [];
             let ddlsAdded = {}
@@ -455,7 +453,7 @@ async function applyPlatformData(projectName, project, options)
                 }
                 else
                 {
-                    //check if there is a dll and copy the dll on post build
+                    // check if there is a dll and copy the dll on post build
                     let dllPath = lib.replace('.lib', '.dll');
                     if (fs.existsSync(dllPath) && !(dllPath in ddlsAdded))
                     {
@@ -466,7 +464,7 @@ async function applyPlatformData(projectName, project, options)
                         ddlsAdded[dllPath] = true;
                     }
 
-                    //change lib path relative to output dir
+                    // change lib path relative to output dir
                     if (!path.isAbsolute(lib))
                         lib = FileHelper.relative(path.join(options.build.outputPath, projectName), path.resolve(lib));
                 }
@@ -475,7 +473,7 @@ async function applyPlatformData(projectName, project, options)
                     libsContent += '"' + lib + '";';
             });
 
-            //buildFlags
+            // buildFlags
             let buildFlagsContent = '';
             let buildFlagsArray = ('buildFlags' in project) ? project['buildFlags'][platform][config] : [];
             buildFlagsArray.forEach(item =>
@@ -483,7 +481,7 @@ async function applyPlatformData(projectName, project, options)
                 buildFlagsContent += item + ' ';
             });
 
-            //linkerFlags
+            // linkerFlags
             let linkerFlagsContent = '';
             let linkerFlagsArray = ('linkerFlags' in project) ? project['linkerFlags'][platform][config] : [];
             linkerFlagsArray.forEach(item =>
@@ -493,7 +491,7 @@ async function applyPlatformData(projectName, project, options)
 
             let configName = Helper.capitalizeFirstLetter(config);
 
-            //apply
+            // apply
             await replace({files: projectFilePath, from: new RegExp(`<!--INCLUDES_${platform}_${configName}-->`, 'g'), to: includePathsContent.trim()});
             await replace({files: projectFilePath, from: new RegExp(`<!--DEFINES_${platform}_${configName}-->`, 'g'), to: definesContent.trim()});
             await replace({files: projectFilePath, from: new RegExp(`<!--LIB_PATHS_${platform}_${configName}-->`, 'g'), to: libPathsContent.trim()});
@@ -534,30 +532,29 @@ async function applyProjectSettings(projectName, project, options)
         {
             let platform = Globals.ARCHS[options.build.template][platformI];
 
-            //Globals.CONFIGURATIONS.forEach(config =>
             for(let configI in Globals.CONFIGURATIONS)
             {
                 let config = Globals.CONFIGURATIONS[configI];
                 let configKey = config.toUpperCase();
                 let configName = Helper.capitalizeFirstLetter(config);
 
-                //resolve value
+                // resolve value
                 let resolvedVal = null;
                 if (settingsKey in SETTINGS_MAP)
                 {
-                    //direct
+                    // direct
                     if (val in SETTINGS_MAP[settingsKey] && typeof SETTINGS_MAP[settingsKey][val] == 'string')
                         resolvedVal = SETTINGS_MAP[settingsKey][val];
 
-                    //based on config
+                    // based on config
                     if (config in SETTINGS_MAP[settingsKey] && val in SETTINGS_MAP[settingsKey][config] && typeof SETTINGS_MAP[settingsKey][config][val] == 'string')
                         resolvedVal = SETTINGS_MAP[settingsKey][config][val];
 
-                    //based on platform
+                    // based on platform
                     if (platform in SETTINGS_MAP[settingsKey] && val in SETTINGS_MAP[settingsKey][platform] && typeof SETTINGS_MAP[settingsKey][platform][val] == 'string')
                         resolvedVal = SETTINGS_MAP[settingsKey][platform][val];
 
-                    //based on platform and config
+                    // based on platform and config
                     if (platform in SETTINGS_MAP[settingsKey] && config in SETTINGS_MAP[settingsKey][platform] && val in  SETTINGS_MAP[settingsKey][platform][config])
                         resolvedVal = SETTINGS_MAP[settingsKey][platform][config][val];
                 }
@@ -592,10 +589,10 @@ async function applyAssets(projectName, project, options)
 
     let scriptContent = '';
 
-    //create asset dir
+    // create asset dir
     await fs.mkdirSync(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR));
 
-    //generate copy script
+    // generate copy script
     if (!options.build.skipAssets)
     {
         for(let i in project.assets)

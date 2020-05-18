@@ -11,7 +11,7 @@ function argParser()
 {
     let args = process.argv.slice(2);
 
-    //repacing short params and synonyms with full one
+    // repacing short params and synonyms with full one
     for(let i=0; i<args.length; ++i)
     {
         let arg = args[i];
@@ -26,7 +26,7 @@ function argParser()
         if (argName in Globals.ARG_OPTIONS_SYNONYMS)
             args[i] = '--' + Globals.ARG_OPTIONS_SYNONYMS[argName];
 
-        //gcc style args (-DMYDEF=1 --> --define MYDEF=1)
+        // gcc style args (-DMYDEF=1 --> --define MYDEF=1)
         if (isShortArg && !isLongArg)
         {
             let shortArg = null;
@@ -62,7 +62,7 @@ function argParser()
 
     let lastOptionKey = null;
 
-    //find all options
+    // find all options
     for(let i=0; i<args.length; ++i)
     {
         let arg = args[i];
@@ -72,7 +72,7 @@ function argParser()
         let isNextOptionKey = !isLastOption && args[i + 1].indexOf('--') == 0;
         let optionKeyName = isOptionKey ? arg.substr(2) : null;
 
-        //error check
+        // error check
         if (isOptionKey && !(optionKeyName in Globals.ARG_OPTIONS_DEFAULT))
         {
             Logging.warning('option key not found: ' + optionKeyName);
@@ -80,7 +80,7 @@ function argParser()
             continue;
         }
 
-        //the first argument without option is: projectPath
+        // the first argument without option is: projectPath
         if (!lastOptionKey && !isOptionKey && !obj.project)
         {
             if (obj.project === null)
@@ -113,7 +113,7 @@ function argParser()
         lastOptionKey = optionKeyName;
     }
 
-    //use current dir as project dir if not set
+    // use current dir as project dir if not set
     if (!obj.project)
         obj.project = './';
 
@@ -122,31 +122,31 @@ function argParser()
     else
         obj.projectDir = obj.project;
 
-    //find template for the current platform (if not set)
+    // find template for the current platform (if not set)
     if (!obj.template)
     {
         if (os.platform() in Globals.DEFAULT_TEMPLATE_BY_PLATFORM)
             obj.template = Globals.DEFAULT_TEMPLATE_BY_PLATFORM[os.platform()];
     }
 
-    //use default output dir if not set
+    // use default output dir if not set
     if (!obj.output)
         obj.output = path.resolve(path.join(obj.projectDir, Globals.DEFAULT_OUTPUT_DIR));
 
-    //check if something is missing
+    // check if something is missing
     if ((!obj.project || !obj.template || !obj.output))
     {
         Logging.info('kmake project.yml template outputdir');
         process.exit();
     }
 
-    //resolve requirements
+    // resolve requirements
     resolveRequirements(obj);
 
-    //appy defines
+    // appy defines
     applyDefines(obj);
 
-    //apply path items
+    // apply path items
     applyPathItems(obj);
 
     return obj;
@@ -154,7 +154,7 @@ function argParser()
 
 function resolveRequirements(obj)
 {
-    //requrements example: run needs make and build
+    // requrements example: run needs make and build
 
     let objCopy = {...obj};
 

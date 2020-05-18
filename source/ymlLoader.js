@@ -22,7 +22,7 @@ function ymlLoader(ymlPath, workingDir = null)
 
     content['projectFiles'] = [ymlPath];
 
-    //load imports
+    // load imports
     if ('imports' in parsed)
     {
         let parentYmlPath = path.dirname(ymlPath);
@@ -48,12 +48,12 @@ function ymlLoader(ymlPath, workingDir = null)
 
 function addWorkingDir(options, dir)
 {
-    //add working dir only for type=project
+    // add working dir only for type=project
     if (options)
     {
         for(let key in options)
         {
-            //only for projects
+            // only for projects
             let isIndex = !isNaN(parseInt(key));
             let isProject = Globals.MAIN_CONFIG_ITEMS.indexOf(key) === -1;
 

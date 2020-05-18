@@ -44,7 +44,7 @@ function help()
             }
         }
 
-        //possible values
+        // possible values
         const possibilities = [];
         for(let argPossKey in Globals.ARG_POSSIBILITIES)
         {

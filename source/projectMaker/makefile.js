@@ -114,10 +114,10 @@ async function makeMakefile(options)
 
     await copy(sourcePath, destPath, {overwrite: true});
 
-    //sort projects by type
+    // sort projects by type
     let projects = [...options.workspace.content];
 
-    //sort projects by output type -> to find the best matching project -> see globals -> PROJECT_TYPES for sorting order
+    // sort projects by output type -> to find the best matching project -> see globals -> PROJECT_TYPES for sorting order
     projects.sort((a, b) =>
     {
         let aType = options[a]['outputType'];
@@ -153,7 +153,7 @@ async function makeMakefile(options)
 
         // ********** beforePrepare hook
 
-        //use x86_64 release
+        // use x86_64 release
         if (Helper.hasKeys(project, 'hooks', 'beforePrepare', 'x86_64', 'release'))
         {
             for(let i in project.hooks.beforePrepare.x86_64.release)
@@ -168,7 +168,7 @@ async function makeMakefile(options)
         let sourceFileContent = '';
         project.sources.forEach(file =>
         {
-            //do not process headers
+            // do not process headers
             if (HEADERS.indexOf(path.extname(file)) != -1)
                 return;
 
@@ -176,7 +176,7 @@ async function makeMakefile(options)
             if (project.workingDir && project.workingDir.length > 0)
                 filePathRelative = filePathRelative.substr(project.workingDir.length + 1);
 
-            //get the relative path from output dir to source
+            // get the relative path from output dir to source
             let absolutePath = FileHelper.resolve(file);
             let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + path.basename(file);
             let extname = path.extname(relativePath);
@@ -184,7 +184,7 @@ async function makeMakefile(options)
             let outPath = FileHelper.join(Globals.DEFAULT_OBJECTS_DIR, relativePath.replace(/\.\.\//g, '')) + '.o';
             let outDir = path.dirname(FileHelper.join(options.build.outputPath,outPath));
 
-            //create all output dirs
+            // create all output dirs
             fs.mkdirSync(outDir, { recursive: true });
 
             let language = "";
@@ -230,7 +230,7 @@ async function makeMakefile(options)
                 let outPathAbsolute = FileHelper.resolve(FileHelper.join(options.build.outputPath, outPath));
                 let outBaseName = path.basename(outPath);
 
-                //dependencies
+                // dependencies
                 let libsContent = '';
                 let targetDepsContent = '';
                 let libsArray = ('dependencies' in project) ? project['dependencies'][platform][config] : [];
@@ -261,12 +261,12 @@ async function makeMakefile(options)
                     }
                 });
 
-                //create all output dirs
+                // create all output dirs
                 fs.mkdirSync(path.dirname(outPathAbsolute), { recursive: true });
 
                 targets += targetKey + '_build: ' + startKey + ' ' + preBuildHook + ' ' + objectList.join(' ') + '\n';
 
-                //set execution path for lib
+                // set execution path for lib
                 let installName = `-dynamiclib -install_name "@executable_path/${outBaseName}"`;
                 if (os.platform() == 'linux')
                     installName = '-Wl,-soname,\'$$$$ORIGIN/'+outBaseName+'\'';
@@ -333,7 +333,7 @@ async function makeMakefile(options)
         await applyHooks(projectName, project, options);
 
         // ********** afterPrepare hook
-        //use x86_64 release
+        // use x86_64 release
         if (Helper.hasKeys(project, 'hooks', 'afterPrepare', 'x86_64', 'release'))
         {
             for(let i in project.hooks.afterPrepare.x86_64.release)
@@ -426,7 +426,7 @@ async function applyPlatformData(projectName, project, options)
                 buildFlagsContent += item + ' ';
             });
 
-            //append global config flags
+            // append global config flags
             buildFlagsContent += '$(' + PROJECT_NAME + '_' + config.toUpperCase() + ')'
             buildFlagsContent += '\n'
 
@@ -451,7 +451,7 @@ async function applyPlatformData(projectName, project, options)
         }
     }
 
-    //apply
+    // apply
     await replace({files: projectFilePath, from: `#TARGET_COMPILER#`, to: compilerContent.trim()});
     await replace({files: projectFilePath, from: `#TARGET_INCLUDES#`, to: includePathsContent.trim()});
     await replace({files: projectFilePath, from: `#TARGET_DEFINES#`, to: definesContent.trim()});
@@ -581,10 +581,10 @@ async function applyAssets(projectName, project, options)
             scriptContent += 'mkdir "' + FileHelper.join(Globals.DEFAULT_ASSET_DIR) + '/"\n\n';
         }
 
-        //create asset dir
+        // create asset dir
         await fs.mkdirSync(FileHelper.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR));
 
-        //generate copy script
+        // generate copy script
         for(let i in project.assets)
         {
             let asset = project.assets[i];

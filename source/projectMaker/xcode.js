@@ -78,12 +78,12 @@ async function makeXcode(options)
 
         await copy(sourcePath, destPath, {overwrite: true});
 
-        //renaming
+        // renaming
         let from = path.join(destPath, 'xcshareddata/xcschemes', project.outputType + '.xcscheme');
         let to = path.join(destPath, 'xcshareddata/xcschemes', projectName + '.xcscheme');
         fs.renameSync(from, to);
 
-        //check and copy extra dependencies
+        // check and copy extra dependencies
         if (fs.existsSync(options.build.templatePath + '/' + project.outputType))
         {
             sourcePath = options.build.templatePath + '/' + project.outputType;
@@ -127,7 +127,7 @@ async function makeXcode(options)
 
         // ********** beforePrepare hook
 
-        //use x86_64 release
+        // use x86_64 release
         if (Helper.hasKeys(project, 'hooks', 'beforePrepare', 'x86_64', 'release'))
         {
             for(let i in project.hooks.beforePrepare.x86_64.release)
@@ -154,7 +154,7 @@ async function makeXcode(options)
 
             let isWorkspaceLib = (options.workspace.content.indexOf(lib) != -1 && 'workingDir' in options[lib]);
 
-            //output name/filename by outputType
+            // output name/filename by outputType
             if (isWorkspaceLib)
             {
                 if (!('outputType' in options[lib]))
@@ -182,7 +182,7 @@ async function makeXcode(options)
             if (project.workingDir && project.workingDir.length > 0)
                 libPathRelative = libPathRelative.substr(project.workingDir.length + 1);
 
-            //lib
+            // lib
             let libsObj =
             {
                 name: path.basename(lib),
@@ -206,10 +206,10 @@ async function makeXcode(options)
             if (ext in XCODE_SOURCE_FILETYPE_MAP)
                 type = XCODE_SOURCE_FILETYPE_MAP[ext];
 
-            //dirs
+            // dirs
             let directory = path.dirname(file);
 
-            //get relative paths
+            // get relative paths
             if (project.workingDir && project.workingDir.length > 0)
                 directory = directory.substr(project.workingDir.length + 1);
 
@@ -226,7 +226,7 @@ async function makeXcode(options)
                 subDirs.forEach(subDir => { directoryList[subDir] = true; });
             }
 
-            //file
+            // file
             let sourceObj =
             {
                 name: path.basename(file),
@@ -241,14 +241,14 @@ async function makeXcode(options)
             soucesList.push(sourceObj);
         });
 
-        //make array out of directory list
+        // make array out of directory list
         directoryList = Object.keys(directoryList);
         let directoryObjectList = [];
 
         // ********** directories
         directoryList.forEach(dir =>
         {
-            //file
+            // file
             let sourceObj =
             {
                 name: path.basename(dir),
@@ -261,7 +261,7 @@ async function makeXcode(options)
 
         directoryList = directoryObjectList;
 
-        //sort
+        // sort
         soucesList.sort((a, b) =>
         {
             if (a.path.length < b.path.length) return -1;
@@ -287,18 +287,18 @@ async function makeXcode(options)
 
         soucesList.forEach(file =>
         {
-            //get the relative path from output dir to source
+            // get the relative path from output dir to source
             let absolutePath = path.resolve(file.path);
             let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + file.name;
 
             sourceFileContent += '		' + file.uid2 + ' /* ' + file.name + ' in Sources */ = {isa = PBXBuildFile; fileRef = ' + file.uid + ' /* ' + file.name + ' */; };\n';
             sourceFileReferenceContent += '		' + file.uid + ' /* ' + file.name + ' */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = ' + file.type + '; name = ' + file.name + '; path = ' + relativePath + '; sourceTree = "<group>"; };\n';
 
-            //only source files
+            // only source files
             if (file.type.indexOf('sourcecode') != -1 && file.type.indexOf('.h') == -1)
                 compileFiles += '				' + file.uid2 + ' /* ' + file.name + ' in Sources */,\n';
 
-            //only header files
+            // only header files
             if (file.type.indexOf('.h') != -1)
                 headerFiles += '				' + file.uid2 + ' /* ' + file.name + ' in Sources */,\n';
         });
@@ -306,7 +306,7 @@ async function makeXcode(options)
         // ********** libs
         libsList.forEach(lib =>
         {
-            //get the relative path from output dir to source
+            // get the relative path from output dir to source
             let absolutePath = path.resolve(lib.path);
 
             let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + lib.name;
@@ -315,7 +315,7 @@ async function makeXcode(options)
 
             sourceFileContent += '		' + lib.uid2 + ' /* ' + lib.name + ' in Frameworks */ = {isa = PBXBuildFile; fileRef = ' + lib.uid + ' /* ' + lib.name + ' */; };\n';
 
-            //add to embed
+            // add to embed
             if (lib.name.indexOf('.dylib') != -1 || lib.name.indexOf('.framework') != -1)
                 sourceFileContent += '		' + lib.uid3 + ' /* ' + lib.name + ' in Embed Libraries */ = {isa = PBXBuildFile; fileRef = ' + lib.uid + ' /* ' + lib.name + ' */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };\n';
 
@@ -334,13 +334,13 @@ async function makeXcode(options)
             sourceFileReferenceContent += '		' + lib.uid + ' /* ' + lib.name + ' */ = {isa = PBXFileReference; ' + fileTypeStr + '; name = ' + lib.name + '; path = ' + relativePath + '; sourceTree = ' + sourceTree + '; };\n';
 
 
-            //add to "framework" group
+            // add to "framework" group
             libList += '				' + lib.uid + ' /* ' + lib.name + ' in Frameworks */,\n';
 
-            //add to build step
+            // add to build step
             libBuildList += '				' + lib.uid2 + ' /* ' + lib.name + ' in Frameworks */,\n';
 
-            //add to embed
+            // add to embed
             if (lib.name.indexOf('.dylib') != -1 || lib.name.indexOf('.framework') != -1)
                 libEmbedList += '				' + lib.uid3 + ' /* ' + lib.name + ' in Embed Libraries */,\n';
         });
@@ -350,7 +350,7 @@ async function makeXcode(options)
         let sourceDirectories = '';
         directoryList.forEach(directory =>
         {
-            //get containing dirs
+            // get containing dirs
             let containingDirs = [];
             directoryList.forEach(innerDir =>
             {
@@ -358,7 +358,7 @@ async function makeXcode(options)
                     containingDirs.push(innerDir);
             });
 
-            //get containing files
+            // get containing files
             let containingFiles = [];
             soucesList.forEach(innerFile =>
             {
@@ -366,7 +366,7 @@ async function makeXcode(options)
                     containingFiles.push(innerFile);
             });
 
-            //add to SOURCE_DIRECTORIES
+            // add to SOURCE_DIRECTORIES
             sourceDirectories += '		' + directory.uid + ' /* ' + directory.name + ' */ = {\n';
             sourceDirectories += '			isa = PBXGroup;\n';
             sourceDirectories += '			children = (\n';
@@ -450,7 +450,7 @@ async function makeXcode(options)
 
         // ********** afterPrepare hook
 
-        //use x86_64 release
+        // use x86_64 release
         if (Helper.hasKeys(project, 'hooks', 'afterPrepare', 'x86_64', 'release'))
         {
             for(let i in project.hooks.afterPrepare.x86_64.release)
@@ -472,13 +472,12 @@ async function applyPlatformData(projectName, project, options)
     {
         let platform = Globals.ARCHS[options.build.template][platformI];
 
-        //Globals.CONFIGURATIONS.forEach(config =>
         for(let configI in Globals.CONFIGURATIONS)
         {
             let config = Globals.CONFIGURATIONS[configI];
             let configKey = config.toUpperCase();
 
-            //include
+            // include
             let includePathsContent = '';
             let includesArray = ('includePaths' in project) ? project['includePaths'][platform][config] : [];
             includesArray.forEach(item =>
@@ -488,7 +487,7 @@ async function applyPlatformData(projectName, project, options)
                 includePathsContent += '					"' + item + '",\n';
             });
 
-            //defines
+            // defines
             let definesContent = '';
             let definesArray = ('defines' in project) ? project['defines'][platform][config] : [];
             definesArray.forEach(item =>
@@ -496,7 +495,7 @@ async function applyPlatformData(projectName, project, options)
                 definesContent += '					' + getDefineEntry(item) + ',\n';
             });
 
-            //libPaths
+            // libPaths
             let libPathsContent = '';
             let libsPathsArray = ('libPaths' in project) ? project['libPaths'][platform][config] : [];
             libsPathsArray.forEach(item =>
@@ -506,7 +505,7 @@ async function applyPlatformData(projectName, project, options)
                 libPathsContent += '					"' + item + '",\n';
             });
 
-            //buildFlags
+            // buildFlags
             let buildFlagsContent = '';
             let buildFlagsArray = ('buildFlags' in project) ? project['buildFlags'][platform][config] : [];
             buildFlagsArray.forEach(item =>
@@ -514,7 +513,7 @@ async function applyPlatformData(projectName, project, options)
                 buildFlagsContent += '					"' + item + '",\n';
             });
 
-            //linkerFlags
+            // linkerFlags
             let linkerFlagsContent = '';
             let linkerFlagsArray = ('linkerFlags' in project) ? project['linkerFlags'][platform][config] : [];
             linkerFlagsArray.forEach(item =>
@@ -522,7 +521,7 @@ async function applyPlatformData(projectName, project, options)
                 linkerFlagsContent += '					"' + item + '",\n';
             });
 
-            //apply
+            // apply
             await replace({files: projectFilePath, from: `/*INCLUDES_${configKey}*/`, to: includePathsContent.trim()});
             await replace({files: projectFilePath, from: `/*DEFINES_${configKey}*/`, to: definesContent.trim()});
             await replace({files: projectFilePath, from: new RegExp(`/\\*LIB_PATHS_${configKey}\\*/`, 'g'), to: libPathsContent.trim()});
@@ -602,7 +601,7 @@ async function applyIcon(projectName, project, options)
         }
     }
 
-    //remove last comma
+    // remove last comma
     if (iconContent.length > 0)
         iconContent = iconContent.substr(0, iconContent.length - 2);
 
@@ -623,12 +622,12 @@ async function applyAssets(projectName, project, options)
     scriptContent += 'rm  -rf "' + path.join(projectName, Globals.DEFAULT_ASSET_DIR) + '/"\n';
     scriptContent += 'mkdir "' + path.join(projectName, Globals.DEFAULT_ASSET_DIR) + '/"\n\n';
 
-    //create asset dir
+    // create asset dir
     const assetDir = path.join(options.build.outputPath, projectName, Globals.DEFAULT_ASSET_DIR)
     if (!fs.existsSync(assetDir))
         await fs.mkdirSync(assetDir);
 
-    //generate copy script
+    // generate copy script
     if (!options.build.skipAssets && 'assets' in project)
     {
         for(let i in project.assets)
@@ -688,13 +687,13 @@ async function applyHooks(projectName, projectId, project, options)
         let hookName = hooks[hookI].name;
         let replacementName = hooks[hookI].replacementName;
 
-        //use x86_64 release
+        // use x86_64 release
         if (Helper.hasKeys(project, 'hooks', hookName, 'x86_64', 'release'))
         {
             let hookContent = '';
             for(let i in project['hooks'][hookName]['x86_64']['release'])
             {
-                //hook should run in working dir
+                // hook should run in working dir
                 let hook = escapeHtml(`cd $\{PROJECT_DIR\}`) + '&#10;';
                 hook += escapeHtml(`exec > $\{PROJECT_DIR\}/${projectName}_${hookName}_${i}.log 2>&1`) + '&#10;';
                 hook += escapeHtml(project['hooks'][hookName]['x86_64']['release'][i]);

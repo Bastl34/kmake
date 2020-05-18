@@ -9,7 +9,7 @@ const makeMakefile = require('./projectMaker/makefile');
 
 async function make(options)
 {
-    //some error checks
+    // some error checks
     let workspace = options.workspace || null;
     if (!workspace || !('content' in workspace) || !(workspace.content instanceof Array) || workspace.content.length == 0)
     {
@@ -17,7 +17,7 @@ async function make(options)
         return false;
     }
 
-    //run validate
+    // run validate
     if (!validate(options))
     {
         Logging.error('validation failed');
@@ -28,7 +28,7 @@ async function make(options)
 
     let res = false;
 
-    //create project files
+    // create project files
     if (options.build.template == 'xcodeMac')
         res = await makeXcode(options);
     else if (options.build.template == 'vs2019')
@@ -41,17 +41,17 @@ async function make(options)
 
 async function createOutputDir(options)
 {
-    //clear output dir if needed
+    // clear output dir if needed
     if (options.build.cleanOutputDir && fs.existsSync(path.normalize(options.build.outputPath)))
     {
         Logging.info('clearing output dir...');
         await fs.promises.rmdir(path.normalize(options.build.outputPath), {recursive: true});
 
-        //wait some tome -> otherwise mkdir will fail on windows
+        // wait some tome -> otherwise mkdir will fail on windows
         await Helper.sleep(100);
     }
 
-    //create output directory
+    // create output directory
     if (!fs.existsSync(path.normalize(options.build.outputPath)))
     {
         Logging.info('creating output dir...');

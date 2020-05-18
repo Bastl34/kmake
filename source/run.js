@@ -52,10 +52,10 @@ async function runXcodeMac(options, runAsync)
     const binPath = path.join(appDir, 'Contents/MacOS', mainProjectName);
     const mainPath = path.join(outDir, 'Build/Products', configName, mainProjectName);
 
-    //app
+    // app
     if (options[mainProjectName].outputType == 'app')
         return await runExecutable(binPath, runAsync);
-    //main
+    // main
     else
         return await runExecutable(mainPath, runAsync);
 }
