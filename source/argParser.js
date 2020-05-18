@@ -54,9 +54,7 @@ function argParser()
 
     let obj =
     {
-        project: null,
-        template: null,
-        output: null
+        project: null
     };
 
     for(let argKey in Globals.ARG_OPTIONS_DEFAULT)
@@ -82,15 +80,11 @@ function argParser()
             continue;
         }
 
-        //the first 3 arguments without option are: projectPath, template, outputDir
-        if (!lastOptionKey && !isOptionKey && (!obj.project || !obj.template || !obj.output))
+        //the first argument without option is: projectPath
+        if (!lastOptionKey && !isOptionKey && !obj.project)
         {
             if (obj.project === null)
                 obj.project = arg;
-            else if (obj.template === null)
-                obj.template = arg;
-            else if (obj.output === null)
-                obj.output = arg;
         }
         else if (lastOptionKey && !isOptionKey)
         {

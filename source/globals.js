@@ -46,8 +46,8 @@ let globals =
         'makefile': ['x86_64', 'x86'],
 
         //TODO
-        'android': ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'],
-        'ios': ['armv7', 'arm64', 'i386', 'x86_64']
+        //'android': ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'],
+        //'ios': ['armv7', 'arm64', 'i386', 'x86_64']
     },
 
     ARCHS_MAP:
@@ -74,6 +74,9 @@ let globals =
 
     ARG_OPTIONS_DEFAULT:
     {
+        'template': null,
+        'output': null,
+
         'verbose': true,
 
         //use the default config if no config was provided
@@ -121,6 +124,9 @@ let globals =
 
     ARG_OPTIONS_SYNONYMS:
     {
+        't': 'template',
+        'o': 'output',
+
         've': 'verbose',
 
         //use the default config if no config was provided
@@ -147,7 +153,7 @@ let globals =
         'b': 'build',
         'rel': 'release',
         'bp': 'buildProject',
-        'o': 'binOutputDir',
+        'bo': 'binOutputDir',
         'baa': 'buildAllArchs',
 
         //watch arguments
@@ -172,6 +178,9 @@ let globals =
 
     ARG_DESC:
     {
+        'template': 'template name',
+        'output': 'output directory (using "out" in your project dir as default)',
+
         'verbose': 'printing out more infos',
 
         'defaultConfig': 'if no config was set/found: use the default kmake.yml config',
@@ -208,6 +217,13 @@ let globals =
 
         'version': 'prints the version',
         'help': 'prints the help',
+    },
+
+    //this references items of Global (this)
+    ARG_POSSIBILITIES:
+    {
+        'template': 'TEMPLATES',
+        'arch': 'ARCHS'
     },
 
     ARG_OPTIONS_REQUREMENTS:

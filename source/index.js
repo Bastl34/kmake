@@ -2,13 +2,13 @@ const fs = require('fs');
 
 const colors = require('colors');
 
-const Globals = require('./globals');
 const Logging = require('./helper/logging');
 const Helper = require('./helper/helper');
 
 const argParser = require('./argParser');
 const getAndApplyOptions = require('./options');
 
+const help = require('./help');
 const make = require('./make');
 const build = require('./build');
 const exp = require('./export');
@@ -38,62 +38,7 @@ const Watcher = require('./watch');
 
     // ********** help **********
     if (args.help)
-    {
-        console.log('usage: kmake PROJECT_DIR [OPTIONS]');
-
-        console.log();
-        console.log('options:');
-        for(let argKey in Globals.ARG_OPTIONS_DEFAULT)
-        {
-            const argSyns = [];
-            for(let argSynKey in Globals.ARG_OPTIONS_SYNONYMS)
-            {
-                if (Globals.ARG_OPTIONS_SYNONYMS[argSynKey] == argKey)
-                    argSyns.push(argSynKey);
-            }
-
-            const requrements = {};
-            for(let argReqKey in Globals.ARG_OPTIONS_REQUREMENTS)
-            {
-                if (argReqKey == argKey)
-                {
-                    const items = Globals.ARG_OPTIONS_REQUREMENTS[argReqKey];
-                    const isArray = items instanceof Array;
-
-                    for(let itemKey in items)
-                    {
-                        if (isArray)
-                        {
-                            items.forEach(item => { requrements[item] = true; });
-                        }
-                        else
-                        {
-                            for(let key in items)
-                                requrements[key] = items[key];
-                        }
-                    }
-
-                    break;
-                }
-            }
-
-            console.log(colors.bold(` --${argKey} (-${argSyns.join(', -')}):`));
-            console.log(`   ${Globals.ARG_DESC[argKey]}`);
-            console.log(`   default value: ` + colors.bold(`${Globals.ARG_OPTIONS_DEFAULT[argKey]}`));
-            if (Globals.ARG_OPTIONS_DEFAULT[argKey] instanceof Array)
-                console.log(`   multiple values are possible`);
-
-            if (Object.keys(requrements).length > 0)
-            {
-                console.log(`   ` + colors.italic(`this flag will set:`));
-                for(let key in requrements)
-                    console.log(`      ${key}: ${requrements[key]}`);
-            }
-            console.log(``);
-        }
-
-        process.exit(0);
-    }
+        help();
 
     // ********** main func **********
     let main = async (steps = null) =>
