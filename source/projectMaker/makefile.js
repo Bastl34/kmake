@@ -582,7 +582,9 @@ async function applyAssets(projectName, project, options)
         }
 
         // create asset dir
-        await fs.mkdirSync(FileHelper.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR));
+        const assetDir = FileHelper.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR);
+        if (!fs.existsSync(assetDir))
+            await fs.mkdirSync(assetDir);
 
         // generate copy script
         for(let i in project.assets)

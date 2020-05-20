@@ -2,11 +2,11 @@ const fs = require('fs');
 
 const colors = require('colors');
 
+const Globals = require('./globals');
 const Exec = require('./helper/exec');
 
-const tempDir = 'testTemp';
-
 const additionalArgs = process.argv.splice(2).join(' ');
+const tempDir = Globals.TEMP_DIRS.test;
 
 async function run(cmd)
 {

@@ -158,6 +158,7 @@ const Watcher = require('./watch');
         {
             Logging.error("make failed");
             Logging.out(e);
+            process.exit(1);
         }
 
         // ********** watch **********

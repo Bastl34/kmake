@@ -19,7 +19,8 @@ let globals =
         'workspace',
         'imports',
         'variables',
-        'inputs'
+        'inputs',
+        'checks'
     ],
 
     TEMPLATES:
@@ -87,6 +88,7 @@ let globals =
         'cleanOutputDir': true,
         'skipAssets': false,
         'useDownloadCache': true,
+        'useCheckCache': true,
 
         'define': [],
         'lib': [],
@@ -250,6 +252,7 @@ let globals =
     {
         INPUT: '.input.cache',
         DOWNLOAD: '.download.cache',
+        CHECK: '.check.cache',
     },
 
     DEFAULT_TEMPLATE_BY_PLATFORM:
@@ -294,6 +297,12 @@ let globals =
         'postBuild',
         'afterPrepare'
     ],
+
+    TEMP_DIRS:
+    {
+        test: 'testTemp',
+        check: 'checkTemp',
+    },
 
     DEFAULT_BUILD_SETTINGS:
     {

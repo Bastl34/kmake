@@ -224,6 +224,27 @@ async function getAndApplyOptions(args)
         }
     }
 
+
+    // ******************** run checks ********************
+    Logging.info('running checks...');
+    const checkResults = await runChecks(options);
+
+    for(let i in options.workspace.content)
+    {
+        let optionKey = options.workspace.content[i];
+        let project = options[optionKey];
+        let isProject = Globals.MAIN_CONFIG_ITEMS.indexOf(optionKey) === -1;
+
+        if (isProject)
+        {
+            if (!('defines' in project))
+                project.defines = [];
+
+            project.defines = [...project.defines, ...checkResults];
+        }
+    }
+
+
     // ******************** process env variables ********************
     Logging.info('replacing env variables...');
     Helper.recursiveReplace(options, (key, object) =>
@@ -666,6 +687,71 @@ async function extract(file, extractTo)
         files = await decompress(file, extractTo);
 
     return files
+}
+
+async function runChecks(options)
+{
+    const tempDir = Globals.TEMP_DIRS.check;
+    const fileName = "check.cpp";
+
+    let result = [];
+
+    // save download cache
+    let cachePath = path.join(options.build.projectDir, Globals.CACHE_FILES.CHECK);
+    let cache = {};
+
+    if (fs.existsSync(cachePath) && options.build.useDownloadCache)
+        cache = yaml.safeLoad(fs.readFileSync(cachePath, 'utf8'));
+
+    if ('checks' in options)
+    {
+        for(let name in options.checks)
+        {
+            const check = options.checks[name];
+
+            let hash = Helper.sha265(JSON.stringify({name, check}));
+
+            let res = false;
+
+            if (options.build.useCheckCache && cache[hash])
+            {
+                res = cache[hash]
+                Logging.log(name + ': ' + res + ' (cached)');
+            }
+            else
+            {
+                // prepare data dir
+                if (fs.existsSync(tempDir))
+                    await fs.promises.rmdir(tempDir, {recursive: true});
+                await fs.promises.mkdir(tempDir);
+
+                // copy content
+                const checkFilePath = path.resolve(path.join(options.build.projectDir, check));
+                const tmpFile = path.resolve(path.join(tempDir, fileName));
+
+                if (fs.existsSync(checkFilePath))
+                    fs.copyFileSync(checkFilePath, tmpFile);
+                else
+                    fs.writeFileSync(tmpFile, check);
+
+                // execute
+                res = await (new Exec(`node kmake.js ${tempDir} --run --useInputCache --verbose 0`)).waitForExit();
+                Logging.log(name + ': ' + res);
+            }
+
+            let obj = {};
+            obj[name] = res;
+            result.push(obj);
+
+            cache[hash] = true;
+        }
+    }
+
+    // save cache
+    let dump = yaml.safeDump(cache);
+    fs.writeFileSync(cachePath, dump);
+
+    return result;
 }
 
 module.exports = getAndApplyOptions;

@@ -23,8 +23,12 @@ function argParser()
         if (isLongArg)
             argName = arg.substr(2);
 
-        if (argName in Globals.ARG_OPTIONS_SYNONYMS)
-            args[i] = '--' + Globals.ARG_OPTIONS_SYNONYMS[argName];
+        // direct synonyms
+        if (isShortArg && !isLongArg)
+        {
+            if (argName in Globals.ARG_OPTIONS_SYNONYMS)
+                args[i] = '--' + Globals.ARG_OPTIONS_SYNONYMS[argName];
+        }
 
         // gcc style args (-DMYDEF=1 --> --define MYDEF=1)
         if (isShortArg && !isLongArg)

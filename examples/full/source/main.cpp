@@ -87,6 +87,8 @@ int main(int const argc, const char* const argv[], char* envv[])
 {
     std::cout << "main" << std::endl;
     std::cout << "TEST_TEST value: " << TEST_TEST << std::endl;
+    std::cout << "HAS_THREADS value: " << HAS_THREADS << std::endl;
+    std::cout << "HAS_IOSTREAM value: " << HAS_IOSTREAM << std::endl;
 
     std::string cwd = getWorkingDir();
 

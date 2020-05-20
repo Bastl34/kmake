@@ -17,6 +17,10 @@ inputs:
     - COMPANY_NAME
     - COMPANY_URL
 
+checks:
+    HAS_THREADS: "#include <thread>\n#include <iostream>\nint main() { std::thread t([] {  }); t.join(); return 0;}"
+    HAS_IOSTREAM: 'checks/iostream.cpp'
+
 # workspace settings
 workspace:
     name: '${NAME}'

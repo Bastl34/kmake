@@ -1,9 +1,9 @@
 #kmake
-*.input.cache
-*.download.cache
+*.*.cache
 out/
 export/
 testTemp/
+checkTemp/
 
 #examples
 examples/sdl/libs/
