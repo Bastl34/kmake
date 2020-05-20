@@ -13,6 +13,7 @@ const decompress = require('decompress');
 const Helper = require('./helper/helper');
 const FileHelper = require('./helper/fileHelper');
 const NetHelper = require('./helper/netHelper');
+const MakeHelper = require('./helper/makeHelper');
 const ImageHelper = require('./helper/imageHelper');
 const Logging = require('./helper/logging');
 const Exec = require('./helper/exec');
@@ -81,6 +82,16 @@ async function getAndApplyOptions(args)
         process.exit();
     }
 
+
+    // ******************** check template/build tool ********************
+    Logging.info('checking build tool...');
+    const res = await MakeHelper.checkBuildTool(args.template);
+    if (!res)
+    {
+        Logging.error('build tool for template: ' + args.template + ' not found');
+        Logging.error('please download an install it for your platform');
+        process.exit();
+    }
 
     // ******************** find output ********************
     let outputPath = kmakeRoot + '/' + args.output;

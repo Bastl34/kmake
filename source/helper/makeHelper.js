@@ -31,7 +31,7 @@ let MakeHelper =
     async findBuildTool()
     {
         // ************ windows ***********
-        if (os.platform('os'))
+        if (os.platform() == 'win32')
         {
             // visual studio
             const vs = this.findMsBuild();
@@ -45,7 +45,7 @@ let MakeHelper =
                 return 'mk';
         }
         // ************ mac ***********
-        else if (os.platform('darwin'))
+        else if (os.platform() == 'darwin')
         {
             // Xcode
             let found = await (new Exec(`xcodebuild -version`)).waitForExit();
@@ -60,7 +60,7 @@ let MakeHelper =
                 return 'mk';
         }
         // ************ linux ***********
-        else if (os.platform('linux'))
+        else if (os.platform() == 'linux')
         {
             // gcc / make
             const found = await (new Exec(`gcc --version`)).waitForExit();
@@ -70,6 +70,32 @@ let MakeHelper =
         }
 
         return ''
+    },
+
+    async checkBuildTool(templateName)
+    {
+        const template = Globals.TEMPLATES[templateName] || templateName;
+
+        // ************ visual studio ***********
+        if (template.indexOf('vs') === 0 && os.platform() == 'win32')
+        {
+            return !!this.findMsBuild();
+        }
+        // ************ xcode ***********
+        else if (template.indexOf('xcode') === 0 && os.platform() == 'darwin')
+        {
+            return !!(await (new Exec(`xcodebuild -version`)).waitForExit());
+        }
+        // ************ makefile ***********
+        else if (template == 'makefile')
+        {
+            if (os.platform() == 'linux' || os.platform() == 'win32')
+                return !!(await (new Exec(`gcc --version`)).waitForExit());
+            else
+                return !!(await (new Exec(`clang --version`)).waitForExit());
+        }
+
+        return null;
     },
 
     findMsBuild()
