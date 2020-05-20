@@ -1,0 +1,13 @@
+
+# workspace settings
+workspace:
+    name: 'testLib'
+
+    content:
+        - testLib
+
+# prebuilt
+testLib:
+    outputType: framework
+
+    sources: ['*.cpp', '*.h']

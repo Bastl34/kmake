@@ -11,6 +11,7 @@ const tempDir = Globals.TEMP_DIRS.test;
 async function run(cmd)
 {
     cmd = (cmd + " " + additionalArgs).trim();
+    console.log(cmd);
     const p = new Exec(cmd);
     //p.on('stdout', out => console.log(out.trimRight()));
     //p.on('stderr', out => console.log(out.trimRight()));
@@ -37,6 +38,10 @@ const tests =
     export: async () =>
     {
         return await run(`node kmake.js examples/noConfig --export --exportDest ${tempDir}/export.zip --useInputCache --verbose 0`);
+    },
+    lib: async () =>
+    {
+        return await run(`node kmake.js examples/lib --useInputCache --verbose 0`);
     },
 };
 
