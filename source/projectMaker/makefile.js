@@ -79,16 +79,6 @@ function getBinDir(platform, config)
     return FileHelper.join(Globals.DEFAULT_BIN_DIR, platform, config);
 }
 
-function getCC(project)
-{
-    let cc = Globals.DEFAULT_BUILD_SETTINGS.MK_CC;
-
-    if (project.settings && 'MK_CC' in project.settings)
-        cc = project.settings['MK_CC'];
-
-    return cc;
-}
-
 async function makeMakefile(options)
 {
     // ******************** copy projects ********************
@@ -370,7 +360,7 @@ async function applyPlatformData(projectName, project, options)
             let targetKey = getTargetKey(projectName, options.build.arch, platformI, configI);
 
             // ***** compiler
-            let cc = getCC(project);
+            let cc = MakeHelper.getMKCC(project);
             let platformName = platform;
             let platformFlags = ""
 

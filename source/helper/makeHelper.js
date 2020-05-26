@@ -72,7 +72,7 @@ let MakeHelper =
         return ''
     },
 
-    async checkBuildTool(templateName)
+    async checkBuildTool(templateName, options)
     {
         const template = Globals.TEMPLATES[templateName] || templateName;
 
@@ -89,10 +89,32 @@ let MakeHelper =
         // ************ makefile ***********
         else if (template == 'makefile')
         {
-            if (os.platform() == 'linux' || os.platform() == 'win32')
-                return !!(await (new Exec(`gcc --version`)).waitForExit());
-            else
-                return !!(await (new Exec(`clang --version`)).waitForExit());
+            let CCs = new Set();
+            let MAKEs = new Set();
+
+            for(let i in options.workspace.content)
+            {
+                let project = options[options.workspace.content[i]];
+                CCs.add(this.getMKCC(project));
+                MAKEs.add(this.getMake(project));
+            }
+
+            for (let cc of CCs)
+            {
+                const res = !!(await (new Exec(`${cc} --version`)).waitForExit());
+                if (!res)
+                    return false;
+            }
+
+            for (let mk of MAKEs)
+            {
+                const res = !!(await (new Exec(`${mk} --version`)).waitForExit());
+                if (!res)
+                    return false;
+            }
+
+            //if make tool and compiler found -> return true
+            return true;
         }
 
         return null;
@@ -137,6 +159,26 @@ let MakeHelper =
         }
 
         return null;
+    },
+
+    getMake(project)
+    {
+        let make = Globals.DEFAULT_BUILD_SETTINGS.MK_MAKE;
+
+        if (project.settings && 'MK_MAKE' in project.settings)
+            make = project.settings['MK_MAKE'];
+
+        return make;
+    },
+
+    getMKCC(project)
+    {
+        let cc = Globals.DEFAULT_BUILD_SETTINGS.MK_CC;
+
+        if (project.settings && 'MK_CC' in project.settings)
+            cc = project.settings['MK_CC'];
+
+        return cc;
     },
 
     findBuildProject(options)

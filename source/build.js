@@ -52,7 +52,7 @@ async function buildVisualStudio(options)
 
         const jobs = os.cpus().length;
         const msBuild = MakeHelper.findMsBuild();
-    
+
         // build
         const cmd = `"${msBuild}" "${solutionPath}" /t:${mainProjectName} /p:Configuration=${configName} /p:Platform=${arch} /m:${jobs} /p:BuildInParallel=true`;
         const success = await buildExecutable(cmd);
@@ -65,21 +65,11 @@ async function buildVisualStudio(options)
     return true;
 }
 
-function getMake(project)
-{
-    let make = Globals.DEFAULT_BUILD_SETTINGS.MK_MAKE;
-
-    if (project.settings && 'MK_MAKE' in project.settings)
-        make = project.settings['MK_MAKE'];
-
-    return make;
-}
-
 async function buildMakefile(options)
 {
     const mainProjectName = MakeHelper.findBuildProject(options);
 
-    const make = getMake(options[mainProjectName]);
+    const make = MakeHelper.getMake(options[mainProjectName]);
 
     for(let i in options.build.arch)
     {

@@ -82,17 +82,6 @@ async function getAndApplyOptions(args)
         process.exit();
     }
 
-
-    // ******************** check template/build tool ********************
-    Logging.info('checking build tool...');
-    const res = await MakeHelper.checkBuildTool(args.template);
-    if (!res)
-    {
-        Logging.error('build tool for template: ' + args.template + ' not found');
-        Logging.error('please download an install it for your platform');
-        process.exit();
-    }
-
     // ******************** find output ********************
     let outputPath = kmakeRoot + '/' + args.output;
     if(path.isAbsolute(args.output))
@@ -121,6 +110,16 @@ async function getAndApplyOptions(args)
         outputPath: FileHelper.normalize(outputPath)
     };
 
+
+    // ******************** check template/build tool ********************
+    Logging.info('checking build tool...');
+    const res = await MakeHelper.checkBuildTool(args.template, options);
+    if (!res)
+    {
+        Logging.error('build tool for template: ' + args.template + ' not found');
+        Logging.error('please download an install it for your platform');
+        process.exit();
+    }
 
     // ******************** apply workspace settings to build settings ********************
     if ('settings' in options.workspace)
