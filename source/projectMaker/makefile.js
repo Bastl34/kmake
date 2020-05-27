@@ -130,7 +130,10 @@ async function makeMakefile(options)
     if (includeStr)
         includeStr = 'include ' + includeStr;
 
+    const mainProject = MakeHelper.findBuildProject(options);
+
     await replace({files: destPath, from: '#INCLUDES#', to: includeStr.trim()});
+    await replace({files: destPath, from: '#DEFAULT_TARGET#', to: getTargetKey(mainProject, options.build.arch, 0, 0)});
 
     // ******************** generate projects ********************
     for(let i in options.workspace.content)
@@ -236,7 +239,7 @@ async function makeMakefile(options)
                         //libsContent += ' -L' + path.dirname(path.join(outDir, lib + libOutputType));
                         //libsContent += ' -l' + path.basename(lib);
 
-                        targetDepsContent += getTargetKey(lib, options.build.arch, platformI, configI) + ' ';
+                        targetDepsContent += '\t$(MAKE) ' + getTargetKey(lib, options.build.arch, platformI, configI) + '\n';
                     }
                     else
                     {
@@ -254,7 +257,8 @@ async function makeMakefile(options)
                 // create all output dirs
                 fs.mkdirSync(path.dirname(outPathAbsolute), { recursive: true });
 
-                targets += targetKey + '_build: ' + startKey + ' ' + preBuildHook + ' ' + objectList.join(' ') + '\n';
+                //targets += targetKey + '_build: ' + startKey + ' ' + preBuildHook + ' ' + objectList.join(' ') + '\n';
+                targets += targetKey + '_build: ' + objectList.join(' ') + '\n';
 
                 // set execution path for lib
                 let installName = `-dynamiclib -install_name "@executable_path/${outBaseName}"`;
@@ -270,7 +274,15 @@ async function makeMakefile(options)
                 else
                     targets += `	$(${PROJECT_NAME}_CC) $(${PROJECT_NAME}_PRE_FLAGS) ${objectList.join(' ')} ${libsContent.trim()} -o ${outPath} $(${PROJECT_NAME}_POST_FLAGS)\n\n`;
 
-                targets += targetKey + ': ' + targetDepsContent.trim() + ' ' + targetKey + '_build ' + copyTarget + ' ' + assetsKey + ' ' + postBuildHook + '\n';
+                //targets += targetKey + ': ' + targetDepsContent.trim() + ' ' + targetKey + '_build ' + copyTarget + ' ' + assetsKey + ' ' + postBuildHook + '\n';
+                targets += targetKey + ': \n';
+                targets += targetDepsContent;
+                targets += '\t$(MAKE) ' + startKey + '\n';
+                targets += '\t$(MAKE) ' + preBuildHook + '\n';
+                targets += '\t$(MAKE) ' + targetKey + '_build ' + '\n';
+                targets += '\t$(MAKE) ' + copyTarget + '\n';
+                targets += '\t$(MAKE) ' + assetsKey + '\n';
+                targets += '\t$(MAKE) ' + postBuildHook + '\n\n';
             }
         }
 
@@ -290,13 +302,13 @@ async function makeMakefile(options)
         if (include)
             include = 'include ' + include;
 
-        let defaultTarget = getTargetKey(projectName, options.build.arch, 0, 0);
+        //let defaultTarget = getTargetKey(projectName, options.build.arch, 0, 0);
 
         // ********** replacements
         Logging.log('generating ' + projectName + '.mk');
         let projectFilePath = options.build.outputPath + '/' + projectName + '.mk';
 
-        results = await replace({files: projectFilePath, from: '#DEFAULT_TARGET#', to: defaultTarget});
+        //results = await replace({files: projectFilePath, from: '#DEFAULT_TARGET#', to: defaultTarget});
         results = await replace({files: projectFilePath, from: '#TARGETS#', to: targets});
         results = await replace({files: projectFilePath, from: '#SOURCE_FILE#', to: sourceFileContent.trim()});
         results = await replace({files: projectFilePath, from: /PROJECT_NAME/g, to: projectName.toUpperCase()});
@@ -360,7 +372,7 @@ async function applyPlatformData(projectName, project, options)
             let targetKey = getTargetKey(projectName, options.build.arch, platformI, configI);
 
             // ***** compiler
-            let cc = MakeHelper.getMKCC(project);
+            let cc = MakeHelper.getMKCC(options, project);
             let platformName = platform;
             let platformFlags = ""
 
@@ -371,12 +383,12 @@ async function applyPlatformData(projectName, project, options)
                 platformName = Globals.ARCHS_MAP[cc][platformName];
 
             if (cc.indexOf("clang") != -1)
-                compilerContent += targetKey + `: ${PROJECT_NAME}_CC += -arch ${platformName} ${platformFlags}\n`;
+                compilerContent += targetKey + `_build: ${PROJECT_NAME}_CC += -arch ${platformName} ${platformFlags}\n`;
             else
-                compilerContent += targetKey + `: ${PROJECT_NAME}_CC += -march=${platformName} ${platformFlags}\n`;
+                compilerContent += targetKey + `_build: ${PROJECT_NAME}_CC += -march=${platformName} ${platformFlags}\n`;
 
             // ***** include
-            includePathsContent += targetKey + `: ${PROJECT_NAME}_INCLUDES += `
+            includePathsContent += targetKey + `_build: ${PROJECT_NAME}_INCLUDES += `
             let includesArray = ('includePaths' in project) ? project['includePaths'][platform][config] : [];
             includesArray.forEach(item =>
             {
@@ -387,7 +399,7 @@ async function applyPlatformData(projectName, project, options)
             includePathsContent += '\n'
 
             // ***** defines
-            definesContent += targetKey + `: ${PROJECT_NAME}_DEFINES += `
+            definesContent += targetKey + `_build: ${PROJECT_NAME}_DEFINES += `
             let definesArray = ('defines' in project) ? project['defines'][platform][config] : [];
             definesArray.forEach(item =>
             {
@@ -396,7 +408,7 @@ async function applyPlatformData(projectName, project, options)
             definesContent += '\n'
 
             // ***** libPaths
-            libPathsContent += targetKey + `: ${PROJECT_NAME}_LIB_PATHS += `
+            libPathsContent += targetKey + `_build: ${PROJECT_NAME}_LIB_PATHS += `
             let libsPathsArray = ('libPaths' in project) ? project['libPaths'][platform][config] : [];
             libsPathsArray.forEach(item =>
             {
@@ -409,7 +421,7 @@ async function applyPlatformData(projectName, project, options)
             libPathsContent += '\n'
 
             // ***** buildFlags
-            buildFlagsContent += targetKey + `: ${PROJECT_NAME}_CXXFLAGS += `
+            buildFlagsContent += targetKey + `_build: ${PROJECT_NAME}_CXXFLAGS += `
             let buildFlagsArray = ('buildFlags' in project) ? project['buildFlags'][platform][config] : [];
             buildFlagsArray.forEach(item =>
             {
@@ -422,7 +434,7 @@ async function applyPlatformData(projectName, project, options)
 
 
             // ***** linkerFlags
-            linkerFlagsContent += targetKey + `: ${PROJECT_NAME}_LDFLAGS += `
+            linkerFlagsContent += targetKey + `_build: ${PROJECT_NAME}_LDFLAGS += `
 
             let rpath = `-Wl,-rpath,"@executable_path"`;
             if (os.platform() == 'linux')
@@ -458,13 +470,16 @@ async function applyProjectSettings(projectName, project, options)
 
     files.map(file => FileHelper.resolve(file));
 
-    for(let settingsKey in Globals.DEFAULT_BUILD_SETTINGS)
+    for(let settingsKey in options.build)
     {
-        let val = Globals.DEFAULT_BUILD_SETTINGS[settingsKey];
+        let val = options.build[settingsKey];
         if ('settings' in project && settingsKey in project.settings)
             val = project.settings[settingsKey];
 
-        await replace({files: files, from: new RegExp(`#${settingsKey}#`, 'g'), to: val.trim()});
+        if (typeof val == 'string')
+            val = val.trim();
+
+        await replace({files: files, from: new RegExp(`#${settingsKey}#`, 'g'), to: val});
     }
 
     return true;

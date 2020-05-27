@@ -1,12 +1,19 @@
+#ifeq ($(wildcard $(addsuffix /rm,$(subst :, ,$(PATH)))),)
+ifeq ($(OS),Windows_NT)
+	CELAN = del /s bin obj
+	CLEAN_OBJ = del /s *.o
+else
+	CELAN = rm -rf bin obj
+	CLEAN_OBJ = find . -name "*.o" -type f -delete
+endif
+
+
+default: #DEFAULT_TARGET#
+
 #INCLUDES#
 
 clean:
-	rm -rf bin obj
+	$(CELAN)
 
 clean_obj:
-	ifeq ($(OS),Windows_NT)
-		#del /s *.o *.d *.elf *.map *.log
-		del /s *.o
-	else
-		find . -name "*.o" -type f -delete
-	endif
+	$(CLEAN_OBJ)

@@ -7,6 +7,8 @@ const Logging = require('./helper/logging');
 const Helper = require('./helper/helper');
 const FileHelper = require('./helper/fileHelper');
 
+const possibleArgs = {...Globals.ARG_OPTIONS_DEFAULT, ...Globals.DEFAULT_BUILD_SETTINGS};
+
 function argParser()
 {
     let args = process.argv.slice(2);
@@ -30,7 +32,7 @@ function argParser()
                 args[i] = '--' + Globals.ARG_OPTIONS_SYNONYMS[argName];
         }
 
-        // gcc style args (-DMYDEF=1 --> --define MYDEF=1)
+        // gcc style args ("-DMYDEF=1" --> "--define MYDEF=1")
         if (isShortArg && !isLongArg)
         {
             let shortArg = null;
@@ -61,8 +63,8 @@ function argParser()
         project: null
     };
 
-    for(let argKey in Globals.ARG_OPTIONS_DEFAULT)
-        obj[argKey] = Globals.ARG_OPTIONS_DEFAULT[argKey];
+    for(let argKey in possibleArgs)
+        obj[argKey] = possibleArgs[argKey];
 
     let lastOptionKey = null;
 
@@ -71,13 +73,19 @@ function argParser()
     {
         let arg = args[i];
 
-        let isOptionKey = arg.indexOf('--') == 0;
+        let isOptionKey = arg.indexOf('--') === 0;
         let isLastOption = i + 1 == args.length
-        let isNextOptionKey = !isLastOption && args[i + 1].indexOf('--') == 0;
+        let isNextOptionKey = !isLastOption && args[i + 1].indexOf('--') === 0;
         let optionKeyName = isOptionKey ? arg.substr(2) : null;
 
+        //value after equal sign (=) example: --MK_MAKE_FLAGS=--debug=v
+        let hasValueAfterEqualEqualSign = arg.includes('=') && optionKeyName.substr(0, arg.indexOf('=')-2) in possibleArgs;
+        let equalSignsValue = hasValueAfterEqualEqualSign ? optionKeyName.substr(arg.indexOf('=')-1) : null
+        if (hasValueAfterEqualEqualSign)
+            optionKeyName = optionKeyName.substr(0, arg.indexOf('=')-2)
+
         // error check
-        if (isOptionKey && !(optionKeyName in Globals.ARG_OPTIONS_DEFAULT))
+        if (isOptionKey && !(optionKeyName in possibleArgs))
         {
             Logging.warning('option key not found: ' + optionKeyName);
             optionKeyName = null;
@@ -90,9 +98,10 @@ function argParser()
             if (obj.project === null)
                 obj.project = arg;
         }
+        //example: --make true
         else if (lastOptionKey && !isOptionKey)
         {
-            let argItem = Globals.ARG_OPTIONS_DEFAULT[lastOptionKey];
+            let argItem = possibleArgs[lastOptionKey];
             let type = typeof argItem;
 
             if (type == 'boolean')
@@ -111,6 +120,10 @@ function argParser()
             else
                 obj[lastOptionKey] = arg;
         }
+        //example: --MK_MAKE_FLAGS=--debug=v
+        else if (equalSignsValue)
+            obj[optionKeyName] = equalSignsValue;
+        //example: --make
         else if (isOptionKey && (isNextOptionKey || isLastOption))
             obj[optionKeyName] = true;
 
@@ -158,7 +171,7 @@ function argParser()
 
 function resolveRequirements(obj)
 {
-    // requrements example: run needs make and build
+    // requrements example: "run" needs "make" and "build"
 
     let objCopy = {...obj};
 

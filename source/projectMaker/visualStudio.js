@@ -522,9 +522,9 @@ async function applyProjectSettings(projectName, project, options)
 
     files.map(file => path.resolve(file));
 
-    for(let settingsKey in Globals.DEFAULT_BUILD_SETTINGS)
+    for(let settingsKey in options.build)
     {
-        let val = Globals.DEFAULT_BUILD_SETTINGS[settingsKey];
+        let val = options.build[settingsKey];
         if ('settings' in project && settingsKey in project.settings)
             val = project.settings[settingsKey];
 
@@ -562,10 +562,13 @@ async function applyProjectSettings(projectName, project, options)
                 if (!resolvedVal)
                     resolvedVal = val;
 
-                await replace({files: files, from: new RegExp(`<!--${settingsKey}-->`, 'g'), to: resolvedVal.trim()});
-                await replace({files: files, from: new RegExp(`<!--${settingsKey}_${platform}_${configName}-->`, 'g'), to: resolvedVal.trim()});
-                await replace({files: files, from: new RegExp(`<!--${settingsKey}_${platform}-->`, 'g'), to: resolvedVal.trim()});
-                await replace({files: files, from: new RegExp(`<!--${settingsKey}_${configName}-->`, 'g'), to: resolvedVal.trim()});
+                if (typeof resolvedVal == 'string')
+                    resolvedVal = resolvedVal.trim();
+
+                await replace({files: files, from: new RegExp(`<!--${settingsKey}-->`, 'g'), to: resolvedVal});
+                await replace({files: files, from: new RegExp(`<!--${settingsKey}_${platform}_${configName}-->`, 'g'), to: resolvedVal});
+                await replace({files: files, from: new RegExp(`<!--${settingsKey}_${platform}-->`, 'g'), to: resolvedVal});
+                await replace({files: files, from: new RegExp(`<!--${settingsKey}_${configName}-->`, 'g'), to: resolvedVal});
             }
         }
     }

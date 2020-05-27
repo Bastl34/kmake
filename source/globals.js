@@ -105,6 +105,7 @@ let globals =
         'buildProject': null,
         'binOutputDir': './bin',
         'buildAllArchs': false,
+        'jobs': os.cpus().length,
 
         // watch arguments
         'watch': false,
@@ -158,6 +159,7 @@ let globals =
         'bp': 'buildProject',
         'bo': 'binOutputDir',
         'baa': 'buildAllArchs',
+        'j': 'jobs',
 
         // watch arguments
         'w': 'watch',
@@ -206,6 +208,7 @@ let globals =
         'buildProject': 'define the main project to be build',
         'binOutputDir': 'output dir of the binary files (only for xCode at the moment)',
         'buildAllArchs': 'build all possible architectures',
+        'jobs': 'job amount for parallel execution (build)',
 
         'watch': 'watch the workspace for changes - and rebuild if build was set',
 
@@ -318,15 +321,18 @@ let globals =
         PRODUCT_BUNDLE_IDENTIFIER: 'test.test.test',
         HUMAN_READABLE_COPYRIGHT: 'Copyright',
         BUNDLE_VERSION: '1.0.0',
+        XCODE_BUILD_FLAGS: '',
 
         // visual studio settings
         VS_C_RUNTIME: 'MT', //MT or MD
         VS_LANGUAGE_STANDARD: 'stdcpp17',
+        VS_BUILD_FLAGS: '',
 
         // makefile settings
         MK_CC: os.platform() == 'darwin' ? 'clang++' : 'g++',
         MK_MAKE: os.platform() == 'win32' ? 'mingw32-make' : 'make',
-        MK_DEFAULT_FLAGS: '-fPIC -Wall -Wno-unused-command-line-argument',
+        MK_MAKE_FLAGS: '',
+        MK_CC_DEFAULT_FLAGS: '-fPIC -Wall -Wno-unused-command-line-argument',
         MK_CPP_LANGUAGE_STANDARD: '-std=c++17',
         MK_C_LANGUAGE_STANDARD: '-std=c11',
         MK_STD_LIB: '-static-libstdc++ -lstdc++',

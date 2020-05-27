@@ -544,14 +544,17 @@ async function applyProjectSettings(projectName, project, options)
 
     files.map(file => path.resolve(file));
 
-    for(let settingsKey in Globals.DEFAULT_BUILD_SETTINGS)
+    for(let settingsKey in options.build)
     {
-        let val = Globals.DEFAULT_BUILD_SETTINGS[settingsKey];
+        let val = options.build[settingsKey];
         if ('settings' in project && settingsKey in project.settings)
             val = project.settings[settingsKey];
 
-        await replace({files: files, from: new RegExp(`<!--${settingsKey}-->`, 'g'), to: val.trim()});
-        await replace({files: files, from: new RegExp(`/\\*${settingsKey}\\*/`, 'g'), to: val.trim()});
+        if (typeof val == 'string')
+            val = val.trim();
+
+        await replace({files: files, from: new RegExp(`<!--${settingsKey}-->`, 'g'), to: val});
+        await replace({files: files, from: new RegExp(`/\\*${settingsKey}\\*/`, 'g'), to: val});
     }
 
     return true;

@@ -28,50 +28,6 @@ let MakeHelper =
         }
     },
 
-    async findBuildTool()
-    {
-        // ************ windows ***********
-        if (os.platform() == 'win32')
-        {
-            // visual studio
-            const vs = this.findMsBuild();
-            if (vs)
-                return 'vs';
-
-            // minGW
-            const found = await (new Exec(`${Globals.DEFAULT_BUILD_SETTINGS.MK_MAKE} -v`)).waitForExit();
-
-            if (found)
-                return 'mk';
-        }
-        // ************ mac ***********
-        else if (os.platform() == 'darwin')
-        {
-            // Xcode
-            let found = await (new Exec(`xcodebuild -version`)).waitForExit();
-
-            if (found)
-                return 'xcode';
-
-            // clang / make
-            found = await (new Exec(`clang --version`)).waitForExit();
-
-            if (found)
-                return 'mk';
-        }
-        // ************ linux ***********
-        else if (os.platform() == 'linux')
-        {
-            // gcc / make
-            const found = await (new Exec(`gcc --version`)).waitForExit();
-
-            if (found)
-                return 'mk';
-        }
-
-        return ''
-    },
-
     async checkBuildTool(templateName, options)
     {
         const template = Globals.TEMPLATES[templateName] || templateName;
@@ -95,8 +51,8 @@ let MakeHelper =
             for(let i in options.workspace.content)
             {
                 let project = options[options.workspace.content[i]];
-                CCs.add(this.getMKCC(project));
-                MAKEs.add(this.getMake(project));
+                CCs.add(this.getMKCC(options, project));
+                MAKEs.add(this.getMake(options, project));
             }
 
             for (let cc of CCs)
@@ -161,21 +117,21 @@ let MakeHelper =
         return null;
     },
 
-    getMake(project)
+    getMake(options, project)
     {
-        let make = Globals.DEFAULT_BUILD_SETTINGS.MK_MAKE;
+        let make = options.build.MK_MAKE;
 
-        if (project.settings && 'MK_MAKE' in project.settings)
+        if (Globals.DEFAULT_BUILD_SETTINGS.MK_MAKE == make && project.settings && 'MK_MAKE' in project.settings)
             make = project.settings['MK_MAKE'];
 
         return make;
     },
 
-    getMKCC(project)
+    getMKCC(options, project)
     {
-        let cc = Globals.DEFAULT_BUILD_SETTINGS.MK_CC;
+        let cc = options.build.MK_CC;
 
-        if (project.settings && 'MK_CC' in project.settings)
+        if (Globals.DEFAULT_BUILD_SETTINGS.MK_CC == cc && project.settings && 'MK_CC' in project.settings)
             cc = project.settings['MK_CC'];
 
         return cc;

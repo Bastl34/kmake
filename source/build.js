@@ -50,11 +50,12 @@ async function buildVisualStudio(options)
     {
         const arch = options.build.arch[i];
 
-        const jobs = os.cpus().length;
+        const jobs = options.build.jobs;
         const msBuild = MakeHelper.findMsBuild();
 
         // build
-        const cmd = `"${msBuild}" "${solutionPath}" /t:${mainProjectName} /p:Configuration=${configName} /p:Platform=${arch} /m:${jobs} /p:BuildInParallel=true`;
+        // /m:2
+        const cmd = `"${msBuild}" "${solutionPath}" /t:${mainProjectName} /p:Configuration=${configName} /p:Platform=${arch} /p:CL_MPCount=${jobs} /p:BuildInParallel=true ${options.build.VS_BUILD_FLAGS}`;
         const success = await buildExecutable(cmd);
 
         // break if it's only needed to build one arch
@@ -69,17 +70,18 @@ async function buildMakefile(options)
 {
     const mainProjectName = MakeHelper.findBuildProject(options);
 
-    const make = MakeHelper.getMake(options[mainProjectName]);
+    const make = MakeHelper.getMake(options, options[mainProjectName]);
 
     for(let i in options.build.arch)
     {
         const configName = options.build.release ? 'release' : 'debug';
         const archName = options.build.arch[i];
 
+        const jobs = options.build.jobs;
         const targetKey = mainProjectName + "_" + archName + '_' + configName;
 
         // build
-        const cmd = `${make} ${targetKey}`
+        const cmd = `${make} ${targetKey} -j${jobs} ${options.build.MK_MAKE_FLAGS}`
         const success = await buildExecutable(cmd, options.build.outputPath);
 
         // break if it's only needed to build one arch
@@ -105,13 +107,13 @@ async function buildXcodeMac(options)
     const configName = options.build.release ? 'Release' : 'Debug';
 
     // build
-    const cmd = `xcodebuild build -configuration ${configName} -workspace ${workspacePath}.xcworkspace -scheme ${mainProjectName} -derivedDataPath ${outDir}`;
+    const cmd = `xcodebuild build -configuration ${configName} -workspace ${workspacePath}.xcworkspace -scheme ${mainProjectName} -derivedDataPath ${outDir} ${options.build.XCODE_BUILD_FLAGS}`;
     return await buildExecutable(cmd);
 }
 
 async function buildExecutable(cmd, cwd = null)
 {
-    const p = new Exec(cmd, cwd);
+    const p = new Exec(cmd.trim(), cwd);
     p.on('stdout', out => Logging.log(out.trimRight()));
     p.on('stderr', out => Logging.log(out.trimRight()));
     p.on('error', out => Logging.error(out));
