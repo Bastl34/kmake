@@ -1,4 +1,5 @@
 const fs = require('fs');
+const path = require('path');
 
 const colors = require('colors');
 
@@ -23,7 +24,6 @@ const Watcher = require('./watch');
     let proc = null;
 
     let args = argParser();
-
     let queueSteps = [];
 
     Logging.setVerbose(args.verbose);
@@ -31,7 +31,7 @@ const Watcher = require('./watch');
     // ********** version **********
     if (args.version)
     {
-        const json = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+        const json = JSON.parse(fs.readFileSync(path.join(__dirname,'..','package.json'), 'utf8'));
         console.log(`${json.name} v${json.version}`);
         process.exit(0);
     }

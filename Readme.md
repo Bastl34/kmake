@@ -25,6 +25,7 @@ kmake is a build tool with live rebuild support for c++ projects.
   * Xcode or Clang
 * Linux:
   * gcc
+    * `sudo apt-get install gcc g++ make`
 
 ## Installation
 * `npm i -g kmake`
