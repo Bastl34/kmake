@@ -38,7 +38,7 @@ async function runMakefile(options, runAsync)
     const arch = options.build.arch[0];
     const binPath = path.join(options.build.outputPath, Globals.DEFAULT_BIN_DIR, arch, configName, mainProjectName);
 
-    return await runExecutable(binPath, runAsync);
+    return await runExecutable(binPath, runAsync, path.dirname(binPath));
 }
 
 async function runXcodeMac(options, runAsync)

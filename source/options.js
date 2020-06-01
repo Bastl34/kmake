@@ -565,7 +565,7 @@ async function download(options)
 {
     let downloadList = {}
 
-    // check projects and goup
+    // check projects and group
     for(let i in options.workspace.content)
     {
         let projectName = options.workspace.content[i];
@@ -631,6 +631,8 @@ async function download(options)
             }
         }
 
+        let success = true;
+
         // post cmd's
         if (dl.postCmds)
         {
@@ -638,23 +640,39 @@ async function download(options)
             {
                 let cmd = dl.postCmds[cmdI];
 
-                if (cmd.convertTo)
+                if (success && cmd.convertTo)
                 {
                     Logging.info('converting to: ' + cmd.convertTo + ' ...');
 
-                    await ImageHelper.convert(dl.dest, cmd.convertTo);
-                    Logging.info('image converted');
+                    try
+                    {
+                        await ImageHelper.convert(dl.dest, cmd.convertTo);
+                        Logging.info('image converted');
+                    }
+                    catch(e)
+                    {
+                        Logging.error('can not convert image');
+                        success = false;
+                    }
                 }
 
-                if (cmd.extractTo)
+                if (success && cmd.extractTo)
                 {
                     Logging.info('extracting to: ' + cmd.extractTo + ' ...');
 
-                    let files = await extract(dl.dest, cmd.extractTo);
-                    Logging.info(files.length + ' extracted');
+                    try
+                    {
+                        let files = await extract(dl.dest, cmd.extractTo);
+                        Logging.info(files.length + ' extracted');
+                    }
+                    catch(e)
+                    {
+                        Logging.error('can not extract');
+                        success = false;
+                    }
                 }
 
-                if (cmd.cmd)
+                if (success && cmd.cmd)
                 {
                     Logging.info(`running cmd: ${cmd.cmd} ...`);
 
@@ -666,11 +684,14 @@ async function download(options)
 
                     const res = await p.waitForExit();
                     Logging.info('cmd: ' + res);
+
+                    success = res;
                 }
             }
         }
 
-        cache[i] = true;
+        if (success)
+            cache[i] = true;
     }
 
     // save cache

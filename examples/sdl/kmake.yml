@@ -43,7 +43,7 @@ sdlTest:
                 sha256: 349268f695c02efbc9b9148a70b85e58cefbbf704abd3e91be654db7f1e2c863
                 postCmds:
                     - extractTo: ${WORKING_DIR}/libs/sdl
-                    - cmd: 'cd ${WORKING_DIR}/libs/sdl/SDL2-2.0.12 && mkdir bin && cd bin && cmake ../ && make -j4'
+                    - cmd: 'cd ${WORKING_DIR}/libs/sdl/SDL2-2.0.12 && mkdir -p bin && cd bin && cmake ../ && make -j4'
 
     includePaths:
         - 'template:makefile':
@@ -58,9 +58,15 @@ sdlTest:
             - 'libs/sdl'
 
     dependencies:
-        - 'template:makefile':
-            - 'libs/sdl/SDL2-2.0.12/bin/libSDL2-2.0.dylib'
-            - 'libs/sdl/SDL2-2.0.12/bin/libSDL2.a'
+        - 'platform:linux':
+            - 'template:makefile':
+                - 'libs/sdl/SDL2-2.0.12/bin/libSDL2.a'
+                - 'dl'
+                - 'pthread'
+        - 'platform:darwin':
+            - 'template:makefile':
+                - 'libs/sdl/SDL2-2.0.12/bin/libSDL2-2.0.dylib'
+                - 'libs/sdl/SDL2-2.0.12/bin/libSDL2.a'
         - 'template:xcodeMac':
             - 'libs/sdl/SDL2.framework'
         - 'template:vs*':

@@ -17,6 +17,7 @@ int main(int argc, char** argv)
     }
 
     std::string imagePath = std::string(ASSET_DIR) + "/grumpyCat.bmp";
+
     SDL_Surface* bmp = SDL_LoadBMP(imagePath.c_str());
     if (bmp == nullptr)
     {
