@@ -11,7 +11,6 @@ const tempDir = Globals.TEMP_DIRS.test;
 async function run(cmd)
 {
     cmd = (cmd + " " + additionalArgs).trim();
-    console.log(cmd);
     const p = new Exec(cmd);
     //p.on('stdout', out => console.log(out.trimRight()));
     //p.on('stderr', out => console.log(out.trimRight()));
