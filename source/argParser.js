@@ -79,7 +79,7 @@ function argParser()
         let optionKeyName = isOptionKey ? arg.substr(2) : null;
 
         //value after equal sign (=) example: --MK_MAKE_FLAGS=--debug=v
-        let hasValueAfterEqualEqualSign = arg.includes('=') && optionKeyName.substr(0, arg.indexOf('=')-2) in possibleArgs;
+        let hasValueAfterEqualEqualSign = arg.includes('=') && optionKeyName && optionKeyName.substr(0, arg.indexOf('=')-2) in possibleArgs;
         let equalSignsValue = hasValueAfterEqualEqualSign ? optionKeyName.substr(arg.indexOf('=')-1) : null
         if (hasValueAfterEqualEqualSign)
             optionKeyName = optionKeyName.substr(0, arg.indexOf('=')-2)
@@ -160,8 +160,8 @@ function argParser()
     // resolve requirements
     resolveRequirements(obj);
 
-    // appy defines
-    applyDefines(obj);
+    // appy defines and inputs
+    applyInputData(obj);
 
     // apply path items
     applyPathItems(obj);
@@ -194,25 +194,30 @@ function resolveRequirements(obj)
     }
 }
 
-function applyDefines(obj)
+function applyInputData(obj)
 {
-    if ('define' in obj)
+    const dataItems = ['define', 'input'];
+
+    dataItems.forEach(dataItem =>
     {
-        obj.define = obj.define.map(def =>
+        if (dataItem in obj)
         {
-            let splits = def.split('=');
-
-            if (splits.length == 2)
+            obj[dataItem] = obj[dataItem].map(def =>
             {
-                let obj = {};
-                let val = Helper.getValueOfStringContent(splits[1]);
-                obj[splits[0]] = val;
-                return obj;
-            }
+                let splits = def.split('=');
 
-            return def;
-        });
-    }
+                if (splits.length == 2)
+                {
+                    let obj = {};
+                    let val = Helper.getValueOfStringContent(splits[1]);
+                    obj[splits[0]] = val;
+                    return obj;
+                }
+
+                return def;
+            });
+        }
+    });
 }
 
 function applyPathItems(obj)

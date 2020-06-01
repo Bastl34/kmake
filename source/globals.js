@@ -84,9 +84,10 @@ let globals =
         // use the default config if no config was provided
         'defaultConfig': true,
 
-        'useInputCache': false,
+        'useInputCache': true,
         'cleanOutputDir': true,
         'skipAssets': false,
+        'skipInput': false,
         'useDownloadCache': true,
         'useCheckCache': true,
 
@@ -95,6 +96,7 @@ let globals =
         'includePath': [],
         'libPath': [],
         'arch': [],
+        'input': [],
 
         // make arguments
         'make': true,
@@ -139,7 +141,9 @@ let globals =
         'ic': 'useInputCache',
         'c': 'cleanOutputDir',
         'sa': 'skipAssets',
+        'si': 'skipInput',
         'dlc': 'useDownloadCache',
+        'chc': 'useCheckCache',
 
         // gcc style args
         // WARNING: other short/synonym parameters are not allowed to start with the first letter of the following
@@ -149,6 +153,7 @@ let globals =
         'I': 'includePath',
         'L': 'libPath',
         'a': 'arch',
+        'in': 'input',
 
         // make arguments
         'm': 'make',
@@ -193,13 +198,16 @@ let globals =
         'useInputCache': 'do not ask for user input everytime',
         'cleanOutputDir': 'clear the output dir on workspace generation',
         'skipAssets': 'do not use the assets',
+        'skipInput': 'do not use the inputs',
         'useDownloadCache': 'cache downloads',
+        'useCheckCache': 'cache checks',
 
         'define': 'add preprocessor defines to all projects of the workspace',
         'lib': 'add a custom library to the project',
         'includePath': 'set include path\'s',
         'libPath': 'set library search path\'',
         'arch': 'specify the architecture of the output',
+        'input': 'input variables/constants',
 
         'make': 'create project configuration files',
 

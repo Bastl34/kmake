@@ -27,42 +27,42 @@ const tests =
     {
         func: async () =>
         {
-            return await run(`node kmake.js examples/full --run --useInputCache --verbose 0`);
+            return await run(`node kmake.js examples/full --run --skipInput --verbose 0`);
         }
     },
-    noConfig: 
+    noConfig:
     {
         func: async () =>
         {
-            return await run(`node kmake.js examples/noConfig --run --useInputCache --verbose 0`);
+            return await run(`node kmake.js examples/noConfig --run --skipInput --verbose 0`);
         }
     },
     sdl:
     {
         func: async () =>
         {
-            return await run(`node kmake.js examples/sdl --build --useInputCache --verbose 0`);
+            return await run(`node kmake.js examples/sdl --build --skipInput --verbose 0`);
         }
     },
     export:
     {
         func: async () =>
         {
-            return await run(`node kmake.js examples/noConfig --export --exportDest ${tempDir}/export.zip --useInputCache --verbose 0`);
+            return await run(`node kmake.js examples/noConfig --export --exportDest ${tempDir}/export.zip --skipInput --verbose 0`);
         }
     },
     lib:
     {
         func: async () =>
         {
-            return await run(`node kmake.js examples/lib --useInputCache --verbose 0`);
+            return await run(`node kmake.js examples/lib --skipInput --verbose 0`);
         }
     },
     thread:
     {
         func: async () =>
         {
-            return await run(`node kmake.js examples/thread --run --useInputCache --verbose 0`);
+            return await run(`node kmake.js examples/thread --run --skipInput --verbose 0`);
         }
     },
     threadClang:
@@ -70,7 +70,7 @@ const tests =
         platform: ['linux', 'darwin'],
         func: async () =>
         {
-            return await run(`node kmake.js examples/thread --run --useInputCache --verbose 0 --MK_CC=clang++`);
+            return await run(`node kmake.js examples/thread --run --skipInput --verbose 0 --MK_CC=clang++`);
         }
     },
 };

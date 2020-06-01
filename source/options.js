@@ -142,6 +142,23 @@ async function getAndApplyOptions(args)
     Logging.info('getting input data...');
     if ('inputs' in options)
     {
+        //array to object
+        const inputs = {}
+        options.inputs.forEach(input =>
+        {
+            inputs[input] = null;
+        });
+
+
+        options.inputs = inputs
+
+        const argInputs = {};
+        args.input.forEach(input =>
+        {
+            const key = Object.keys(input)[0];
+            argInputs[key] = input[key];
+        });
+
         try
         {
             // save input cache
@@ -150,45 +167,31 @@ async function getAndApplyOptions(args)
             let inputCache = {};
 
             if (fs.existsSync(inputCachePath))
-                inputCache = ymlLoader(inputCachePath, args.projectDir);
+                inputCache = yaml.safeLoad(fs.readFileSync(inputCachePath, 'utf8'));
 
-            if (!args.useInputCache)
+            for(let key in options.inputs)
             {
-                for(let key in options.inputs)
+                let nameStr = key + ': ';
+                if (key in inputCache)
+                    nameStr = key + ' (' + inputCache[key] + '): ';
+
+                // read value from cache
+                let value = null;
+                if (key in inputCache && args.useInputCache)
+                    value = inputCache[key];
+
+                //use value from command line args
+                if (key in argInputs)
+                    value = argInputs[key];
+
+                // read value
+                if (!value && !args.skipInput)
+                    value = readlineSync.question(nameStr);
+
+                if (value)
                 {
-                    let inputVar = options.inputs[key];
-
-                    let nameStr = inputVar + ': ';
-                    if (inputVar in inputCache)
-                        nameStr = inputVar + ' (' + inputCache[inputVar] + '): ';
-
-                    // read value
-                    let value = readlineSync.question(nameStr);
-
-                    if (!value && inputVar in inputCache)
-                        value = inputCache[inputVar];
-
-                    if (value)
-                    {
-                        options.inputs[inputVar] = value;
-                        inputCache[inputVar] = value;
-                    }
-
-                    Logging.log(' --> ' + value);
-                }
-            }
-            else
-            {
-                for(let key in options.inputs)
-                {
-                    let inputVar = options.inputs[key];
-
-                    // read value from cache
-                    let value = null;
-                    if (inputVar in inputCache)
-                        value = inputCache[inputVar];
-
-                    Logging.log(inputVar + ': ' + value);
+                    options.inputs[key] = value;
+                    inputCache[key] = value;
                 }
             }
 
@@ -199,7 +202,7 @@ async function getAndApplyOptions(args)
         catch(e)
         {
             Logging.error('error reading input variables ');
-            Logging.log(e);
+            console.log(e);
             process.exit();
         }
     }
@@ -253,6 +256,26 @@ async function getAndApplyOptions(args)
             project.defines = [...project.defines, ...checkResults];
         }
     }
+
+
+    // ******************** process input variables ********************
+    Logging.info('replacing input variables...');
+    Helper.recursiveReplace(options, (key, object) =>
+    {
+        if (typeof object === "string")
+        {
+            for(let varName in options.inputs)
+            {
+                varName = varName.toUpperCase();
+
+                let replacement = '\\${' + varName + '}';
+                let regex = new RegExp(replacement, 'g');
+                object = object.replace(regex, options.inputs[varName]);
+            }
+        }
+
+        return object;
+    });
 
 
     // ******************** process env variables ********************
@@ -766,7 +789,7 @@ async function runChecks(options)
                     fs.writeFileSync(tmpFile, check);
 
                 // execute
-                res = await (new Exec(`node kmake.js ${tempDir} --run --useInputCache --verbose 0`)).waitForExit();
+                res = await (new Exec(`node kmake.js ${tempDir} --run --verbose 0`)).waitForExit();
                 Logging.log(name + ': ' + res);
             }
 

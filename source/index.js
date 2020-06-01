@@ -31,7 +31,7 @@ const Watcher = require('./watch');
     catch(e)
     {
         Logging.error('can not parse args');
-        Logging.log(e);
+        console.log(e);
         process.exit(1);
     }
     let queueSteps = [];

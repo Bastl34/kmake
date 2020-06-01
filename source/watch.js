@@ -30,7 +30,7 @@ class Watcher
         // kmake files
         options.projectFiles.forEach(file =>
         {
-            this.files.push({path: path.resolve(file), exclude: null, steps: projectFileSteps});
+            this.files.push({path: FileHelper.resolve(file), exclude: null, steps: projectFileSteps});
         });
 
         for(let i in options.workspace.content)
