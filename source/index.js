@@ -23,7 +23,17 @@ const Watcher = require('./watch');
     let running = false;
     let proc = null;
 
-    let args = argParser();
+    let args = {};
+    try
+    {
+        args = argParser();
+    }
+    catch(e)
+    {
+        Logging.error('can not parse args');
+        Logging.log(e);
+        process.exit(1);
+    }
     let queueSteps = [];
 
     Logging.setVerbose(args.verbose);

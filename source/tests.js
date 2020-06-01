@@ -1,4 +1,5 @@
 const fs = require('fs');
+const os = require('os');
 
 const colors = require('colors');
 
@@ -22,25 +23,55 @@ async function run(cmd)
 
 const tests =
 {
-    fullExample: async () =>
+    fullExample:
     {
-        return await run(`node kmake.js examples/full --run --useInputCache --verbose 0`);
+        func: async () =>
+        {
+            return await run(`node kmake.js examples/full --run --useInputCache --verbose 0`);
+        }
     },
-    noConfig: async () =>
+    noConfig: 
     {
-        return await run(`node kmake.js examples/noConfig --run --useInputCache --verbose 0`);
+        func: async () =>
+        {
+            return await run(`node kmake.js examples/noConfig --run --useInputCache --verbose 0`);
+        }
     },
-    sdl: async () =>
+    sdl:
     {
-        return await run(`node kmake.js examples/sdl --build --useInputCache --verbose 0`);
+        func: async () =>
+        {
+            return await run(`node kmake.js examples/sdl --build --useInputCache --verbose 0`);
+        }
     },
-    export: async () =>
+    export:
     {
-        return await run(`node kmake.js examples/noConfig --export --exportDest ${tempDir}/export.zip --useInputCache --verbose 0`);
+        func: async () =>
+        {
+            return await run(`node kmake.js examples/noConfig --export --exportDest ${tempDir}/export.zip --useInputCache --verbose 0`);
+        }
     },
-    lib: async () =>
+    lib:
     {
-        return await run(`node kmake.js examples/lib --useInputCache --verbose 0`);
+        func: async () =>
+        {
+            return await run(`node kmake.js examples/lib --useInputCache --verbose 0`);
+        }
+    },
+    thread:
+    {
+        func: async () =>
+        {
+            return await run(`node kmake.js examples/thread --run --useInputCache --verbose 0`);
+        }
+    },
+    threadClang:
+    {
+        platform: ['linux', 'darwin'],
+        func: async () =>
+        {
+            return await run(`node kmake.js examples/thread --run --useInputCache --verbose 0 --MK_CC=clang++`);
+        }
     },
 };
 
@@ -49,7 +80,7 @@ const tests =
     try
     {
         let successful = 0;
-        let testAmount = Object.keys(tests).length;
+        let testAmount = 0;
 
         for(let testName in tests)
         {
@@ -58,11 +89,16 @@ const tests =
                 await fs.promises.rmdir(tempDir, {recursive: true});
             await fs.promises.mkdir(tempDir);
 
+            if ('platform' in tests[testName] && !tests[testName].platform.includes(os.platform()))
+                continue;
+
+            ++testAmount;
+
             // run test
             try
             {
                 process.stdout.write(`test "${testName}" running... `);
-                const res = await tests[testName]();
+                const res = await tests[testName].func();
 
                 if (!res)
                 {

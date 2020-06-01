@@ -1,0 +1,19 @@
+workspace:
+    name: 'thread'
+
+    content:
+        - threadTest
+
+threadTest:
+    outputType: app
+
+    settings:
+        MACOSX_DEPLOYMENT_TARGET: '10.14'
+
+    dependencies:
+        - 'platform:linux':
+            - 'template:makefile':
+                - 'pthread'
+
+    sources:
+        - '*.cpp'
