@@ -453,6 +453,10 @@ async function applyPlatformData(projectName, project, options)
                 }
                 else
                 {
+                    //resolve lib path (based on search paths)
+                    let workingDir = path.resolve(project.workingDir);
+                    lib = MakeHelper.findPath(lib, libsPathsArray, workingDir);
+
                     // check if there is a dll and copy the dll on post build
                     let dllPath = lib.replace('.lib', '.dll');
                     if (fs.existsSync(dllPath) && !(dllPath in ddlsAdded))

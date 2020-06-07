@@ -175,7 +175,28 @@ let MakeHelper =
             return projects[0];
 
         throw Error('no build project found');
+    },
+
+    findPath(lib, libPaths, workingDir)
+    {
+        let libPath = path.join(workingDir, lib);
+        if (fs.existsSync(libPath))
+            return libPath;
+
+        for(let i in libPaths)
+        {
+            libPath = path.join(libPaths[i], lib);
+
+            if (!path.isAbsolute(libPath))
+                libPath = path.join(workingDir, libPath);
+
+            if (fs.existsSync(libPath))
+                return libPath;
+        }
+
+        return lib;
     }
+
 };
 
 

@@ -310,7 +310,7 @@ async function makeXcode(options)
             let absolutePath = path.resolve(lib.path);
 
             let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + lib.name;
-            if (lib.isWorkspaceLib)
+            if (lib.isWorkspaceLib || !fs.existsSync(absolutePath))
                 relativePath = lib.name;
 
             sourceFileContent += '		' + lib.uid2 + ' /* ' + lib.name + ' in Frameworks */ = {isa = PBXBuildFile; fileRef = ' + lib.uid + ' /* ' + lib.name + ' */; };\n';
@@ -332,7 +332,6 @@ async function makeXcode(options)
                 sourceTree = '"<group>"';
 
             sourceFileReferenceContent += '		' + lib.uid + ' /* ' + lib.name + ' */ = {isa = PBXFileReference; ' + fileTypeStr + '; name = ' + lib.name + '; path = ' + relativePath + '; sourceTree = ' + sourceTree + '; };\n';
-
 
             // add to "framework" group
             libList += '				' + lib.uid + ' /* ' + lib.name + ' in Frameworks */,\n';

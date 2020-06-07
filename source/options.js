@@ -629,7 +629,10 @@ async function download(options)
         let size = 0;
         try { size = await NetHelper.getDownloadSize(dl.url); } catch(e) { Logging.warning('can not get download size') };
 
-        Logging.info('downloading: ' + dl.url + ' (' + Helper.bytesToSize(size) +  ') ...');
+        if (size)
+            Logging.info('downloading: ' + dl.url + ' (' + Helper.bytesToSize(size) +  ') ...');
+        else
+            Logging.info('downloading: ' + dl.url + ' ...');
 
         await mkdirProm(path.dirname(dl.dest), {recursive: true});
         await NetHelper.download(dl.url, dl.dest);

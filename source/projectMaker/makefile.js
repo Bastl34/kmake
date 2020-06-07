@@ -223,6 +223,8 @@ async function makeMakefile(options)
                 let outPathAbsolute = FileHelper.resolve(FileHelper.join(options.build.outputPath, outPath));
                 let outBaseName = path.basename(outPath);
 
+                let libsPathsArray = ('libPaths' in project) ? project['libPaths'][platform][config] : [];
+
                 // dependencies
                 let libsContent = '';
                 let targetDepsContent = '';
@@ -243,6 +245,10 @@ async function makeMakefile(options)
                     }
                     else
                     {
+                        //resolve lib path (based on search paths)
+                        let workingDir = path.resolve(project.workingDir);
+                        lib = MakeHelper.findPath(lib, libsPathsArray, workingDir);
+
                         if (fs.existsSync(lib))
                         {
                             let libAbsolute = FileHelper.resolve(lib);
