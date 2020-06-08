@@ -130,6 +130,7 @@ bla:
         - 'template:xcodeMac':
             - 'lib/prebuilt/bin/xcodeMac/x86_64/prebuilt.a'
             - 'lib/prebuiltDyn/bin/xcodeMac/x86_64/prebuiltDyn.dylib'
+            - 'CoreFoundation.framework'
         - 'template:vs*':
             arch:win32:
                 - 'lib/prebuilt/bin/vs2019/win32/prebuilt.lib'
@@ -156,6 +157,29 @@ bla:
             - 'template:makefile':
                 arch:x86:
                     - 'lib/prebuilt/bin/makefile/win/x86/prebuilt.a'
+                    - 'lib/prebuiltDyn/bin/makefile/win/x86/prebuiltDyn.dll'
+
+    embedDependencies:
+        - 'template:xcodeMac':
+            - 'lib/prebuiltDyn/bin/xcodeMac/x86_64/prebuiltDyn.dylib'
+        - 'template:vs*':
+            arch:win32:
+                - 'lib/prebuiltDyn/bin/vs2019/win32/prebuiltDyn.dll'
+            arch:x64:
+                - 'lib/prebuiltDyn/bin/vs2019/x64/prebuiltDyn.dll'
+        - 'platform:darwin':
+            - 'template:makefile':
+                arch:x86_64:
+                    - 'lib/prebuiltDyn/bin/makefile/mac/x86_64/prebuiltDyn.dylib'
+        - 'platform:linux':
+            - 'template:makefile':
+                arch:x86_64:
+                    - 'lib/prebuiltDyn/bin/makefile/linux/x86_64/prebuiltDyn.so'
+                arch:x86:
+                    - 'lib/prebuiltDyn/bin/makefile/linux/x86/prebuiltDyn.so'
+        - 'platform:win32':
+            - 'template:makefile':
+                arch:x86:
                     - 'lib/prebuiltDyn/bin/makefile/win/x86/prebuiltDyn.dll'
 
     hooks:

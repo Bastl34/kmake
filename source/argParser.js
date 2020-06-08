@@ -222,7 +222,7 @@ function applyInputData(obj)
 
 function applyPathItems(obj)
 {
-    const pathItems = ['lib', 'includePath', 'libPath'];
+    const pathItems = ['lib', 'includePath', 'libPath', 'embed'];
 
     pathItems.forEach(pathItem =>
     {

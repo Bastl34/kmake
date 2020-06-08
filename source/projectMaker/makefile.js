@@ -445,7 +445,7 @@ async function applyPlatformData(projectName, project, options)
             let rpath = `-Wl,-rpath,"@executable_path"`;
             if (os.platform() == 'linux')
                 rpath = '-Wl,-rpath,\'$$$$ORIGIN\'';
-            else (os.platform() == 'win32')
+            else if (os.platform() == 'win32')
                 rpath = '';
 
             linkerFlagsContent += rpath;
@@ -550,7 +550,8 @@ async function applyCopyStep(projectName, project, options)
 
             copyContent += copyKey + ':\n';
 
-            let libsArray = ('dependencies' in project) ? project['dependencies'][platform][config] : [];
+            //let libsArray = ('dependencies' in project) ? project['dependencies'][platform][config] : [];
+            let libsArray = ('embedDependencies' in project) ? project['embedDependencies'][platform][config] : [];
             libsArray.forEach(lib =>
             {
                 if (!(lib in options))

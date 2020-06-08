@@ -30,6 +30,14 @@ const tests =
             return await run(`node kmake.js examples/full --run --skipInput --verbose 0`);
         }
     },
+    fullExampleMakefile:
+    {
+        platform: ['darwin'],
+        func: async () =>
+        {
+            return await run(`node kmake.js examples/full --template mk --run --skipInput --verbose 0`);
+        }
+    },
     noConfig:
     {
         func: async () =>

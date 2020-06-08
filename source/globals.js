@@ -97,6 +97,7 @@ let globals =
         'libPath': [],
         'arch': [],
         'input': [],
+        'embed': [],
 
         // make arguments
         'make': true,
@@ -154,6 +155,7 @@ let globals =
         'L': 'libPath',
         'a': 'arch',
         'in': 'input',
+        'em': 'embed',
 
         // make arguments
         'm': 'make',
@@ -208,6 +210,7 @@ let globals =
         'libPath': 'set library search path\'',
         'arch': 'specify the architecture of the output',
         'input': 'input variables/constants',
+        'embed': 'add libarys wich should be embedded',
 
         'make': 'create project configuration files',
 
@@ -297,6 +300,7 @@ let globals =
         'includePaths',
         'libPaths',
         'dependencies',
+        'embedDependencies',
         'buildFlags',
         'linkerFlags',
         'downloads',

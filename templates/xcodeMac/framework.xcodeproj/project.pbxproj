@@ -62,6 +62,7 @@
 				70EC42EF163F701F007A327B /* assets */,
 				6BB5710423EDF9C300430CC2 /* Products */,
 				6BFA07FE23EB71E9000E3732 /* Frameworks */,
+				6BFA07FE23EB71E9000E3733 /* Embeds */,
 			);
 			sourceTree = "<group>";
 		};
@@ -71,6 +72,14 @@
 				/*LIBRARIES_LIST*/
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6BFA07FE23EB71E9000E3733 /* Embeds */ = {
+			isa = PBXGroup;
+			children = (
+				/*EMBEDS_LIST*/
+			);
+			name = Embeds;
 			sourceTree = "<group>";
 		};
 		6BB5710423EDF9C300430CC2 /* Products */ = {
