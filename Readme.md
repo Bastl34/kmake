@@ -6,7 +6,7 @@ kmake is a build tool with live rebuild support for c++ projects.
 
 
 ## Features
-* generate project files for different IDE's
+* generate project files for different IDE's/build systems
 * `kmake.yml` file based configuration
 * command line config support
 * file watcher with live rebuild
@@ -17,10 +17,16 @@ kmake is a build tool with live rebuild support for c++ projects.
 * hooks support
 * icon generation
 
+## Supported IDE'S / build systems
+ * Visual Studio 2019
+ * XCode
+ * Makefile (GCC, Clang, MinGW)
+
 ## Requrements
 * node.js >=12
 * Windows:
-  * Visual Studio 2019 or MinGW
+  * Visual Studio 2019
+  * or MinGW (add it to your env-path)
 * Mac:
   * Xcode or Clang
 * Linux:
