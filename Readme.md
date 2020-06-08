@@ -50,3 +50,7 @@ kmake is a build tool with live rebuild support for c++ projects.
 * makefile: building for archs which are not on your system.
   * use: install: `gcc-multilib` and `g++-multilib`
   * on debian/ubuntu use: `sudo apt-get install gcc-multilib g++-multilib`
+
+* Inspect executable
+  * on Mac: `otool -l BINARY`
+  * on Linux: `ldd BINARY`

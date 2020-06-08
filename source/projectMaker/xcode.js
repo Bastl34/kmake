@@ -138,6 +138,7 @@ async function makeXcode(options)
         }
 
         let libsList = [];
+        let embedsList = [];
         let soucesList = [];
         let directoryList = {};
 
@@ -191,11 +192,45 @@ async function makeXcode(options)
                 pathRelative: libPathRelative ? libPathRelative : null,
                 uid: Helper.randomString(24, '0123456789ABCDEF', false),
                 uid2: Helper.randomString(24, '0123456789ABCDEF', false),
-                uid3: Helper.randomString(24, '0123456789ABCDEF', false),
+                uid3: Helper.randomString(24, '0123456789ABCDEF', false), //uid3 is only used for embed
                 type: type
             };
 
             libsList.push(libsObj);
+        }
+
+        // ********** embed
+
+        //use x86_64 release
+        let embeds = [];
+        if ('embedDependencies' in project && 'x86_64' in project.embedDependencies)
+            embeds = project.embedDependencies['x86_64']['release'];
+
+        for(let embedKey in embeds)
+        {
+            let embed = embeds[embedKey];
+
+            let type = 'unknown';
+            let ext = path.extname(embed);
+            if (ext in XCODE_BIN_FILETYPE_MAP)
+                type = XCODE_BIN_FILETYPE_MAP[ext];
+
+            let embedPathRelative = embed;
+            if (project.workingDir && project.workingDir.length > 0)
+                embedPathRelative = embedPathRelative.substr(project.workingDir.length + 1);
+
+            // embed
+            let embedsObj =
+            {
+                name: path.basename(embed),
+                path: embed,
+                pathRelative: embedPathRelative ? embedPathRelative : null,
+                uid: Helper.randomString(24, '0123456789ABCDEF', false),
+                uid3: Helper.randomString(24, '0123456789ABCDEF', false), //uid3 is only used for embed
+                type: type
+            };
+
+            embedsList.push(embedsObj);
         }
 
         // ********** files
@@ -282,6 +317,7 @@ async function makeXcode(options)
         let compileFiles = '';
         let headerFiles = '';
         let libList = '';
+        let embedList = '';
         let libBuildList = '';
         let libEmbedList = '';
 
@@ -316,7 +352,8 @@ async function makeXcode(options)
             sourceFileContent += '		' + lib.uid2 + ' /* ' + lib.name + ' in Frameworks */ = {isa = PBXBuildFile; fileRef = ' + lib.uid + ' /* ' + lib.name + ' */; };\n';
 
             // add to embed
-            if (lib.name.indexOf('.dylib') != -1 || lib.name.indexOf('.framework') != -1)
+            const embeddable = (lib.isWorkspaceLib && (lib.name.indexOf('.dylib') != -1 || lib.name.indexOf('.framework') != -1));
+            if (embeddable)
                 sourceFileContent += '		' + lib.uid3 + ' /* ' + lib.name + ' in Embed Libraries */ = {isa = PBXBuildFile; fileRef = ' + lib.uid + ' /* ' + lib.name + ' */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };\n';
 
             let fileTypeStr = '';
@@ -336,14 +373,43 @@ async function makeXcode(options)
             // add to "framework" group
             libList += '				' + lib.uid + ' /* ' + lib.name + ' in Frameworks */,\n';
 
+            // add to "embed" group
+            if (embeddable)
+                embedList += '				' + lib.uid + ' /* ' + lib.name + ' in Embeds */,\n';
+
             // add to build step
             libBuildList += '				' + lib.uid2 + ' /* ' + lib.name + ' in Frameworks */,\n';
 
             // add to embed
-            if (lib.name.indexOf('.dylib') != -1 || lib.name.indexOf('.framework') != -1)
+            if (embeddable)
                 libEmbedList += '				' + lib.uid3 + ' /* ' + lib.name + ' in Embed Libraries */,\n';
         });
 
+        // ********** emeds
+        embedsList.forEach(embed =>
+        {
+            // get the relative path from output dir to source
+            let absolutePath = path.resolve(embed.path);
+            let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + embed.name;
+
+            // add to embed
+            sourceFileContent += '		' + embed.uid3 + ' /* ' + embed.name + ' in Embed Libraries */ = {isa = PBXBuildFile; fileRef = ' + embed.uid + ' /* ' + embed.name + ' */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };\n';
+
+            let fileTypeStr = '';
+            if (embed.name.indexOf('framework') != -1)
+                fileTypeStr = 'lastKnownFileType = ' + embed.type;
+            else
+                fileTypeStr = 'explicitFileType = ' + embed.type;
+
+            let sourceTree = '"<group>"';
+            sourceFileReferenceContent += '		' + embed.uid + ' /* ' + embed.name + ' */ = {isa = PBXFileReference; ' + fileTypeStr + '; name = ' + embed.name + '; path = ' + relativePath + '; sourceTree = ' + sourceTree + '; };\n';
+
+            // add to "embed" group
+            embedList += '				' + embed.uid + ' /* ' + embed.name + ' in Embeds */,\n';
+
+            // add to embed
+            libEmbedList += '				' + embed.uid3 + ' /* ' + embed.name + ' in Embed Libraries */,\n';
+        });
 
         // ********** source groups folders
         let sourceDirectories = '';
@@ -420,6 +486,7 @@ async function makeXcode(options)
         results = await replace({files: projectFilePath, from: '/*SOURCE_DIRECTORIES*/', to: sourceDirectories.trim()});
         results = await replace({files: projectFilePath, from: '/*SOURCE_ROOT*/', to: sourceRoot.trim()});
         results = await replace({files: projectFilePath, from: '/*LIBRARIES_LIST*/', to: libList.trim()});
+        results = await replace({files: projectFilePath, from: '/*EMBEDS_LIST*/', to: embedList.trim()});
         results = await replace({files: projectFilePath, from: '/*LIBRARIES_BUILD*/', to: libBuildList.trim()});
         results = await replace({files: projectFilePath, from: '/*EMBED_LIBRARIES*/', to: libEmbedList.trim()});
 

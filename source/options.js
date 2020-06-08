@@ -209,14 +209,15 @@ async function getAndApplyOptions(args)
 
 
     // ******************** apply command line data (defines, libs) to all projects ********************
-    Logging.info('apply command line defines, libs, headerPath, libPath to each project...');
+    Logging.info('apply command line defines, libs, headerPath, libPath, embed to each project...');
 
     const commandLineOptionMapping =
     [
         {cmdKey: 'define', projectKey: 'defines'},
         {cmdKey: 'lib', projectKey: 'dependencies'},
         {cmdKey: 'includePath', projectKey: 'includePaths'},
-        {cmdKey: 'libPath', projectKey: 'libPaths'}
+        {cmdKey: 'libPath', projectKey: 'libPaths'},
+        {cmdKey: 'embed', projectKey: 'embedDependencies'}
     ];
 
     for(let i in options.workspace.content)
@@ -524,7 +525,7 @@ async function getAndApplyOptions(args)
     // ******************** resolve platform specific paths ********************
     Logging.info('resolving platform/arch/config specific paths...');
 
-    let resolvingItems = ['includePaths', 'libPaths'];
+    let resolvingItems = ['includePaths', 'libPaths', 'embedDependencies'];
 
     for(let i in options.workspace.content)
     {

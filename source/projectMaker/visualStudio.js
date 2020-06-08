@@ -437,7 +437,7 @@ async function applyPlatformData(projectName, project, options)
             // dependencies
             let libsContent = '';
             let libsArray = ('dependencies' in project) ? project['dependencies'][platform][config] : [];
-            let ddlsAdded = {}
+            //let ddlsAdded = {}
             libsArray.forEach(lib =>
             {
                 if (lib in options)
@@ -458,6 +458,7 @@ async function applyPlatformData(projectName, project, options)
                     lib = MakeHelper.findPath(lib, libsPathsArray, workingDir);
 
                     // check if there is a dll and copy the dll on post build
+                    /*
                     let dllPath = lib.replace('.lib', '.dll');
                     if (fs.existsSync(dllPath) && !(dllPath in ddlsAdded))
                     {
@@ -467,6 +468,7 @@ async function applyPlatformData(projectName, project, options)
 
                         ddlsAdded[dllPath] = true;
                     }
+                    */
 
                     // change lib path relative to output dir
                     if (!path.isAbsolute(lib))
@@ -475,6 +477,25 @@ async function applyPlatformData(projectName, project, options)
 
                 if (lib.indexOf('.dll') === -1)
                     libsContent += '"' + lib + '";';
+            });
+
+            // embedDependencies
+            let embedsArray = ('embedDependencies' in project) ? project['embedDependencies'][platform][config] : [];
+            let ddlsAdded = {}
+            embedsArray.forEach(embed =>
+            {
+                //resolve lib path (based on search paths)
+                let workingDir = path.resolve(project.workingDir);
+                embed = MakeHelper.findPath(embed, libsPathsArray, workingDir);
+
+                if (fs.existsSync(embed) && !(embed in ddlsAdded))
+                {
+                    let dllPathRelative = FileHelper.relative(path.join(options.build.outputPath, projectName), embed);
+                    let dllName = path.basename(embed);
+                    hookPostBuildContent += `        copy /Y "$(ProjectDir)\\${path.normalize(dllPathRelative)}" "$(SolutionDir)$(Platform)\\$(Configuration)\\${dllName}"\r\n`;
+
+                    ddlsAdded[embed] = true;
+                }
             });
 
             // buildFlags

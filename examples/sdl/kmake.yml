@@ -71,13 +71,23 @@ sdlTest:
             - 'libs/sdl/SDL2.framework'
         - 'template:vs*':
             arch:win32:
-                - 'libs/sdl/SDL2-2.0.12/lib/x86/SDL2.dll'
                 - 'libs/sdl/SDL2-2.0.12/lib/x86/SDL2.lib'
                 - 'libs/sdl/SDL2-2.0.12/lib/x86/SDL2main.lib'
             arch:x64:
-                - 'libs/sdl/SDL2-2.0.12/lib/x64/SDL2.dll'
                 - 'libs/sdl/SDL2-2.0.12/lib/x64/SDL2.lib'
                 - 'libs/sdl/SDL2-2.0.12/lib/x64/SDL2main.lib'
+
+    embedDependencies:
+        - 'platform:darwin':
+            - 'template:makefile':
+                - 'libs/sdl/SDL2-2.0.12/bin/libSDL2-2.0.dylib'
+        - 'template:xcodeMac':
+            - 'libs/sdl/SDL2.framework'
+        - 'template:vs*':
+            arch:win32:
+                - 'libs/sdl/SDL2-2.0.12/lib/x86/SDL2.dll'
+            arch:x64:
+                - 'libs/sdl/SDL2-2.0.12/lib/x64/SDL2.dll'
 
     sources:
         - source/main.cpp
