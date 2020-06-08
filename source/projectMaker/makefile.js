@@ -319,6 +319,7 @@ async function makeMakefile(options)
         results = await replace({files: projectFilePath, from: '#SOURCE_FILE#', to: sourceFileContent.trim()});
         results = await replace({files: projectFilePath, from: /PROJECT_NAME/g, to: projectName.toUpperCase()});
         results = await replace({files: projectFilePath, from: '#INCLUDES#', to: include.trim()});
+        results = await replace({files: projectFilePath, from: '#OBJECTS#', to: objectList.join(' ')});
 
         // ********** platform specific data
         Logging.log("applying platform data...");
