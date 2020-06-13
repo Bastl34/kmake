@@ -26,7 +26,13 @@ kmake is a build tool with live rebuild support for c++ projects.
 * Linux:
   * gcc
     * `sudo apt-get install gcc g++ make`
-    * for sdl: `sudo apt install cmake libxext-dev`
+
+### SDL Exmaple
+* `sudo apt install cmake libxext-dev`
+
+### Vulkan Example
+* `sudo apt-get update -y`
+* `sudo apt install cmake libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev`
 
 ## Installation
 * `npm i -g kmake`
