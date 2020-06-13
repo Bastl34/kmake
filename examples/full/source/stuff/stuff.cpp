@@ -3,5 +3,5 @@
 
 void stuff()
 {
-    std::cout << "stuff" << std::endl;
+    std::cout << "hello from stuff" << std::endl;
 }

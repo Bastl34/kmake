@@ -1,5 +1,6 @@
 #include "main.h"
 #include "stuff/stuff.h"
+#include "platform/platform.h"
 
 #include <dep1.h>
 #include <dep2.h>
@@ -102,6 +103,7 @@ int main(int const argc, const char* const argv[], char* envv[])
     std::cout << "new working dir: " << cwd << std::endl;
 
     //test some funcs
+    platformFunc();
     dep1Func();
     dep2Func();
     stuff();

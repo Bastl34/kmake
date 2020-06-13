@@ -279,12 +279,13 @@ async function getAndApplyOptions(args)
     });
 
 
-    // ******************** process env variables ********************
+    // ******************** process variables ********************
     Logging.info('replacing env variables...');
     Helper.recursiveReplace(options, (key, object) =>
     {
         if (typeof object === "string")
         {
+            //env
             for(let varName in process.env)
             {
                 varName = varName.toUpperCase();
@@ -292,6 +293,11 @@ async function getAndApplyOptions(args)
                 let replacement = '\\${ENV:' + varName + '}';
                 let regex = new RegExp(replacement, 'g');
                 object = object.replace(regex, process.env[varName]);
+            }
+
+            //platform
+            {
+                object = object.replace(new RegExp('\\${PLATFORM}', 'g'), os.platform());
             }
         }
 

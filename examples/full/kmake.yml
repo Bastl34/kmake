@@ -121,6 +121,7 @@ bla:
         - source/*.cpp
         - source/*.h
         - source/stuff/**/*.*
+        - source/platform/${PLATFORM}.cpp
 
     dependencies:
         - dep1
