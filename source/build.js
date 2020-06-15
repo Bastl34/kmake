@@ -9,7 +9,8 @@ const Logging = require('./helper/logging');
 
 async function build(options)
 {
-    await validate(options);
+    if (!validate(options))
+        return false;
 
     if (options.build.template == 'xcodeMac')
         res = await buildXcodeMac(options);
@@ -41,9 +42,13 @@ function validate(options)
     }
 
     if (sourcesFound == 0)
-        return Promise.reject('no sources found');
+    {
+        Logging.error("no sources found");
+
+        return false;
+    }
     else
-        return Promise.resolve();
+        return true;
 }
 
 async function buildVisualStudio(options)
