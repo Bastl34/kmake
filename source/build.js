@@ -23,13 +23,21 @@ async function build(options)
 
 function validate(options)
 {
+    let platform0 = options.build.arch[0];
+    let config0 = Globals.CONFIGURATIONS[0];
+
     let sourcesFound = 0;
+
     for(let itemKey in options)
     {
         let item = options[itemKey];
 
-        if (item.sources && item.sources.length > 0)
-            sourcesFound += item.sources.length;
+        let sources = [];
+        if ('sources' in item && platform0 in item.sources)
+            sources = item.sources[platform0][config0];
+
+        if (sources && sources.length > 0)
+            sourcesFound += sources.length;
     }
 
     if (sourcesFound == 0)

@@ -67,6 +67,9 @@ function getDefineEntry(item)
 
 async function makeXcode(options)
 {
+    let platform0 = options.build.arch[0];
+    let config0 = Globals.CONFIGURATIONS[0];
+
     // ******************** copy projects ********************
     for(let i in options.workspace.content)
     {
@@ -127,12 +130,12 @@ async function makeXcode(options)
 
         // ********** beforePrepare hook
 
-        // use x86_64 release
-        if (Helper.hasKeys(project, 'hooks', 'beforePrepare', 'x86_64', 'release'))
+        // use first platform/config release
+        if (Helper.hasKeys(project, 'hooks', 'beforePrepare', platform0, config0))
         {
-            for(let i in project.hooks.beforePrepare.x86_64.release)
+            for(let i in project.hooks.beforePrepare[platform0][config0])
             {
-                let hook = project.hooks.beforePrepare.x86_64.release[i];
+                let hook = project.hooks.beforePrepare[platform0][config0][i];
                 await MakeHelper.runHook(hook, project.workingDir);
             }
         }
@@ -144,10 +147,10 @@ async function makeXcode(options)
 
         // ********** libs
 
-        //use x86_64 release
+        // use first platform/config release
         let libs = [];
-        if ('dependencies' in project && 'x86_64' in project.dependencies)
-            libs = project.dependencies['x86_64']['release'];
+        if ('dependencies' in project && platform0 in project.dependencies)
+            libs = project.dependencies[platform0][config0];
 
         for(let libKey in libs)
         {
@@ -201,10 +204,10 @@ async function makeXcode(options)
 
         // ********** embed
 
-        //use x86_64 release
+        // use first platform/config release
         let embeds = [];
-        if ('embedDependencies' in project && 'x86_64' in project.embedDependencies)
-            embeds = project.embedDependencies['x86_64']['release'];
+        if ('embedDependencies' in project && platform0 in project.embedDependencies)
+            embeds = project.embedDependencies[platform0][config0];
 
         for(let embedKey in embeds)
         {
@@ -233,8 +236,13 @@ async function makeXcode(options)
             embedsList.push(embedsObj);
         }
 
-        // ********** files
-        project.sources.forEach(file =>
+        // ********** files/sources
+        // use first platform/config release
+        let sources = [];
+        if ('sources' in project && platform0 in project.sources)
+            sources = project.sources[platform0][config0];
+
+        sources.forEach(file =>
         {
             let type = 'unknown';
             let ext = path.extname(file);
@@ -516,12 +524,12 @@ async function makeXcode(options)
 
         // ********** afterPrepare hook
 
-        // use x86_64 release
-        if (Helper.hasKeys(project, 'hooks', 'afterPrepare', 'x86_64', 'release'))
+        // use first platform/config release
+        if (Helper.hasKeys(project, 'hooks', 'afterPrepare', platform0, config0))
         {
-            for(let i in project.hooks.afterPrepare.x86_64.release)
+            for(let i in project.hooks.afterPrepare[platform0][config0])
             {
-                let hook = project.hooks.afterPrepare.x86_64.release[i];
+                let hook = project.hooks.afterPrepare[platform0][config0][i];
                 await MakeHelper.runHook(hook, project.workingDir);
             }
         }
@@ -747,6 +755,9 @@ function applyReplacements(projectName, project, options)
 
 async function applyHooks(projectName, projectId, project, options)
 {
+    let platform0 = options.build.arch[0];
+    let config0 = Globals.CONFIGURATIONS[0];
+
     let schemePath = options.build.outputPath + '/' + projectName + '.xcodeproj/xcshareddata/xcschemes/' + projectName + '.xcscheme';
 
     let hooks = [{name: 'preBuild', replacementName: 'HOOK_PRE_BUILD'}, {name: 'postBuild', replacementName: 'HOOK_POST_BUILD'}];
@@ -756,16 +767,16 @@ async function applyHooks(projectName, projectId, project, options)
         let hookName = hooks[hookI].name;
         let replacementName = hooks[hookI].replacementName;
 
-        // use x86_64 release
-        if (Helper.hasKeys(project, 'hooks', hookName, 'x86_64', 'release'))
+        // use first platform/config release
+        if (Helper.hasKeys(project, 'hooks', hookName, platform0, config0))
         {
             let hookContent = '';
-            for(let i in project['hooks'][hookName]['x86_64']['release'])
+            for(let i in project['hooks'][hookName][platform0][config0])
             {
                 // hook should run in working dir
                 let hook = escapeHtml(`cd $\{PROJECT_DIR\}`) + '&#10;';
                 hook += escapeHtml(`exec > $\{PROJECT_DIR\}/${projectName}_${hookName}_${i}.log 2>&1`) + '&#10;';
-                hook += escapeHtml(project['hooks'][hookName]['x86_64']['release'][i]);
+                hook += escapeHtml(project['hooks'][hookName][platform0][config0][i]);
 
                 hookContent += `         <ExecutionAction ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">\n`;
                 hookContent += `            <ActionContent title = "${hookName} Script" scriptText = "${hook}">\n`;

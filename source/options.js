@@ -476,23 +476,33 @@ async function getAndApplyOptions(args)
         let item = options[itemKey];
         if ('sources' in item)
         {
-            let sources = [];
-
             let workingDir = item.workingDir;
 
-            item.sourcesBase = [...item.sources];
+            item.sourcesBase = [];
 
-            for(let key in item.sources)
+            for(let archKey in item.sources)
             {
-                let file = item.sources[key];
-                let filePath = workingDir + '/' + file;
-                let files = glob.sync(filePath);
+                for(let configKey in item.sources[archKey])
+                {
+                    let sources = item.sources[archKey][configKey];
 
-                files = files.map(file => { return FileHelper.normalize(file); });
-                sources = [...sources, ...files];
+                    let sourcesResolved = [];
+                    for(let key in sources)
+                    {
+                        const file = sources[key];
+                        const filePath = workingDir + '/' + file;
+                        let files = glob.sync(filePath);
+
+                        files = files.map(file => { return FileHelper.normalize(file); });
+                        sourcesResolved = [...sourcesResolved, ...files];
+                    }
+
+                    item.sources[archKey][configKey] = sourcesResolved;
+                    item.sourcesBase = [...item.sourcesBase, ...sources];
+                }
             }
 
-            item.sources = sources;
+            item.sourcesBase = Array.from(new Set(item.sourcesBase));
         }
     }
 

@@ -104,6 +104,7 @@ int main(int const argc, const char* const argv[], char* envv[])
 
     //test some funcs
     platformFunc();
+    platformFunc2();
     dep1Func();
     dep2Func();
     stuff();

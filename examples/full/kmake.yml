@@ -121,7 +121,14 @@ bla:
         - source/*.cpp
         - source/*.h
         - source/stuff/**/*.*
+        - source/platform/platform.h
         - source/platform/${PLATFORM}.cpp
+        - 'platform:win32':
+            - source/platform/win32_2.cpp
+        - 'platform:linux':
+            - source/platform/linux_2.cpp
+        - 'platform:darwin':
+            - source/platform/darwin_2.cpp
 
     dependencies:
         - dep1

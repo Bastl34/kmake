@@ -112,6 +112,9 @@ async function makeVisualStudio(options)
     let projectDef = '';
     let platformDef = '';
 
+    let platform0 = options.build.arch[0];
+    let config0 = Globals.CONFIGURATIONS[0];
+
     // generate project ids
     let projectIds = {}
 
@@ -137,10 +140,10 @@ async function makeVisualStudio(options)
         {
             let project = options[projectName];
 
-            // use win32 release
+            // use first platform/config release
             let libs = [];
-            if ('dependencies' in project && 'win32' in project.dependencies)
-                libs = project.dependencies['win32']['release'];
+            if ('dependencies' in project && platform0 in project.dependencies)
+                libs = project.dependencies[platform0][config0];
 
             libs.forEach(lib =>
             {
@@ -182,12 +185,12 @@ async function makeVisualStudio(options)
 
         // ********** beforePrepare hook
 
-        // use win32 release
-        if (Helper.hasKeys(project, 'hooks', 'beforePrepare', 'win32', 'release'))
+        // use first platform/config release
+        if (Helper.hasKeys(project, 'hooks', 'beforePrepare', platform0, config0))
         {
-            for(let i in project.hooks.beforePrepare.win32.release)
+            for(let i in project.hooks.beforePrepare[platform0][config0])
             {
-                let hook = project.hooks.beforePrepare.win32.release[i];
+                let hook = project.hooks.beforePrepare[platform0][config0][i];
                 await MakeHelper.runHook(hook, project.workingDir);
             }
         }
@@ -196,7 +199,11 @@ async function makeVisualStudio(options)
         let directoryList = {};
 
         // ********** files
-        project.sources.forEach(file =>
+        let sources = [];
+        if ('sources' in project && platform0 in project.sources)
+            sources = project.sources[platform0][config0];
+
+        sources.forEach(file =>
         {
             let type = 'unknown';
             let ext = path.extname(file);
@@ -354,12 +361,12 @@ async function makeVisualStudio(options)
 
         // ********** afterPrepare hook
 
-        // use win32 release
-        if (Helper.hasKeys(project, 'hooks', 'afterPrepare', 'win32', 'release'))
+        // use first platform/config release
+        if (Helper.hasKeys(project, 'hooks', 'afterPrepare', platform0, config0))
         {
-            for(let i in project.hooks.afterPrepare.win32.release)
+            for(let i in project.hooks.afterPrepare[platform0][config0])
             {
-                let hook = project.hooks.afterPrepare.win32.release[i];
+                let hook = project.hooks.afterPrepare[platform0][config0][i];
                 await MakeHelper.runHook(hook, project.workingDir);
             }
         }
@@ -437,7 +444,6 @@ async function applyPlatformData(projectName, project, options)
             // dependencies
             let libsContent = '';
             let libsArray = ('dependencies' in project) ? project['dependencies'][platform][config] : [];
-            //let ddlsAdded = {}
             libsArray.forEach(lib =>
             {
                 if (lib in options)
@@ -456,19 +462,6 @@ async function applyPlatformData(projectName, project, options)
                     //resolve lib path (based on search paths)
                     let workingDir = path.resolve(project.workingDir);
                     lib = MakeHelper.findPath(lib, libsPathsArray, workingDir);
-
-                    // check if there is a dll and copy the dll on post build
-                    /*
-                    let dllPath = lib.replace('.lib', '.dll');
-                    if (fs.existsSync(dllPath) && !(dllPath in ddlsAdded))
-                    {
-                        dllPathRelative = FileHelper.relative(path.join(options.build.outputPath, projectName), dllPath);
-                        let dllName = path.basename(dllPath);
-                        hookPostBuildContent += `        copy /Y "$(ProjectDir)\\${path.normalize(dllPathRelative)}" "$(SolutionDir)$(Platform)\\$(Configuration)\\${dllName}"\r\n`;
-
-                        ddlsAdded[dllPath] = true;
-                    }
-                    */
 
                     // change lib path relative to output dir
                     if (!path.isAbsolute(lib))

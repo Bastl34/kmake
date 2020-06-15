@@ -142,16 +142,19 @@ async function makeMakefile(options)
         let project = options[projectName];
         let PROJECT_NAME = projectName.toUpperCase();
 
+        let platform0 = options.build.arch[0];
+        let config0 = Globals.CONFIGURATIONS[0];
+
         Logging.info('========== ' + projectName + ' ==========');
 
         // ********** beforePrepare hook
 
-        // use x86_64 release
-        if (Helper.hasKeys(project, 'hooks', 'beforePrepare', 'x86_64', 'release'))
+        // use first platform/config release
+        if (Helper.hasKeys(project, 'hooks', 'beforePrepare', platform0, config0))
         {
-            for(let i in project.hooks.beforePrepare.x86_64.release)
+            for(let i in project.hooks.beforePrepare[platform0][config0])
             {
-                let hook = project.hooks.beforePrepare.x86_64.release[i];
+                let hook = project.hooks.beforePrepare[platform0][config0][i];
                 await MakeHelper.runHook(hook, project.workingDir);
             }
         }
@@ -159,7 +162,12 @@ async function makeMakefile(options)
         // ********** sources
         let objectList = [];
         let sourceFileContent = '';
-        project.sources.forEach(file =>
+
+        let sources = [];
+        if ('sources' in project && platform0 in project.sources)
+            sources = project.sources[platform0][config0];
+
+        sources.forEach(file =>
         {
             // do not process headers
             if (HEADERS.indexOf(path.extname(file)) != -1)
@@ -295,9 +303,6 @@ async function makeMakefile(options)
         // ********** includes (makefile includes)
         let include = '';
 
-        let platform0 = options.build.arch[0];
-        let config0 = Globals.CONFIGURATIONS[0];
-
         let libsArray = ('dependencies' in project) ? project['dependencies'][platform0][config0] : [];
         libsArray.forEach(lib =>
         {
@@ -342,12 +347,12 @@ async function makeMakefile(options)
         await applyHooks(projectName, project, options);
 
         // ********** afterPrepare hook
-        // use x86_64 release
-        if (Helper.hasKeys(project, 'hooks', 'afterPrepare', 'x86_64', 'release'))
+        // use first platform/config
+        if (Helper.hasKeys(project, 'hooks', 'afterPrepare', platform0, config0))
         {
-            for(let i in project.hooks.afterPrepare.x86_64.release)
+            for(let i in project.hooks.afterPrepare[platform0][config0])
             {
-                let hook = project.hooks.afterPrepare.x86_64.release[i];
+                let hook = project.hooks.afterPrepare[platform0][config0][i];
                 await MakeHelper.runHook(hook, project.workingDir);
             }
         }
