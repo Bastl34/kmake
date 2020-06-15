@@ -193,9 +193,10 @@ async function makeXcode(options)
                 isWorkspaceLib: isWorkspaceLib,
                 path: lib,
                 pathRelative: libPathRelative ? libPathRelative : null,
-                uid: Helper.randomString(24, '0123456789ABCDEF', false),
-                uid2: Helper.randomString(24, '0123456789ABCDEF', false),
-                uid3: Helper.randomString(24, '0123456789ABCDEF', false), //uid3 is only used for embed
+                uidRef: Helper.randomString(24, '0123456789ABCDEF', false),
+                uidFile: Helper.randomString(24, '0123456789ABCDEF', false),
+                uidEmbedRef: Helper.randomString(24, '0123456789ABCDEF', false),
+                uidEmbed: Helper.randomString(24, '0123456789ABCDEF', false),
                 type: type
             };
 
@@ -228,8 +229,8 @@ async function makeXcode(options)
                 name: path.basename(embed),
                 path: embed,
                 pathRelative: embedPathRelative ? embedPathRelative : null,
-                uid: Helper.randomString(24, '0123456789ABCDEF', false),
-                uid3: Helper.randomString(24, '0123456789ABCDEF', false), //uid3 is only used for embed
+                uidRef: Helper.randomString(24, '0123456789ABCDEF', false),
+                uidEmbed: Helper.randomString(24, '0123456789ABCDEF', false),
                 type: type
             };
 
@@ -276,8 +277,8 @@ async function makeXcode(options)
                 path: file,
                 pathRelative: filePathRelative,
                 dir: directory,
-                uid: Helper.randomString(24, '0123456789ABCDEF', false),
-                uid2: Helper.randomString(24, '0123456789ABCDEF', false),
+                uidRef: Helper.randomString(24, '0123456789ABCDEF', false),
+                uidFile: Helper.randomString(24, '0123456789ABCDEF', false),
                 type: type
             };
 
@@ -296,7 +297,7 @@ async function makeXcode(options)
             {
                 name: path.basename(dir),
                 path: dir,
-                uid: Helper.randomString(24, '0123456789ABCDEF', false)
+                uidRef: Helper.randomString(24, '0123456789ABCDEF', false)
             };
 
             directoryObjectList.push(sourceObj);
@@ -335,16 +336,16 @@ async function makeXcode(options)
             let absolutePath = path.resolve(file.path);
             let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + file.name;
 
-            sourceFileContent += '		' + file.uid2 + ' /* ' + file.name + ' in Sources */ = {isa = PBXBuildFile; fileRef = ' + file.uid + ' /* ' + file.name + ' */; };\n';
-            sourceFileReferenceContent += '		' + file.uid + ' /* ' + file.name + ' */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = ' + file.type + '; name = ' + file.name + '; path = ' + relativePath + '; sourceTree = "<group>"; };\n';
+            sourceFileContent += '		' + file.uidFile + ' /* ' + file.name + ' in Sources */ = {isa = PBXBuildFile; fileRef = ' + file.uidRef + ' /* ' + file.name + ' */; };\n';
+            sourceFileReferenceContent += '		' + file.uidRef + ' /* ' + file.name + ' */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = ' + file.type + '; name = ' + file.name + '; path = ' + relativePath + '; sourceTree = "<group>"; };\n';
 
             // only source files
             if (file.type.indexOf('sourcecode') != -1 && file.type.indexOf('.h') == -1)
-                compileFiles += '				' + file.uid2 + ' /* ' + file.name + ' in Sources */,\n';
+                compileFiles += '				' + file.uidFile + ' /* ' + file.name + ' in Sources */,\n';
 
             // only header files
             if (file.type.indexOf('.h') != -1)
-                headerFiles += '				' + file.uid2 + ' /* ' + file.name + ' in Sources */,\n';
+                headerFiles += '				' + file.uidFile + ' /* ' + file.name + ' in Sources */,\n';
         });
 
         // ********** libs
@@ -357,12 +358,12 @@ async function makeXcode(options)
             if (lib.isWorkspaceLib || !fs.existsSync(absolutePath))
                 relativePath = lib.name;
 
-            sourceFileContent += '		' + lib.uid2 + ' /* ' + lib.name + ' in Frameworks */ = {isa = PBXBuildFile; fileRef = ' + lib.uid + ' /* ' + lib.name + ' */; };\n';
+            sourceFileContent += '		' + lib.uidFile + ' /* ' + lib.name + ' in Frameworks */ = {isa = PBXBuildFile; fileRef = ' + lib.uidRef + ' /* ' + lib.name + ' */; };\n';
 
             // add to embed
             const embeddable = (lib.isWorkspaceLib && (lib.name.indexOf('.dylib') != -1 || lib.name.indexOf('.framework') != -1));
             if (embeddable)
-                sourceFileContent += '		' + lib.uid3 + ' /* ' + lib.name + ' in Embed Libraries */ = {isa = PBXBuildFile; fileRef = ' + lib.uid + ' /* ' + lib.name + ' */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };\n';
+                sourceFileContent += '		' + lib.uidEmbed + ' /* ' + lib.name + ' in Embed Libraries */ = {isa = PBXBuildFile; fileRef = ' + lib.uidEmbedRef + ' /* ' + lib.name + ' */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };\n';
 
             let fileTypeStr = '';
             if (lib.name.indexOf('framework') != -1)
@@ -376,21 +377,24 @@ async function makeXcode(options)
             else
                 sourceTree = '"<group>"';
 
-            sourceFileReferenceContent += '		' + lib.uid + ' /* ' + lib.name + ' */ = {isa = PBXFileReference; ' + fileTypeStr + '; name = ' + lib.name + '; path = ' + relativePath + '; sourceTree = ' + sourceTree + '; };\n';
+            sourceFileReferenceContent += '		' + lib.uidRef + ' /* ' + lib.name + ' */ = {isa = PBXFileReference; ' + fileTypeStr + '; name = ' + lib.name + '; path = ' + relativePath + '; sourceTree = ' + sourceTree + '; };\n';
+
+            if (embeddable)
+                sourceFileReferenceContent += '		' + lib.uidEmbedRef + ' /* ' + lib.name + ' */ = {isa = PBXFileReference; ' + fileTypeStr + '; name = ' + lib.name + '; path = ' + relativePath + '; sourceTree = ' + sourceTree + '; };\n';
 
             // add to "framework" group
-            libList += '				' + lib.uid + ' /* ' + lib.name + ' in Frameworks */,\n';
+            libList += '				' + lib.uidRef + ' /* ' + lib.name + ' in Frameworks */,\n';
 
             // add to "embed" group
             if (embeddable)
-                embedList += '				' + lib.uid + ' /* ' + lib.name + ' in Embeds */,\n';
+                embedList += '				' + lib.uidEmbedRef + ' /* ' + lib.name + ' in Embeds */,\n';
 
             // add to build step
-            libBuildList += '				' + lib.uid2 + ' /* ' + lib.name + ' in Frameworks */,\n';
+            libBuildList += '				' + lib.uidFile + ' /* ' + lib.name + ' in Frameworks */,\n';
 
             // add to embed
             if (embeddable)
-                libEmbedList += '				' + lib.uid3 + ' /* ' + lib.name + ' in Embed Libraries */,\n';
+                libEmbedList += '				' + lib.uidEmbed + ' /* ' + lib.name + ' in Embed Libraries */,\n';
         });
 
         // ********** emeds
@@ -401,7 +405,7 @@ async function makeXcode(options)
             let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + embed.name;
 
             // add to embed
-            sourceFileContent += '		' + embed.uid3 + ' /* ' + embed.name + ' in Embed Libraries */ = {isa = PBXBuildFile; fileRef = ' + embed.uid + ' /* ' + embed.name + ' */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };\n';
+            sourceFileContent += '		' + embed.uidEmbed + ' /* ' + embed.name + ' in Embed Libraries */ = {isa = PBXBuildFile; fileRef = ' + embed.uidRef + ' /* ' + embed.name + ' */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };\n';
 
             let fileTypeStr = '';
             if (embed.name.indexOf('framework') != -1)
@@ -410,13 +414,13 @@ async function makeXcode(options)
                 fileTypeStr = 'explicitFileType = ' + embed.type;
 
             let sourceTree = '"<group>"';
-            sourceFileReferenceContent += '		' + embed.uid + ' /* ' + embed.name + ' */ = {isa = PBXFileReference; ' + fileTypeStr + '; name = ' + embed.name + '; path = ' + relativePath + '; sourceTree = ' + sourceTree + '; };\n';
+            sourceFileReferenceContent += '		' + embed.uidRef + ' /* ' + embed.name + ' */ = {isa = PBXFileReference; ' + fileTypeStr + '; name = ' + embed.name + '; path = ' + relativePath + '; sourceTree = ' + sourceTree + '; };\n';
 
             // add to "embed" group
-            embedList += '				' + embed.uid + ' /* ' + embed.name + ' in Embeds */,\n';
+            embedList += '				' + embed.uidRef + ' /* ' + embed.name + ' in Embeds */,\n';
 
             // add to embed
-            libEmbedList += '				' + embed.uid3 + ' /* ' + embed.name + ' in Embed Libraries */,\n';
+            libEmbedList += '				' + embed.uidEmbed + ' /* ' + embed.name + ' in Embed Libraries */,\n';
         });
 
         // ********** source groups folders
@@ -440,18 +444,18 @@ async function makeXcode(options)
             });
 
             // add to SOURCE_DIRECTORIES
-            sourceDirectories += '		' + directory.uid + ' /* ' + directory.name + ' */ = {\n';
+            sourceDirectories += '		' + directory.uidRef + ' /* ' + directory.name + ' */ = {\n';
             sourceDirectories += '			isa = PBXGroup;\n';
             sourceDirectories += '			children = (\n';
 
             containingDirs.forEach(cDir =>
             {
-                sourceDirectories += '				' + cDir.uid + ' /* ' + cDir.name + ' */,\n';
+                sourceDirectories += '				' + cDir.uidRef + ' /* ' + cDir.name + ' */,\n';
             });
 
             containingFiles.forEach(cFile =>
             {
-                sourceDirectories += '				' + cFile.uid + ' /* ' + cFile.name + ' */,\n';
+                sourceDirectories += '				' + cFile.uidRef + ' /* ' + cFile.name + ' */,\n';
             });
 
             sourceDirectories += '			);\n';
@@ -465,12 +469,12 @@ async function makeXcode(options)
         directoryList.forEach(directory =>
         {
             if (FileHelper.countDirectoryLevels(directory.path) == 1)
-                sourceRoot += '				' + directory.uid + ' /* ' + directory.name + ' */,\n';
+                sourceRoot += '				' + directory.uidRef + ' /* ' + directory.name + ' */,\n';
         });
         soucesList.forEach(file =>
         {
             if (FileHelper.countDirectoryLevels(file.pathRelative) == 1)
-                sourceRoot += '				' + file.uid + ' /* ' + file.name + ' */,\n';
+                sourceRoot += '				' + file.uidRef + ' /* ' + file.name + ' */,\n';
         });
 
         // ********** replacements
