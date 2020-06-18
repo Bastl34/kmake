@@ -294,7 +294,7 @@ async function makeVisualStudio(options)
         {
             // get the relative path from output dir to source
             let absolutePath = path.resolve(file.path);
-            let relativePath = path.relative(path.join(options.build.outputPath, outputType) , path.dirname(absolutePath)) + '/' + file.name;
+            let relativePath = path.relative(path.join(options.build.outputPath, outputType) , path.dirname(absolutePath)) + '\\' + file.name;
 
             let outFileName = file.name + '.' + file.uid2 + '.obj';
 
@@ -624,13 +624,13 @@ async function applyAssets(projectName, project, options)
             let source = path.normalize(path.resolve(path.join(project.workingDir, asset.source)));
 
             let dest = path.normalize(path.resolve(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR)));
-            if (asset.dest)
+            if (asset.destination)
                 dest = path.normalize(path.resolve(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR, asset.destination)));
 
             let assetDir = dest;
 
             scriptContent += 'if exist "' + assetDir + '" rmdir "' + assetDir + '\\" /s /Q\n';
-            scriptContent += 'md "' + assetDir + '/"\r\n';
+            scriptContent += 'md "' + assetDir + '\\"\r\n';
 
             let exclude = '';
             if ('exclude' in asset)
@@ -645,7 +645,7 @@ async function applyAssets(projectName, project, options)
 
             fs.writeFileSync(options.build.outputPath + '/' + projectName + '/' + excludeFile, exclude);
 
-            let xcopy = `xcopy "${source}" "${dest}/" /E /I /Y /exclude:${excludeFile}\r\n`;
+            let xcopy = `xcopy "${source}" "${dest}\\" /E /I /Y /exclude:${excludeFile}\r\n`;
             scriptContent += xcopy +'\r\n';
         }
     }
