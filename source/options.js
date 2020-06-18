@@ -507,6 +507,29 @@ async function getAndApplyOptions(args)
     }
 
 
+    // ******************** resolve commands ********************
+    Logging.info('resolving commands...');
+    for(let itemKey in options)
+    {
+        let item = options[itemKey];
+        if ('commands' in item)
+        {
+            item.commandsBase = [];
+
+            for(let archKey in item.commands)
+            {
+                for(let configKey in item.commands[archKey])
+                {
+                    let commands = item.commands[archKey][configKey];
+                    item.commandsBase = [...item.commandsBase, ...commands];
+                }
+            }
+
+            item.commandsBase = Array.from(new Set(item.commandsBase));
+        }
+    }
+
+
     // ******************** resolve dependency files ********************
 
     // this is basicly the same as the next part

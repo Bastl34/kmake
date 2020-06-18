@@ -5,10 +5,11 @@ const chokidar = require('chokidar');
 const Logging = require('./helper/logging');
 const FileHelper = require('./helper/fileHelper');
 
-const projectFileSteps = ['options', 'make', 'build', 'run', 'export', 'test'];
+const projectFileSteps = ['options', 'commands', 'make', 'build', 'run', 'export', 'test'];
 const sourceFileSteps = ['build', 'run', 'export', 'test'];
-const assetFileSteps = ['build', 'run', 'export', 'test'];
-const addedOrDeletedAdditionalSteps = ['options', 'make'];
+const assetFileSteps = ['run', 'export', 'test'];
+const commandsFileSteps = ['commands', 'run', 'export', 'test'];
+const addedOrDeletedAdditionalSteps = ['options', 'make', 'commands'];
 
 const TIMEOUT = 200;
 
@@ -39,13 +40,16 @@ class Watcher
             let project = options[projectName];
 
             // sources
-            project.sourcesBase.forEach(file =>
+            if (project.sourcesBase)
             {
-                file = FileHelper.resolve(path.join(project.workingDir, file));
-                file = FileHelper.unixPath(file);
+                project.sourcesBase.forEach(file =>
+                {
+                    file = FileHelper.resolve(path.join(project.workingDir, file));
+                    file = FileHelper.unixPath(file);
 
-                this.files.push({path: file, exclude: null, steps: sourceFileSteps});
-            });
+                    this.files.push({path: file, exclude: null, steps: sourceFileSteps});
+                });
+            }
 
             // assets
             if (project.assets)
@@ -53,7 +57,17 @@ class Watcher
                 project.assets.forEach(asset =>
                 {
                     let assetPath = FileHelper.resolve(path.join(project.workingDir, asset.source));
-                    this.files.push({path: assetPath, exclude: asset.exclude, steps: assetFileSteps});
+                    this.files.push({path: assetPath, exclude: asset.exclude, steps: commandsFileSteps});
+                });
+            }
+
+            // commands
+            if (project.commandsBase)
+            {
+                project.commandsBase.forEach(command =>
+                {
+                    let commandPath = FileHelper.resolve(path.join(project.workingDir, command.source));
+                    this.files.push({path: commandPath, steps: assetFileSteps});
                 });
             }
         }

@@ -305,6 +305,7 @@ let globals =
         'linkerFlags',
         'downloads',
         'sources',
+        'commands',
 
         // hooks
         'beforePrepare',

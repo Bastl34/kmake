@@ -716,7 +716,10 @@ async function applyAssets(projectName, project, options)
             let asset = project.assets[i];
 
             let source = path.resolve(path.join(project.workingDir, asset.source)) + '/';
-            let dest = path.join(projectName, Globals.DEFAULT_ASSET_DIR, asset.destination);
+
+            let dest = path.join(projectName, Globals.DEFAULT_ASSET_DIR);
+            if (asset.destination)
+                dest = path.join(projectName, Globals.DEFAULT_ASSET_DIR, asset.destination);
 
             let exclude = '';
             if ('exclude' in asset)

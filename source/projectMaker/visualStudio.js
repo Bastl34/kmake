@@ -622,9 +622,12 @@ async function applyAssets(projectName, project, options)
             let asset = project.assets[i];
 
             let source = path.normalize(path.resolve(path.join(project.workingDir, asset.source)));
-            let dest = path.normalize(path.resolve(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR, asset.destination)) + '/');
 
-            let assetDir = path.normalize(path.resolve(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR, asset.destination)));
+            let dest = path.normalize(path.resolve(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR)));
+            if (asset.dest)
+                dest = path.normalize(path.resolve(path.join(options.build.outputPath, Globals.DEFAULT_ASSET_DIR, asset.destination)));
+
+            let assetDir = dest;
 
             scriptContent += 'if exist "' + assetDir + '" rmdir "' + assetDir + '\\" /s /Q\n';
             scriptContent += 'md "' + assetDir + '/"\r\n';
@@ -642,7 +645,7 @@ async function applyAssets(projectName, project, options)
 
             fs.writeFileSync(options.build.outputPath + '/' + projectName + '/' + excludeFile, exclude);
 
-            let xcopy = `xcopy "${source}" "${dest}" /E /I /Y /exclude:${excludeFile}\r\n`;
+            let xcopy = `xcopy "${source}" "${dest}/" /E /I /Y /exclude:${excludeFile}\r\n`;
             scriptContent += xcopy +'\r\n';
         }
     }

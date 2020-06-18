@@ -613,7 +613,9 @@ async function applyAssets(projectName, project, options)
             if (FileHelper.isDir(source) && os.platform() != 'win32')
                 source += '/';
 
-            let dest = path.join(Globals.DEFAULT_ASSET_DIR, asset.destination);
+            let dest = Globals.DEFAULT_ASSET_DIR;
+            if (asset.destination)
+                dest = path.join(Globals.DEFAULT_ASSET_DIR, asset.destination);
 
             let excludeRSync = '';
             let excludeXCopy = '';
