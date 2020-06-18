@@ -2,7 +2,6 @@ const path = require('path');
 const micromatch = require('micromatch');
 const chokidar = require('chokidar');
 
-const Logging = require('./helper/logging');
 const FileHelper = require('./helper/fileHelper');
 
 const projectFileSteps = ['options', 'commands', 'make', 'build', 'run', 'export', 'test'];
@@ -57,7 +56,7 @@ class Watcher
                 project.assets.forEach(asset =>
                 {
                     let assetPath = FileHelper.resolve(path.join(project.workingDir, asset.source));
-                    this.files.push({path: assetPath, exclude: asset.exclude, steps: commandsFileSteps});
+                    this.files.push({path: assetPath, exclude: asset.exclude, steps: assetFileSteps});
                 });
             }
 
@@ -67,7 +66,7 @@ class Watcher
                 project.commandsBase.forEach(command =>
                 {
                     let commandPath = FileHelper.resolve(path.join(project.workingDir, command.source));
-                    this.files.push({path: commandPath, steps: assetFileSteps});
+                    this.files.push({path: commandPath, steps: commandsFileSteps});
                 });
             }
         }

@@ -117,6 +117,11 @@ bla:
             exclude:
                 - '*.data'
 
+    commands:
+        -
+            source: 'assets2/**/*.*'
+            cmd: echo ${FILENAME} ${ABSOLUTEPATH}
+
     sources:
         - source/*.cpp
         - source/*.h

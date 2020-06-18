@@ -14,6 +14,7 @@ const make = require('./make');
 const build = require('./build');
 const exp = require('./export');
 const run = require('./run');
+const commands = require('./commands');
 const Watcher = require('./watch');
 
 (async () =>
@@ -109,6 +110,27 @@ const Watcher = require('./watch');
                         Logging.out('build: ' + colors.green('success'));
                     else
                         Logging.out('build: ' + colors.green('error'));
+                }
+            }
+
+            // ********** commands **********
+            if (success && options.build.commands && (!steps || steps.indexOf('commands') != -1))
+            {
+                Logging.info('running commands...');
+
+                success = !!(await commands(options));
+
+                Logging.log('====================');
+
+                if (success)
+                    Logging.rainbow("commands were successfully executed");
+
+                if (!Logging.isVerbose())
+                {
+                    if (success)
+                        Logging.out('commands: ' + colors.green('success'));
+                    else
+                        Logging.out('commands: ' + colors.green('error'));
                 }
             }
 

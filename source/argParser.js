@@ -39,7 +39,7 @@ function argParser()
 
             for(let argKey in Globals.ARG_OPTIONS_SYNONYMS)
             {
-                if (argName.indexOf(argKey) === 0 && argName != argKey)
+                if (argName.indexOf(argKey) === 0 && argName != argKey && !(argName in Globals.ARG_OPTIONS_SYNONYMS))
                 {
                     shortArg = argKey;
                     break;

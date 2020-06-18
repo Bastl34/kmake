@@ -110,6 +110,9 @@ let globals =
         'buildAllArchs': false,
         'jobs': os.cpus().length,
 
+        // run commands
+        'commands': true,
+
         // watch arguments
         'watch': false,
 
@@ -168,6 +171,9 @@ let globals =
         'baa': 'buildAllArchs',
         'j': 'jobs',
 
+        // run commands
+        'cmd': 'commands',
+
         // watch arguments
         'w': 'watch',
         'observe': 'watch', //this is because it's somehow not possible to use 'watch' or 'w' on windows in combination with nodemon
@@ -221,6 +227,8 @@ let globals =
         'buildAllArchs': 'build all possible architectures',
         'jobs': 'job amount for parallel execution (build)',
 
+        'commands': 'execute the project specific commands',
+
         'watch': 'watch the workspace for changes - and rebuild if build was set',
 
         'export': 'export the workspace/project to a zip or directory',
@@ -253,6 +261,7 @@ let globals =
         {
             'build': true,
             'run': true,
+            'commands': true,
             'watch': true,
             'release': false,
             'verbose': false,
