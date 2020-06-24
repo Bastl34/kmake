@@ -2,8 +2,6 @@ const path = require('path');
 const micromatch = require('micromatch');
 const chokidar = require('chokidar');
 
-const Globals = require('./globals');
-
 const FileHelper = require('./helper/fileHelper');
 
 const projectFileSteps = ['options', 'commands', 'make', 'build', 'run', 'export', 'test'];
