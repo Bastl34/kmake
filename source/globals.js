@@ -37,6 +37,14 @@ let globals =
         'Makefile': 'makefile'
     },
 
+    WATCH_POSSIBILITIES:
+    [
+        'configs',
+        'sources',
+        'assets',
+        'commands'
+    ],
+
     // all supported archs
     // if archs is not supported -> not matching archs from kmake.yml are not applied
     // if you want to add a new template/arch add it here
@@ -113,8 +121,11 @@ let globals =
         // run commands
         'commands': true,
 
+        // run downloads
+        'downloads': true,
+
         // watch arguments
-        'watch': false,
+        'watch': [],
 
         // export arguments
         'export': false,
@@ -174,6 +185,9 @@ let globals =
         // run commands
         'cmd': 'commands',
 
+        // run downloads
+        'dls': 'downloads',
+
         // watch arguments
         'w': 'watch',
         'observe': 'watch', //this is because it's somehow not possible to use 'watch' or 'w' on windows in combination with nodemon
@@ -229,6 +243,8 @@ let globals =
 
         'commands': 'execute the project specific commands',
 
+        'downloads': 'run download tasks',
+
         'watch': 'watch the workspace for changes - and rebuild if build was set',
 
         'export': 'export the workspace/project to a zip or directory',
@@ -248,7 +264,8 @@ let globals =
     ARG_POSSIBILITIES:
     {
         'template': 'TEMPLATES',
-        'arch': 'ARCHS'
+        'arch': 'ARCHS',
+        'watch': 'WATCH_POSSIBILITIES'
     },
 
     ARG_OPTIONS_REQUREMENTS:

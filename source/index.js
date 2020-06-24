@@ -6,6 +6,8 @@ const colors = require('colors');
 const Logging = require('./helper/logging');
 const Helper = require('./helper/helper');
 
+const Globals = require('./globals');
+
 const argParser = require('./argParser');
 const getAndApplyOptions = require('./options');
 
@@ -194,11 +196,13 @@ const Watcher = require('./watch');
         }
 
         // ********** watch **********
-        if (options.build.watch)
+        const watching = options.build.watch === true || options.build.watch instanceof Array && options.build.watch.length > 0;
+        if (watching)
         {
-            Logging.out(colors.blue('watching...'));
+            const watchItems = options.build.watch === true ? Globals.WATCH_POSSIBILITIES : options.build.watch;
+            Logging.out(colors.blue('watching (' + watchItems.join(',')  + ')... '));
 
-            await watcher.watch(options, (changeType, change, steps) =>
+            await watcher.watch(options, watchItems, (changeType, change, steps) =>
             {
                 Logging.out(colors.blue('change detected (type=' + changeType + '): ' + change));
 
@@ -209,7 +213,7 @@ const Watcher = require('./watch');
         running = false;
 
         // end process if needed (if watcher is not runing)
-        if (!options.build.watch)
+        if (!watching)
             process.exit(success ? 0 : 1)
     }
 

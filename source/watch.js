@@ -2,6 +2,8 @@ const path = require('path');
 const micromatch = require('micromatch');
 const chokidar = require('chokidar');
 
+const Globals = require('./globals');
+
 const FileHelper = require('./helper/fileHelper');
 
 const projectFileSteps = ['options', 'commands', 'make', 'build', 'run', 'export', 'test'];
@@ -23,15 +25,18 @@ class Watcher
         this.lastChange = 0;
     }
 
-    async watch(options, callback)
+    async watch(options, watchItems, callback)
     {
         await this.clear();
 
         // kmake files
-        options.projectFiles.forEach(file =>
+        if (watchItems.includes('configs'))
         {
-            this.files.push({path: FileHelper.resolve(file), exclude: null, steps: projectFileSteps});
-        });
+            options.projectFiles.forEach(file =>
+            {
+                this.files.push({path: FileHelper.resolve(file), exclude: null, steps: projectFileSteps});
+            });
+        }
 
         for(let i in options.workspace.content)
         {
@@ -39,7 +44,7 @@ class Watcher
             let project = options[projectName];
 
             // sources
-            if (project.sourcesBase)
+            if (watchItems.includes('sources') && project.sourcesBase)
             {
                 project.sourcesBase.forEach(file =>
                 {
@@ -51,7 +56,7 @@ class Watcher
             }
 
             // assets
-            if (project.assets)
+            if (watchItems.includes('assets') && project.assets)
             {
                 project.assets.forEach(asset =>
                 {
@@ -61,7 +66,7 @@ class Watcher
             }
 
             // commands
-            if (project.commandsBase)
+            if (watchItems.includes('commands') && project.commandsBase)
             {
                 project.commandsBase.forEach(command =>
                 {

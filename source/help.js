@@ -50,17 +50,25 @@ function help()
         {
             if (argPossKey == argKey)
             {
-                let content = Globals[Globals.ARG_POSSIBILITIES[argPossKey]];
+                const content = Globals[Globals.ARG_POSSIBILITIES[argPossKey]];
+                const isObject = content instanceof Object;
+                const isArray = content instanceof Array;
 
-                if (content instanceof Object)
+                if (isObject)
                 {
                     for(let itemKey in content)
                     {
-                        //console.log(content[itemKey])
+                        let output = '';
+
+                        if (!isArray)
+                            output += itemKey + ' --> ';
+
                         if (content[itemKey] instanceof Object)
-                            possibilities.push(itemKey + ' --> ' + [...content[itemKey]].join(', '));
+                            output += [...content[itemKey]].join(', ');
                         else
-                            possibilities.push(itemKey + ' --> ' + content[itemKey]);
+                            output += content[itemKey];
+
+                        possibilities.push(output);
                     }
                 }
                 else

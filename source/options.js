@@ -465,8 +465,11 @@ async function getAndApplyOptions(args)
 
 
     // ******************** download ********************
-    Logging.info('downloading...');
-    await download(options);
+    if (options.build.downloads)
+    {
+        Logging.info('downloading...');
+        await download(options);
+    }
 
 
     // ******************** resolve source files ********************
@@ -793,11 +796,11 @@ async function runChecks(options)
 
     let result = [];
 
-    // save download cache
+    // save check cache
     let cachePath = path.join(options.build.projectDir, Globals.CACHE_FILES.CHECK);
     let cache = {};
 
-    if (fs.existsSync(cachePath) && options.build.useDownloadCache)
+    if (fs.existsSync(cachePath) && options.build.useCheckCache)
         cache = yaml.safeLoad(fs.readFileSync(cachePath, 'utf8'));
 
     if ('checks' in options)
