@@ -39,12 +39,12 @@ const SETTINGS_MAP =
         'release':
         {
             'MT': 'MultiThreaded',
-            'MD': 'MultiThreadedDLL',
+            'MD': 'MultiThreadedDLL'
         },
         'debug':
         {
             'MT': 'MultiThreadedDebug',
-            'MD': 'MultiThreadedDebugDLL',
+            'MD': 'MultiThreadedDebugDLL'
         }
     }
 };
@@ -94,9 +94,9 @@ async function makeVisualStudio(options)
         await copy(sourcePath, destPath, {overwrite: true});
 
         // rename project files
-        fs.renameSync(path.join(destPath,outputType+'.vcxproj'), path.join(destPath,projectName+'.vcxproj'));
-        fs.renameSync(path.join(destPath,outputType+'.vcxproj.filters'), path.join(destPath,projectName+'.vcxproj.filters'));
-        fs.renameSync(path.join(destPath,outputType+'.vcxproj.user'), path.join(destPath,projectName+'.vcxproj.user'));
+        fs.renameSync(path.join(destPath, outputType + '.vcxproj'), path.join(destPath, projectName + '.vcxproj'));
+        fs.renameSync(path.join(destPath, outputType + '.vcxproj.filters'), path.join(destPath, projectName + '.vcxproj.filters'));
+        fs.renameSync(path.join(destPath, outputType + '.vcxproj.user'), path.join(destPath, projectName + '.vcxproj.user'));
     }
 
     // ******************** generate workspace.sln ********************
@@ -116,7 +116,7 @@ async function makeVisualStudio(options)
     let config0 = Globals.CONFIGURATIONS[0];
 
     // generate project ids
-    let projectIds = {}
+    let projectIds = {};
 
     for(let i in options.workspace.content)
     {
@@ -166,9 +166,9 @@ async function makeVisualStudio(options)
         });
     }
 
-    results = await replace({files: destPath, from: '#PROJECT_DEF#', to: projectDef.trim()});
-    results = await replace({files: destPath, from: '#PLATFORM_DEF#', to: platformDef.trim()});
-    results = await replace({files: destPath, from: '#SOLUTION_ID#', to: solutionId2});
+    await replace({files: destPath, from: '#PROJECT_DEF#', to: projectDef.trim()});
+    await replace({files: destPath, from: '#PLATFORM_DEF#', to: platformDef.trim()});
+    await replace({files: destPath, from: '#SOLUTION_ID#', to: solutionId2});
 
 
     // ******************** generate projects ********************
@@ -294,7 +294,7 @@ async function makeVisualStudio(options)
         {
             // get the relative path from output dir to source
             let absolutePath = path.resolve(file.path);
-            let relativePath = path.relative(path.join(options.build.outputPath, outputType) , path.dirname(absolutePath)) + '\\' + file.name;
+            let relativePath = path.relative(path.join(options.build.outputPath, outputType), path.dirname(absolutePath)) + '\\' + file.name;
 
             let outFileName = file.name + '.' + file.uid2 + '.obj';
 
@@ -305,7 +305,7 @@ async function makeVisualStudio(options)
                 compileFiles += '    </ClCompile>\r\n';
 
                 compileFilesFilters += '    <ClCompile Include="' + relativePath + '">\r\n';
-                compileFilesFilters += '      <Filter>' + path.normalize(file.dir)+'</Filter>\r\n';
+                compileFilesFilters += '      <Filter>' + path.normalize(file.dir) + '</Filter>\r\n';
                 compileFilesFilters += '    </ClCompile>\r\n';
             }
             else if (file.type == 'header')
@@ -313,7 +313,7 @@ async function makeVisualStudio(options)
                 headerFiles += '    <ClInclude Include="' + relativePath + '" />\r\n';
 
                 headerFilesFilters += '    <ClInclude Include="' + relativePath + '">\r\n';
-                headerFilesFilters += '      <Filter>' + path.normalize(file.dir)+'</Filter>\r\n';
+                headerFilesFilters += '      <Filter>' + path.normalize(file.dir) + '</Filter>\r\n';
                 headerFilesFilters += '    </ClInclude>\r\n';
             }
             else
@@ -321,7 +321,7 @@ async function makeVisualStudio(options)
                 assetFiles += '    <None Include="' + relativePath + '" />\r\n';
 
                 assetFilesFilters += '    <None Include="' + relativePath + '">\r\n';
-                assetFilesFilters += '      <Filter>' + path.normalize(file.dir)+'</Filter>\r\n';
+                assetFilesFilters += '      <Filter>' + path.normalize(file.dir) + '</Filter>\r\n';
                 assetFilesFilters += '    </None>\r\n';
             }
         });
@@ -339,17 +339,17 @@ async function makeVisualStudio(options)
         let projectFilePath = options.build.outputPath + '/' + projectName + '/' + projectName + '.vcxproj';
         let projectFilePathFilters = projectFilePath + '.filters';
 
-        results = await replace({files: projectFilePath, from: /#PROJECT_ID#/g, to: projectIds[projectName]});
-        results = await replace({files: projectFilePath, from: /#PROJECT_NAME#/g, to: projectName});
+        await replace({files: projectFilePath, from: /#PROJECT_ID#/g, to: projectIds[projectName]});
+        await replace({files: projectFilePath, from: /#PROJECT_NAME#/g, to: projectName});
 
-        results = await replace({files: projectFilePath, from: '<!--[COMPILE_FILES]-->', to: compileFiles.trim()});
-        results = await replace({files: projectFilePath, from: '<!--[INCLUDE_FILES]-->', to: headerFiles.trim()});
-        results = await replace({files: projectFilePath, from: '<!--[ASSET_FILES]-->', to: assetFiles.trim()});
+        await replace({files: projectFilePath, from: '<!--[COMPILE_FILES]-->', to: compileFiles.trim()});
+        await replace({files: projectFilePath, from: '<!--[INCLUDE_FILES]-->', to: headerFiles.trim()});
+        await replace({files: projectFilePath, from: '<!--[ASSET_FILES]-->', to: assetFiles.trim()});
 
-        results = await replace({files: projectFilePathFilters, from: '<!--[DIRECTORIES]-->', to: directoriesFilters.trim()});
-        results = await replace({files: projectFilePathFilters, from: '<!--[COMPILE_FILES]-->', to: compileFilesFilters.trim()});
-        results = await replace({files: projectFilePathFilters, from: '<!--[INCLUDE_FILES]-->', to: headerFilesFilters.trim()});
-        results = await replace({files: projectFilePathFilters, from: '<!--[ASSET_FILES]-->', to: assetFilesFilters.trim()});
+        await replace({files: projectFilePathFilters, from: '<!--[DIRECTORIES]-->', to: directoriesFilters.trim()});
+        await replace({files: projectFilePathFilters, from: '<!--[COMPILE_FILES]-->', to: compileFilesFilters.trim()});
+        await replace({files: projectFilePathFilters, from: '<!--[INCLUDE_FILES]-->', to: headerFilesFilters.trim()});
+        await replace({files: projectFilePathFilters, from: '<!--[ASSET_FILES]-->', to: assetFilesFilters.trim()});
 
         // ********** platform specific data
         Logging.log("applying platform data...");
@@ -383,11 +383,9 @@ async function applyPlatformData(projectName, project, options)
     {
         let platform = Globals.ARCHS[options.build.template][platformI];
 
-        //Globals.CONFIGURATIONS.forEach(config =>
         for(let configI in Globals.CONFIGURATIONS)
         {
             let config = Globals.CONFIGURATIONS[configI];
-            let configKey = config.toUpperCase();
 
             // hook: pre build
             let hookPreBuildContent = '';
@@ -474,7 +472,7 @@ async function applyPlatformData(projectName, project, options)
 
             // embedDependencies
             let embedsArray = ('embedDependencies' in project) ? project['embedDependencies'][platform][config] : [];
-            let ddlsAdded = {}
+            let ddlsAdded = {};
             embedsArray.forEach(embed =>
             {
                 //resolve lib path (based on search paths)
@@ -553,7 +551,6 @@ async function applyProjectSettings(projectName, project, options)
             for(let configI in Globals.CONFIGURATIONS)
             {
                 let config = Globals.CONFIGURATIONS[configI];
-                let configKey = config.toUpperCase();
                 let configName = Helper.capitalizeFirstLetter(config);
 
                 // resolve value
@@ -601,7 +598,7 @@ async function applyAssets(projectName, project, options)
 
     if (!(fs.existsSync(options.build.outputPath + '/' + projectName)))
     {
-        Logging.warning('there is no content directory (assets) for this type of project: '+project.outputType);
+        Logging.warning('there is no content directory (assets) for this type of project: ' + project.outputType);
         return;
     }
 
@@ -646,13 +643,13 @@ async function applyAssets(projectName, project, options)
             fs.writeFileSync(options.build.outputPath + '/' + projectName + '/' + excludeFile, exclude);
 
             let xcopy = `xcopy "${source}" "${dest}\\" /E /I /Y /exclude:${excludeFile}\r\n`;
-            scriptContent += xcopy +'\r\n';
+            scriptContent += xcopy + '\r\n';
         }
     }
 
     fs.writeFileSync(copyScriptOutPath, scriptContent);
 
-    let cmd = 'cmd.exe /c "copyAssets.cmd"'
+    let cmd = 'cmd.exe /c "copyAssets.cmd"';
 
     let projectFilePath = options.build.outputPath + '/' + projectName + '/' + projectName + '.vcxproj';
     await replace({files: projectFilePath, from: new RegExp(`<!--COPY_ASSETS-->`, 'g'), to: cmd});

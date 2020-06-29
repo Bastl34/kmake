@@ -483,24 +483,24 @@ async function makeXcode(options)
         let workspaceContentPath = options.build.outputPath + '/' + projectName + '.xcodeproj/project.xcworkspace/contents.xcworkspacedata';
         let schemePath = options.build.outputPath + '/' + projectName + '.xcodeproj/xcshareddata/xcschemes/' + projectName + '.xcscheme';
 
-        results = await replace({files: projectFilePath, from: /PROJECT_ID/g, to: projectId});
-        results = await replace({files: workspaceContentPath, from: /PROJECT_ID/g, to: projectId});
-        results = await replace({files: schemePath, from: /PROJECT_ID/g, to: projectId});
+        await replace({files: projectFilePath, from: /PROJECT_ID/g, to: projectId});
+        await replace({files: workspaceContentPath, from: /PROJECT_ID/g, to: projectId});
+        await replace({files: schemePath, from: /PROJECT_ID/g, to: projectId});
 
-        results = await replace({files: projectFilePath, from: /PROJECT_NAME/g, to: projectName});
-        results = await replace({files: workspaceContentPath, from: /PROJECT_NAME/g, to: projectName});
-        results = await replace({files: schemePath, from: /PROJECT_NAME/g, to: projectName});
+        await replace({files: projectFilePath, from: /PROJECT_NAME/g, to: projectName});
+        await replace({files: workspaceContentPath, from: /PROJECT_NAME/g, to: projectName});
+        await replace({files: schemePath, from: /PROJECT_NAME/g, to: projectName});
 
-        results = await replace({files: projectFilePath, from: '/*SOURCE_FILE_REFERENCE*/', to: sourceFileReferenceContent.trim()});
-        results = await replace({files: projectFilePath, from: '/*SOURCE_FILE*/', to: sourceFileContent.trim()});
-        results = await replace({files: projectFilePath, from: '/*COMPILE_FILES*/', to: compileFiles.trim()});
-        results = await replace({files: projectFilePath, from: '/*HEADER_FILES*/', to: headerFiles.trim()});
-        results = await replace({files: projectFilePath, from: '/*SOURCE_DIRECTORIES*/', to: sourceDirectories.trim()});
-        results = await replace({files: projectFilePath, from: '/*SOURCE_ROOT*/', to: sourceRoot.trim()});
-        results = await replace({files: projectFilePath, from: '/*LIBRARIES_LIST*/', to: libList.trim()});
-        results = await replace({files: projectFilePath, from: '/*EMBEDS_LIST*/', to: embedList.trim()});
-        results = await replace({files: projectFilePath, from: '/*LIBRARIES_BUILD*/', to: libBuildList.trim()});
-        results = await replace({files: projectFilePath, from: '/*EMBED_LIBRARIES*/', to: libEmbedList.trim()});
+        await replace({files: projectFilePath, from: '/*SOURCE_FILE_REFERENCE*/', to: sourceFileReferenceContent.trim()});
+        await replace({files: projectFilePath, from: '/*SOURCE_FILE*/', to: sourceFileContent.trim()});
+        await replace({files: projectFilePath, from: '/*COMPILE_FILES*/', to: compileFiles.trim()});
+        await replace({files: projectFilePath, from: '/*HEADER_FILES*/', to: headerFiles.trim()});
+        await replace({files: projectFilePath, from: '/*SOURCE_DIRECTORIES*/', to: sourceDirectories.trim()});
+        await replace({files: projectFilePath, from: '/*SOURCE_ROOT*/', to: sourceRoot.trim()});
+        await replace({files: projectFilePath, from: '/*LIBRARIES_LIST*/', to: libList.trim()});
+        await replace({files: projectFilePath, from: '/*EMBEDS_LIST*/', to: embedList.trim()});
+        await replace({files: projectFilePath, from: '/*LIBRARIES_BUILD*/', to: libBuildList.trim()});
+        await replace({files: projectFilePath, from: '/*EMBED_LIBRARIES*/', to: libEmbedList.trim()});
 
         // ********** platform specific data
         Logging.log("applying platform data...");
@@ -704,7 +704,7 @@ async function applyAssets(projectName, project, options)
     scriptContent += 'mkdir "' + path.join(projectName, Globals.DEFAULT_ASSET_DIR) + '/"\n\n';
 
     // create asset dir
-    const assetDir = path.join(options.build.outputPath, projectName, Globals.DEFAULT_ASSET_DIR)
+    const assetDir = path.join(options.build.outputPath, projectName, Globals.DEFAULT_ASSET_DIR);
     if (!fs.existsSync(assetDir))
         await fs.mkdirSync(assetDir);
 
@@ -795,7 +795,7 @@ async function applyHooks(projectName, projectId, project, options)
                 hookContent += `         </ExecutionAction>\n`;
             }
 
-            results = await replace({files: schemePath, from: '<!--' + replacementName + '-->', to: hookContent.trim()});
+            await replace({files: schemePath, from: '<!--' + replacementName + '-->', to: hookContent.trim()});
         }
     }
 }

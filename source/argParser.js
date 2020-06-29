@@ -14,7 +14,7 @@ function argParser()
     let args = process.argv.slice(2);
 
     // repacing short params and synonyms with full one
-    for(let i=0; i<args.length; ++i)
+    for(let i = 0; i < args.length; ++i)
     {
         let arg = args[i];
 
@@ -69,20 +69,20 @@ function argParser()
     let lastOptionKey = null;
 
     // find all options
-    for(let i=0; i<args.length; ++i)
+    for(let i = 0; i < args.length; ++i)
     {
         let arg = args[i];
 
         let isOptionKey = arg.indexOf('--') === 0;
-        let isLastOption = i + 1 == args.length
+        let isLastOption = i + 1 == args.length;
         let isNextOptionKey = !isLastOption && args[i + 1].indexOf('--') === 0;
         let optionKeyName = isOptionKey ? arg.substr(2) : null;
 
         //value after equal sign (=) example: --MK_MAKE_FLAGS=--debug=v
-        let hasValueAfterEqualEqualSign = arg.includes('=') && optionKeyName && optionKeyName.substr(0, arg.indexOf('=')-2) in possibleArgs;
-        let equalSignsValue = hasValueAfterEqualEqualSign ? optionKeyName.substr(arg.indexOf('=')-1) : null
+        let hasValueAfterEqualEqualSign = arg.includes('=') && optionKeyName && optionKeyName.substr(0, arg.indexOf('=') - 2) in possibleArgs;
+        let equalSignsValue = hasValueAfterEqualEqualSign ? optionKeyName.substr(arg.indexOf('=') - 1) : null;
         if (hasValueAfterEqualEqualSign)
-            optionKeyName = optionKeyName.substr(0, arg.indexOf('=')-2)
+            optionKeyName = optionKeyName.substr(0, arg.indexOf('=') - 2);
 
         // error check
         if (isOptionKey && !(optionKeyName in possibleArgs))

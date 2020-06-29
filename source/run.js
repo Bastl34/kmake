@@ -8,6 +8,7 @@ const Exec = require('./helper/exec');
 
 async function run(options, runAsync)
 {
+    let res = false;
     if (options.build.template == 'xcodeMac')
         res = await runXcodeMac(options, runAsync);
     else if (options.build.template == 'vs2019')
@@ -55,9 +56,9 @@ async function runXcodeMac(options, runAsync)
     // app
     if (options[mainProjectName].outputType == 'app')
         return await runExecutable(binPath, runAsync);
+
     // main
-    else
-        return await runExecutable(mainPath, runAsync);
+    return await runExecutable(mainPath, runAsync);
 }
 
 async function runExecutable(cmd, runAsync, cwd = null)

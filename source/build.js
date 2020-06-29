@@ -1,4 +1,3 @@
-const os = require('os');
 const path = require('path');
 const Exec = require('./helper/exec');
 
@@ -12,6 +11,7 @@ async function build(options)
     if (!validate(options))
         return false;
 
+    let res = false;
     if (options.build.template == 'xcodeMac')
         res = await buildXcodeMac(options);
     else if (options.build.template == 'vs2019')
@@ -94,7 +94,7 @@ async function buildMakefile(options)
         const targetKey = mainProjectName + "_" + archName + '_' + configName;
 
         // build
-        const cmd = `${make} ${targetKey} -j${jobs} ${options.build.MK_MAKE_FLAGS}`
+        const cmd = `${make} ${targetKey} -j${jobs} ${options.build.MK_MAKE_FLAGS}`;
         const success = await buildExecutable(cmd, options.build.outputPath);
 
         // break if it's only needed to build one arch

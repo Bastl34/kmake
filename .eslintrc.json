@@ -57,18 +57,18 @@
         ],
         "complexity": [
             "error",
-            40
+            50
         ],
         "computed-property-spacing": [
             "error",
             "never"
         ],
-        "consistent-return": "error",
+        "consistent-return": "off",
         "consistent-this": "error",
         "curly": "off",
         "default-case": "error",
         "default-param-last": "error",
-        "dot-location": "error",
+        "dot-location": "off",
         "dot-notation": "off",
         "eol-last": [
             "error",
@@ -138,7 +138,7 @@
         "no-div-regex": "error",
         "no-dupe-else-if": "error",
         "no-duplicate-imports": "error",
-        "no-else-return": "error",
+        "no-else-return": "off",
         "no-empty": [
             "error",
             {
@@ -175,7 +175,7 @@
         "no-native-reassign": "error",
         "no-negated-condition": "off",
         "no-negated-in-lhs": "error",
-        "no-nested-ternary": "error",
+        "no-nested-ternary": "off",
         "no-new": "error",
         "no-new-func": "error",
         "no-new-object": "error",
@@ -249,13 +249,13 @@
         "prefer-object-spread": "error",
         "prefer-promise-reject-errors": "error",
         "prefer-reflect": "off",
-        "prefer-regex-literals": "error",
+        "prefer-regex-literals": "off",
         "prefer-rest-params": "error",
         "prefer-spread": "error",
         "prefer-template": "off",
         "quote-props": "off",
         "quotes": "off",
-        "radix": "error",
+        "radix": "off",
         "require-atomic-updates": "error",
         "require-await": "error",
         "require-jsdoc": "off",

@@ -80,7 +80,7 @@ const tests =
         {
             return await run(`node kmake.js examples/thread --run --skipInput --verbose 0 --MK_CC=clang++`);
         }
-    },
+    }
 };
 
 (async () =>

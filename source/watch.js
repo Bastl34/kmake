@@ -112,13 +112,12 @@ class Watcher
                         steps = [...steps, ...addedOrDeletedAdditionalSteps];
 
                     const relativePath = path.relative(options.build.projectDir, changedPath);
+                    this.timeout = null;
 
                     callback(changeType, relativePath, steps);
-
-                    this.timeout = null;
-                },TIMEOUT);
+                }, TIMEOUT);
             }
-        }
+        };
 
         this.watcher
             .on('add', changedPath => func('add', changedPath))

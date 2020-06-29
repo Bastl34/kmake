@@ -36,6 +36,7 @@
         "dev-no-config": "npm i && npx nodemon --ignore examples/ source/index.js examples/noConfig --dev",
         "lint": "eslint source/",
         "test": "npm i && node source/tests.js",
+        "test-noi": "node source/tests.js",
         "test-dev": "npm i && npx nodemon --ignore examples/ source/tests.js",
         "help-dev": "npm i && npx nodemon --ignore examples/ --exec \" node kmake.js --help\""
     },

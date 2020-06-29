@@ -47,7 +47,7 @@ const OUTPUT_BY_TYPE =
 {
     'static': '.a',
     'dynamic': os.platform() == 'darwin' ? '.dylib' : os.platform() == 'win32' ? '.dll' : '.so',
-    'main': os.platform() == 'win32' ? '.exe' : '',
+    'main': os.platform() == 'win32' ? '.exe' : ''
 };
 
 function getDefineEntry(item)
@@ -173,17 +173,13 @@ async function makeMakefile(options)
             if (HEADERS.indexOf(path.extname(file)) != -1)
                 return;
 
-            let filePathRelative = file;
-            if (project.workingDir && project.workingDir.length > 0)
-                filePathRelative = filePathRelative.substr(project.workingDir.length + 1);
-
             // get the relative path from output dir to source
             let absolutePath = FileHelper.resolve(file);
             let relativePath = FileHelper.relative(options.build.outputPath, path.dirname(absolutePath)) + '/' + path.basename(file);
             let extname = path.extname(relativePath);
 
             let outPath = FileHelper.join(Globals.DEFAULT_OBJECTS_DIR, relativePath.replace(/\.\.\//g, '')) + '.o';
-            let outDir = path.dirname(FileHelper.join(options.build.outputPath,outPath));
+            let outDir = path.dirname(FileHelper.join(options.build.outputPath, outPath));
 
             // create all output dirs
             fs.mkdirSync(outDir, { recursive: true });
@@ -206,7 +202,7 @@ async function makeMakefile(options)
         });
 
         // ********** platform specific targets
-        let targets = ''
+        let targets = '';
         for(let platformI in options.build.arch)
         {
             let platform = options.build.arch[platformI];
@@ -260,7 +256,7 @@ async function makeMakefile(options)
                         if (fs.existsSync(lib))
                         {
                             let libAbsolute = FileHelper.resolve(lib);
-                            pathRelative = FileHelper.relative(options.build.outputPath, libAbsolute);
+                            let pathRelative = FileHelper.relative(options.build.outputPath, libAbsolute);
                             libsContent += ' ' + pathRelative;
                         }
                         else
@@ -277,7 +273,7 @@ async function makeMakefile(options)
                 // set execution path for lib
                 let installName = `-dynamiclib -install_name "@executable_path/${outBaseName}"`;
                 if (os.platform() == 'linux')
-                    installName = '-Wl,-soname,\'$$$$ORIGIN/'+outBaseName+'\'';
+                    installName = '-Wl,-soname,\'$$$$ORIGIN/' + outBaseName + '\'';
                 else if (os.platform() == 'win32')
                     installName = '';
 
@@ -293,7 +289,7 @@ async function makeMakefile(options)
                 targets += targetDepsContent;
                 targets += '\t$(MAKE) ' + startKey + '\n';
                 targets += '\t$(MAKE) ' + preBuildHook + '\n';
-                targets += '\t$(MAKE) ' + targetKey + '_build ' + '\n';
+                targets += '\t$(MAKE) ' + targetKey + '_build\n';
                 targets += '\t$(MAKE) ' + copyTarget + '\n';
                 targets += '\t$(MAKE) ' + assetsKey + '\n';
                 targets += '\t$(MAKE) ' + postBuildHook + '\n\n';
@@ -319,12 +315,11 @@ async function makeMakefile(options)
         Logging.log('generating ' + projectName + '.mk');
         let projectFilePath = options.build.outputPath + '/' + projectName + '.mk';
 
-        //results = await replace({files: projectFilePath, from: '#DEFAULT_TARGET#', to: defaultTarget});
-        results = await replace({files: projectFilePath, from: '#TARGETS#', to: targets});
-        results = await replace({files: projectFilePath, from: '#SOURCE_FILE#', to: sourceFileContent.trim()});
-        results = await replace({files: projectFilePath, from: /PROJECT_NAME/g, to: projectName.toUpperCase()});
-        results = await replace({files: projectFilePath, from: '#INCLUDES#', to: include.trim()});
-        results = await replace({files: projectFilePath, from: '#OBJECTS#', to: objectList.join(' ')});
+        await replace({files: projectFilePath, from: '#TARGETS#', to: targets});
+        await replace({files: projectFilePath, from: '#SOURCE_FILE#', to: sourceFileContent.trim()});
+        await replace({files: projectFilePath, from: /PROJECT_NAME/g, to: projectName.toUpperCase()});
+        await replace({files: projectFilePath, from: '#INCLUDES#', to: include.trim()});
+        await replace({files: projectFilePath, from: '#OBJECTS#', to: objectList.join(' ')});
 
         // ********** platform specific data
         Logging.log("applying platform data...");
@@ -386,7 +381,7 @@ async function applyPlatformData(projectName, project, options)
             // ***** compiler
             let cc = MakeHelper.getMKCC(options, project);
             let platformName = platform;
-            let platformFlags = ""
+            let platformFlags = "";
 
             if (cc in Globals.ARCHS_FLAG_MAP && platformName in Globals.ARCHS_FLAG_MAP[cc])
                 platformFlags = Globals.ARCHS_FLAG_MAP[cc][platformName];
@@ -400,7 +395,7 @@ async function applyPlatformData(projectName, project, options)
                 compilerContent += targetKey + `_build: ${PROJECT_NAME}_CC += -march=${platformName} ${platformFlags}\n`;
 
             // ***** include
-            includePathsContent += targetKey + `_build: ${PROJECT_NAME}_INCLUDES += `
+            includePathsContent += targetKey + `_build: ${PROJECT_NAME}_INCLUDES += `;
             let includesArray = ('includePaths' in project) ? project['includePaths'][platform][config] : [];
             includesArray.forEach(item =>
             {
@@ -408,19 +403,19 @@ async function applyPlatformData(projectName, project, options)
                     item = FileHelper.relative(options.build.outputPath, item);
                 includePathsContent += '-I' + item + ' ';
             });
-            includePathsContent += '\n'
+            includePathsContent += '\n';
 
             // ***** defines
-            definesContent += targetKey + `_build: ${PROJECT_NAME}_DEFINES += `
+            definesContent += targetKey + `_build: ${PROJECT_NAME}_DEFINES += `;
             let definesArray = ('defines' in project) ? project['defines'][platform][config] : [];
             definesArray.forEach(item =>
             {
                 definesContent += '-D' + getDefineEntry(item) + ' ';
             });
-            definesContent += '\n'
+            definesContent += '\n';
 
             // ***** libPaths
-            libPathsContent += targetKey + `_build: ${PROJECT_NAME}_LIB_PATHS += `
+            libPathsContent += targetKey + `_build: ${PROJECT_NAME}_LIB_PATHS += `;
             let libsPathsArray = ('libPaths' in project) ? project['libPaths'][platform][config] : [];
             libsPathsArray.forEach(item =>
             {
@@ -430,10 +425,10 @@ async function applyPlatformData(projectName, project, options)
             });
 
             libPathsContent += '-L' + getBinDir(platform, config) + ' ';
-            libPathsContent += '\n'
+            libPathsContent += '\n';
 
             // ***** buildFlags
-            buildFlagsContent += targetKey + `_build: ${PROJECT_NAME}_CXXFLAGS += `
+            buildFlagsContent += targetKey + `_build: ${PROJECT_NAME}_CXXFLAGS += `;
             let buildFlagsArray = ('buildFlags' in project) ? project['buildFlags'][platform][config] : [];
             buildFlagsArray.forEach(item =>
             {
@@ -441,12 +436,12 @@ async function applyPlatformData(projectName, project, options)
             });
 
             // append global config flags
-            buildFlagsContent += '$(' + PROJECT_NAME + '_' + config.toUpperCase() + ')'
-            buildFlagsContent += '\n'
+            buildFlagsContent += '$(' + PROJECT_NAME + '_' + config.toUpperCase() + ')';
+            buildFlagsContent += '\n';
 
 
             // ***** linkerFlags
-            linkerFlagsContent += targetKey + `_build: ${PROJECT_NAME}_LDFLAGS += `
+            linkerFlagsContent += targetKey + `_build: ${PROJECT_NAME}_LDFLAGS += `;
 
             let rpath = `-Wl,-rpath,"@executable_path"`;
             if (os.platform() == 'linux')
@@ -461,7 +456,7 @@ async function applyPlatformData(projectName, project, options)
             {
                 linkerFlagsContent += item + ' ';
             });
-            linkerFlagsContent += '\n'
+            linkerFlagsContent += '\n';
         }
     }
 
@@ -535,7 +530,7 @@ async function applyHooks(projectName, project, options)
         }
     }
 
-    results = await replace({files: projectFilePath, from: '#HOOKS#', to: hookContent.trim()});
+    await replace({files: projectFilePath, from: '#HOOKS#', to: hookContent.trim()});
 }
 
 async function applyCopyStep(projectName, project, options)
@@ -574,7 +569,7 @@ async function applyCopyStep(projectName, project, options)
         }
     }
 
-    results = await replace({files: projectFilePath, from: '#COPY#', to: copyContent.trim()});
+    await replace({files: projectFilePath, from: '#COPY#', to: copyContent.trim()});
 }
 
 
@@ -624,7 +619,7 @@ async function applyAssets(projectName, project, options)
                 asset.exclude.forEach(excludeItem =>
                 {
                     excludeRSync += `--exclude "${excludeItem}" `;
-                    excludeXCopy += excludeItem.replace('*.', '.').replace('.*', '.')+'\r\n';
+                    excludeXCopy += excludeItem.replace('*.', '.').replace('.*', '.') + '\r\n';
                 });
             }
 

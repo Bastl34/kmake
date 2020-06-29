@@ -2,7 +2,7 @@ const yaml = require('js-yaml');
 const fs = require('fs');
 const path = require('path');
 
-const Globals = require('./globals')
+const Globals = require('./globals');
 
 const FileHelper = require('./helper/fileHelper');
 
