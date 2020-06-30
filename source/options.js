@@ -105,6 +105,7 @@ async function getAndApplyOptions(args)
     options.build =
     {
         ...args,
+        kmakeRoot: kmakeRoot,
         templatePath: FileHelper.normalize(templatePath),
         projectPath: FileHelper.normalize(args.project),
         outputPath: FileHelper.normalize(outputPath)

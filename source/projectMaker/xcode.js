@@ -645,7 +645,7 @@ async function applyIcon(projectName, project, options)
     if (!fs.existsSync(iconJson))
         return true;
 
-    let iconPath = path.resolve(Globals.ICON);
+    let iconPath = path.resolve(path.join(options.build.kmakeRoot, Globals.ICON));
     if ('icon' in project)
     {
         if (path.isAbsolute(project.icon) && fs.existsSync(project.icon))
