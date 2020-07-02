@@ -634,9 +634,11 @@ async function applyAssets(projectName, project, options)
             {
                 asset.exclude.forEach(excludeItem =>
                 {
+                    const hasWildCardEnd = excludeItem.length > 0 && excludeItem.lastIndexOf('*') == excludeItem.length - 1;
+
                     excludeItem = excludeItem.replace("*.", ".").replace(".*", ".");
 
-                    exclude += `${excludeItem}\r\n`;
+                    exclude += `${excludeItem}${!hasWildCardEnd ? '\\' : ''}\r\n`;
                 });
             }
 
