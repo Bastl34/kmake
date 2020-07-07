@@ -1,8 +1,6 @@
 const path = require('path');
 
-const Globals = require('./globals');
 const Logging = require('./helper/logging');
-const exec = require('child_process').exec;
 const Exec = require('./helper/exec');
 
 async function open(options, runAsync)
