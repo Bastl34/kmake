@@ -19,9 +19,6 @@ class Exec extends EventEmitter
 
     run(cmd, cwd = null)
     {
-        // replace windows paths (for splitBySpaceWithQuotes)
-        cmd = cmd.replace(/\\/g, '/');
-
         const options = { shell: true };
         if (cwd)
             options.cwd = cwd;
