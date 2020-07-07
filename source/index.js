@@ -16,6 +16,7 @@ const make = require('./make');
 const build = require('./build');
 const exp = require('./export');
 const run = require('./run');
+const open = require('./open');
 const commands = require('./commands');
 const Watcher = require('./watch');
 
@@ -133,6 +134,27 @@ const Watcher = require('./watch');
                         Logging.out('commands: ' + colors.green('success'));
                     else
                         Logging.out('commands: ' + colors.green('error'));
+                }
+            }
+
+            // ********** open **********
+            if (success && options.build.open && (!steps || steps.indexOf('open') != -1))
+            {
+                Logging.info('opening project...');
+
+                success = !!(await open(options));
+
+                Logging.log('====================');
+
+                if (success)
+                    Logging.rainbow("project was successfully opened");
+
+                if (!Logging.isVerbose())
+                {
+                    if (success)
+                        Logging.out('open: ' + colors.green('success'));
+                    else
+                        Logging.out('open: ' + colors.green('error'));
                 }
             }
 

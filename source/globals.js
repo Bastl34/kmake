@@ -109,6 +109,7 @@ let globals =
 
         // make arguments
         'make': true,
+        'open': false,
 
         // build arguments
         'build': false,
@@ -173,6 +174,7 @@ let globals =
 
         // make arguments
         'm': 'make',
+        'opn': 'open',
 
         // build arguments
         'b': 'build',
@@ -233,6 +235,7 @@ let globals =
         'embed': 'add libarys wich should be embedded',
 
         'make': 'create project configuration files',
+        'open': 'open the IDE project',
 
         'build': 'build the project',
         'release': 'use the release configuration (false for debug)',
