@@ -137,7 +137,7 @@ function argParser()
     if (fs.existsSync(obj.project) && fs.lstatSync(obj.project).isFile())
         obj.projectDir = path.dirname(obj.project);
     else
-        obj.projectDir = obj.project;
+        obj.projectDir = FileHelper.removeTrailingSlash(obj.project);
 
     // find template for the current platform (if not set)
     if (!obj.template)

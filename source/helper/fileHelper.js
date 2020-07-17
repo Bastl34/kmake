@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-let Helper =
+let FileHelper =
 {
     getAllFiles(dir, fileList = [])
     {
@@ -13,7 +13,7 @@ let Helper =
             const fileStat = fs.lstatSync(filePath);
 
             if (fileStat.isDirectory())
-                Helper.getAllFiles(filePath, fileList);
+                FileHelper.getAllFiles(filePath, fileList);
             else
                 fileList.push(filePath);
         });
@@ -38,8 +38,8 @@ let Helper =
         if (outerDirPath == subDirPath || subDirPath.length < outerDirPath.length)
             return false;
 
-        let outerDirLevels = Helper.countDirectoryLevels(outerDirPath);
-        let subDirLevels = Helper.countDirectoryLevels(subDirPath);
+        let outerDirLevels = FileHelper.countDirectoryLevels(outerDirPath);
+        let subDirLevels = FileHelper.countDirectoryLevels(subDirPath);
 
         if (subDirPath.indexOf(outerDirPath) == 0 && subDirLevels == outerDirLevels + 1)
             return true;
@@ -98,7 +98,15 @@ let Helper =
     {
         return input.replace(/\//g, '\\');
     },
+
+    removeTrailingSlash(input)
+    {
+        if(input.substr(-1) === '/' || input.substr(-1) === '\\')
+            return input.substr(0, input.length - 1);
+        
+        return input;
+    }
 };
 
 
-module.exports = Helper;
+module.exports = FileHelper;
