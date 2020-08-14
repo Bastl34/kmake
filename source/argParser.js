@@ -158,7 +158,7 @@ function argParser()
     }
 
     // resolve requirements
-    resolveRequirements(obj);
+    resolveRequirements(obj, args);
 
     // appy defines and inputs
     applyInputData(obj);
@@ -169,7 +169,7 @@ function argParser()
     return obj;
 }
 
-function resolveRequirements(obj)
+function resolveRequirements(obj, args)
 {
     // requrements example: "run" needs "make" and "build"
 
@@ -188,7 +188,11 @@ function resolveRequirements(obj)
                 if (isArray)
                     obj[item] = true;
                 else
-                    obj[itemKey] = item;
+                {
+                    //do not overwrite content if a explicit arg was set
+                    if (!args.includes('--' + itemKey))
+                        obj[itemKey] = item;
+                }
             }
         }
     }
