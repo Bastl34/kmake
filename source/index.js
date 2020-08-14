@@ -222,7 +222,7 @@ const Watcher = require('./watch');
         if (watching)
         {
             const watchItems = options.build.watch === true ? Globals.WATCH_POSSIBILITIES : options.build.watch;
-            Logging.out(colors.blue('watching (' + watchItems.join(',')  + ')... '));
+            Logging.out(colors.blue('watching (' + watchItems.join(', ')  + ')... '));
 
             await watcher.watch(options, watchItems, (changeType, change, steps) =>
             {
