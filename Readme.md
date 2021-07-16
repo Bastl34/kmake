@@ -41,7 +41,7 @@ kmake is a build tool with live rebuild support for c++ projects.
 * `sudo apt install cmake libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev`
 
 ## Installation
-* `npm i -g kmake`
+* `npm i -g kmake` (currently no tavailable on npm - will be added in the future)
 
 ## Run
 * `kmake your_kmake.yml your_project_template output_dir`
