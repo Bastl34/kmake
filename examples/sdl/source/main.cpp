@@ -36,6 +36,9 @@ int main(int argc, char** argv)
 
     int angle = 0;
 
+    uint64_t lastTime = 0;
+    uint64_t currentTime = 0;
+
     while (true)
     {
         SDL_Event e;
@@ -50,7 +53,16 @@ int main(int argc, char** argv)
         SDL_RenderClear(ren);
         SDL_RenderCopyEx(ren, tex, nullptr, nullptr, angle, NULL, SDL_FLIP_NONE);
         SDL_RenderPresent(ren);
-        SDL_Delay(10);
+
+        currentTime = SDL_GetTicks();
+        float fps = 1000.0f / (currentTime - lastTime);
+
+        lastTime = currentTime;
+
+        std::string fpsStr = "SDL TEST (FPS: " + std::to_string((uint32_t)fps) + ")";
+        SDL_SetWindowTitle(window, fpsStr.c_str());
+
+        //SDL_Delay(10);
 
         angle += 3 % 360;
     }
