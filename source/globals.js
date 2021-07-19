@@ -51,7 +51,7 @@ let globals =
     // the default target is based on the order
     ARCHS:
     {
-        'xcodeMac': ['x86_64'],
+        'xcodeMac': ['x86_64', 'arm64'],
         'vs2019': ['x64', 'win32'],
         'makefile': ['x86_64', 'x86'],
 
@@ -60,6 +60,7 @@ let globals =
         // 'ios': ['armv7', 'arm64', 'i386', 'x86_64']
     },
 
+    // only needed for arch names wich are different from the names of "ARCHS"
     ARCHS_MAP:
     {
         'g++':

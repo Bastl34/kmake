@@ -141,8 +141,8 @@ bla:
         - dep21
         - dep3
         - 'template:xcodeMac':
-            - 'lib/prebuilt/bin/xcodeMac/x86_64/prebuilt.a'
-            - 'lib/prebuiltDyn/bin/xcodeMac/x86_64/prebuiltDyn.dylib'
+            - 'lib/prebuilt/bin/xcodeMac/universal/prebuilt.a'
+            - 'lib/prebuiltDyn/bin/xcodeMac/universal/prebuiltDyn.dylib'
             - 'CoreFoundation.framework'
         - 'template:vs*':
             arch:win32:
@@ -174,7 +174,7 @@ bla:
 
     embedDependencies:
         - 'template:xcodeMac':
-            - 'lib/prebuiltDyn/bin/xcodeMac/x86_64/prebuiltDyn.dylib'
+            - 'lib/prebuiltDyn/bin/xcodeMac/universal/prebuiltDyn.dylib'
         - 'template:vs*':
             arch:win32:
                 - 'lib/prebuiltDyn/bin/vs2019/win32/prebuiltDyn.dll'

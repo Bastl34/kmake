@@ -180,6 +180,9 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 
+				ARCHS = (
+					/*ARCHS_DEBUG*/
+				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -254,6 +257,9 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
 
+				ARCHS = (
+					/*ARCHS_RELEASE*/
+				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"$(inherited)",
 					/*DEFINES_RELEASE*/

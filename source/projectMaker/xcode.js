@@ -555,6 +555,13 @@ async function applyPlatformData(projectName, project, options)
             let config = Globals.CONFIGURATIONS[configI];
             let configKey = config.toUpperCase();
 
+            // archs
+            let archsContent = '';
+            options.build.arch.forEach(item =>
+            {
+                archsContent += '					' + item + ',\n';
+            });
+
             // include
             let includePathsContent = '';
             let includesArray = ('includePaths' in project) ? project['includePaths'][platform][config] : [];
@@ -605,6 +612,7 @@ async function applyPlatformData(projectName, project, options)
             await replace({files: projectFilePath, from: new RegExp(`/\\*LIB_PATHS_${configKey}\\*/`, 'g'), to: libPathsContent.trim()});
             await replace({files: projectFilePath, from: `/*BUILD_FLAGS_${configKey}*/`, to: buildFlagsContent.trim()});
             await replace({files: projectFilePath, from: `/*LINKER_FLAGS_${configKey}*/`, to: linkerFlagsContent.trim()});
+            await replace({files: projectFilePath, from: `/*ARCHS_${configKey}*/`, to: archsContent.trim()});
         }
     }
 }

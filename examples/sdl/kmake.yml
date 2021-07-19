@@ -24,32 +24,32 @@ sdlTest:
                 - convertTo: ${WORKING_DIR}/assets/icon.png
         - 'template:vs*':
             -
-                url: https://www.libsdl.org/release/SDL2-devel-2.0.12-VC.zip
-                dest: ${WORKING_DIR}/libs/SDL2-devel-2.0.12-VC.zip
-                sha256: 00c55a597cebdb9a4eb2723f2ad2387a4d7fd605e222c69b46099b15d5d8b32d
+                url: https://www.libsdl.org/release/SDL2-devel-2.0.14-VC.zip
+                dest: ${WORKING_DIR}/libs/SDL2-devel-2.0.14-VC.zip
+                sha256: 232071cf7d40546cde9daeddd0ec30e8a13254c3431be1f60e1cdab35a968824
                 postCmds:
                     - extractTo: ${WORKING_DIR}/libs/sdl
         - 'template:xcodeMac':
             -
-                url: https://www.libsdl.org/release/SDL2-2.0.12.dmg
-                dest: ${WORKING_DIR}/libs/SDL2-2.0.12.dmg
-                sha256: 672f2f2a5edb6f108d30bb83584e7d40658667e0f88a39c2a8e1d48a41fa2ab2
+                url: https://www.libsdl.org/release/SDL2-2.0.14.dmg
+                dest: ${WORKING_DIR}/libs/SDL2-2.0.14.dmg
+                sha256: 05ee7538e4617e561333e7a85e5d9ef9813d3e5352e91c10e7f8912f86378793
                 postCmds:
                     - extractTo: ${WORKING_DIR}/libs/sdl
         - 'template:makefile':
             -
-                url: https://www.libsdl.org/release/SDL2-2.0.12.tar.gz
-                dest: ${WORKING_DIR}/libs/SDL2-2.0.12.tar.gz
-                sha256: 349268f695c02efbc9b9148a70b85e58cefbbf704abd3e91be654db7f1e2c863
+                url: https://www.libsdl.org/release/SDL2-2.0.14.tar.gz
+                dest: ${WORKING_DIR}/libs/SDL2-2.0.14.tar.gz
+                sha256: d8215b571a581be1332d2106f8036fcb03d12a70bae01e20f424976d275432bc
                 postCmds:
                     - extractTo: ${WORKING_DIR}/libs/sdl
-                    - cmd: 'cd ${WORKING_DIR}/libs/sdl/SDL2-2.0.12 && mkdir -p bin && cd bin && cmake ../ && make -j4'
+                    - cmd: 'cd ${WORKING_DIR}/libs/sdl/SDL2-2.0.14 && mkdir -p bin && cd bin && cmake ../ && make -j4'
 
     includePaths:
         - 'template:makefile':
-            - 'libs/sdl/SDL2-2.0.12/include'
+            - 'libs/sdl/SDL2-2.0.14/include'
         - 'template:vs*':
-            - 'libs/sdl/SDL2-2.0.12/include'
+            - 'libs/sdl/SDL2-2.0.14/include'
         - 'template:xcodeMac':
             - 'libs/sdl/SDL2.framework/Headers'
 
@@ -60,34 +60,34 @@ sdlTest:
     dependencies:
         - 'platform:linux':
             - 'template:makefile':
-                - 'libs/sdl/SDL2-2.0.12/bin/libSDL2.a'
+                - 'libs/sdl/SDL2-2.0.14/bin/libSDL2.a'
                 - 'dl'
                 - 'pthread'
         - 'platform:darwin':
             - 'template:makefile':
-                - 'libs/sdl/SDL2-2.0.12/bin/libSDL2-2.0.dylib'
-                - 'libs/sdl/SDL2-2.0.12/bin/libSDL2.a'
+                - 'libs/sdl/SDL2-2.0.14/bin/libSDL2-2.0.dylib'
+                - 'libs/sdl/SDL2-2.0.14/bin/libSDL2.a'
         - 'template:xcodeMac':
             - 'libs/sdl/SDL2.framework'
         - 'template:vs*':
             arch:win32:
-                - 'libs/sdl/SDL2-2.0.12/lib/x86/SDL2.lib'
-                - 'libs/sdl/SDL2-2.0.12/lib/x86/SDL2main.lib'
+                - 'libs/sdl/SDL2-2.0.14/lib/x86/SDL2.lib'
+                - 'libs/sdl/SDL2-2.0.14/lib/x86/SDL2main.lib'
             arch:x64:
-                - 'libs/sdl/SDL2-2.0.12/lib/x64/SDL2.lib'
-                - 'libs/sdl/SDL2-2.0.12/lib/x64/SDL2main.lib'
+                - 'libs/sdl/SDL2-2.0.14/lib/x64/SDL2.lib'
+                - 'libs/sdl/SDL2-2.0.14/lib/x64/SDL2main.lib'
 
     embedDependencies:
         - 'platform:darwin':
             - 'template:makefile':
-                - 'libs/sdl/SDL2-2.0.12/bin/libSDL2-2.0.dylib'
+                - 'libs/sdl/SDL2-2.0.14/bin/libSDL2-2.0.dylib'
         - 'template:xcodeMac':
             - 'libs/sdl/SDL2.framework'
         - 'template:vs*':
             arch:win32:
-                - 'libs/sdl/SDL2-2.0.12/lib/x86/SDL2.dll'
+                - 'libs/sdl/SDL2-2.0.14/lib/x86/SDL2.dll'
             arch:x64:
-                - 'libs/sdl/SDL2-2.0.12/lib/x64/SDL2.dll'
+                - 'libs/sdl/SDL2-2.0.14/lib/x64/SDL2.dll'
 
     sources:
         - source/main.cpp
