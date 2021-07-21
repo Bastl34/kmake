@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <SDL.h>
 
 int main(int argc, char** argv)
@@ -8,6 +9,18 @@ int main(int argc, char** argv)
     SDL_Init(SDL_INIT_VIDEO);
 
     SDL_Window* window = SDL_CreateWindow("SDL TEST", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 500, 650, SDL_WINDOW_RESIZABLE);
+
+    //read and apply window pos if possible
+    std::ifstream windowPosFile("window.pos");
+    if (windowPosFile.is_open())
+    {
+        int x, y;
+        windowPosFile >> x >> y;
+        SDL_SetWindowPosition(window, x, y);
+        windowPosFile.close();
+
+        std::cout << "if you can not see a window: delete the window.pos file" << std::endl;
+    }
 
     SDL_Renderer* ren = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (ren == nullptr)
@@ -44,7 +57,16 @@ int main(int argc, char** argv)
         SDL_Event e;
         if (SDL_PollEvent(&e))
         {
-            if (e.type == SDL_QUIT)
+            if (e.type == SDL_WINDOWEVENT && e.window.event == SDL_WINDOWEVENT_MOVED)
+            {
+                int x = e.window.data1;
+                int y = e.window.data2;
+
+                std::ofstream windowPosFile("window.pos");
+                windowPosFile << x << '\n' << y;
+                windowPosFile.close();
+            }
+            else if (e.type == SDL_QUIT)
                 break;
             else if (e.type == SDL_KEYUP && e.key.keysym.sym == SDLK_ESCAPE)
                 break;
