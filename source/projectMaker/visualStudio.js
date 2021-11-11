@@ -214,7 +214,7 @@ async function makeVisualStudio(options)
             let directory = path.dirname(file);
 
             // get relative paths
-            if (project.workingDir && project.workingDir.length > 0)
+            if (project.workingDir && project.workingDir.length > 0 && project.workingDir != '.')
                 directory = directory.substr(project.workingDir.length + 1);
 
             let filePathRelative = file;
