@@ -13,7 +13,7 @@ function ymlLoader(ymlPath, workingDir = null)
     if (!fileContent)
         fileContent = {};
 
-    const parsed = yaml.safeLoad(fileContent);
+    const parsed = yaml.load(fileContent);
 
     let content = {...parsed};
     delete content.imports;

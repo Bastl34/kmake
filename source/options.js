@@ -168,7 +168,7 @@ async function getAndApplyOptions(args)
             let inputCache = {};
 
             if (fs.existsSync(inputCachePath))
-                inputCache = yaml.safeLoad(fs.readFileSync(inputCachePath, 'utf8'));
+                inputCache = yaml.load(fs.readFileSync(inputCachePath, 'utf8'));
 
             for(let key in options.inputs)
             {
@@ -197,7 +197,7 @@ async function getAndApplyOptions(args)
             }
 
             // saving input data
-            let dump = yaml.safeDump(inputCache);
+            let dump = yaml.dump(inputCache);
             fs.writeFileSync(inputCachePath, dump);
         }
         catch(e)
@@ -661,7 +661,7 @@ async function download(options)
     let cache = {};
 
     if (fs.existsSync(cachePath) && options.build.useDownloadCache)
-        cache = yaml.safeLoad(fs.readFileSync(cachePath, 'utf8'));
+        cache = yaml.load(fs.readFileSync(cachePath, 'utf8'));
 
     for (let i in downloadList)
     {
@@ -765,7 +765,7 @@ async function download(options)
     }
 
     // save cache
-    let dump = yaml.safeDump(cache);
+    let dump = yaml.dump(cache);
     fs.writeFileSync(cachePath, dump);
 }
 
@@ -802,7 +802,7 @@ async function runChecks(options)
     let cache = {};
 
     if (fs.existsSync(cachePath) && options.build.useCheckCache)
-        cache = yaml.safeLoad(fs.readFileSync(cachePath, 'utf8'));
+        cache = yaml.load(fs.readFileSync(cachePath, 'utf8'));
 
     if ('checks' in options)
     {
@@ -849,7 +849,7 @@ async function runChecks(options)
     }
 
     // save cache
-    let dump = yaml.safeDump(cache);
+    let dump = yaml.dump(cache);
     fs.writeFileSync(cachePath, dump);
 
     return result;
