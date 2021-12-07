@@ -86,28 +86,37 @@ let MakeHelper =
             Logging.warning('vsInstallDir env is set but the directory does not exist');
         }
 
-        const basePath = path.join(process.env['ProgramFiles(X86)'], 'Microsoft Visual Studio');
+        const basePath32 = path.join(process.env['ProgramFiles(X86)'], 'Microsoft Visual Studio');
+        const basePath64 = path.join(process.env['ProgramFiles'], 'Microsoft Visual Studio');
         const postPath = 'MSBuild/Current/Bin/MSBuild.exe';
 
-        if (!fs.existsSync(basePath))
+        if (!fs.existsSync(basePath32) || !fs.existsSync(basePath64))
             return null;
 
-        //const variations = ['Professional', 'Enterprise', 'Community', 'BuildTools'];
+        const versions32 = fs.readdirSync(basePath32).map(item => path.join(basePath32, item));
+        const versions64 = fs.readdirSync(basePath64).map(item => path.join(basePath64, item));
 
-        const versions = fs.readdirSync(basePath);
-        versions.sort((a, b) => { return b - a; });
+        let versions = [...versions32, ...versions64];
+
+        versions.sort((a, b) =>
+        {
+            const basenameA = path.basename(a);
+            const basenameB = path.basename(b);
+
+            return basenameB.localeCompare(basenameA);
+        });
 
         // check all possibilites
         for(let i in versions)
         {
             const version = versions[i];
-            const variations = fs.readdirSync(path.join(basePath, version));
+            const variations = fs.readdirSync(version);
 
             for(let v in variations)
             {
                 const variation = variations[v];
 
-                let possiblePath = path.join(basePath, version, variation, postPath);
+                let possiblePath = path.join(version, variation, postPath);
 
                 if (fs.existsSync(possiblePath))
                     return possiblePath;
