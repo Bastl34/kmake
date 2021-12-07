@@ -8,17 +8,19 @@ async function open(options, runAsync)
     let res = false;
     if (options.build.template == 'xcodeMac')
         res = await openXcodeMac(options, runAsync);
-    else if (options.build.template == 'vs2019')
+    else if (options.build.template == 'vs')
         res = await openVisualStudio(options, runAsync);
     return res;
 }
 
 async function openVisualStudio(options, runAsync)
 {
+    const versionSelector = path.join(process.env['ProgramFiles(X86)'], 'Common Files', 'Microsoft Shared', 'MSEnv', 'VSLauncher.exe');
+
     const workspaceName = options.workspace.name;
     const solutionPath = path.resolve(path.join(options.build.outputPath, workspaceName) + '.sln');
 
-    let cmd = `start ${solutionPath}`;
+    let cmd = `"${versionSelector}" "${solutionPath}"`;
 
     return await runExecutable(cmd);
 }

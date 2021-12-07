@@ -31,7 +31,7 @@ async function make(options)
     // create project files
     if (options.build.template == 'xcodeMac')
         res = await makeXcode(options);
-    else if (options.build.template == 'vs2019')
+    else if (options.build.template == 'vs')
         res = await makeVisualStudio(options);
     else if (options.build.template == 'makefile')
         res = await makeMakefile(options);

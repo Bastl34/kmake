@@ -25,8 +25,9 @@ let globals =
 
     TEMPLATES:
     {
-        'vs': 'vs2019',
-        'vs2019': 'vs2019',
+        'vs': 'vs',
+        'vs2019': 'vs',
+        'vs2022': 'vs',
 
         'mac': 'xcodeMac',
         'xcodemac': 'xcodeMac',
@@ -52,12 +53,26 @@ let globals =
     ARCHS:
     {
         'xcodeMac': ['x86_64', 'arm64'],
-        'vs2019': ['x64', 'win32'],
+        'vs': ['x64', 'win32'],
         'makefile': ['x86_64', 'x86'],
 
         // TODO
         // 'android': ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'],
         // 'ios': ['armv7', 'arm64', 'i386', 'x86_64']
+    },
+
+    //map of platform toolset versions for different versions of visual studio
+    VISUAL_STUDIO_PLATFORM_TOOLSET_MAP:
+    {
+        'vs2022': 'v143',
+        'vs2019': 'v142'
+    },
+
+    //used for visual studio version selector
+    VISUAL_STUDIO_SOLUTION_VERSION_MAP:
+    {
+        'vs2022': '17',
+        'vs2019': '16'
     },
 
     // only needed for arch names wich are different from the names of "ARCHS"
@@ -302,7 +317,7 @@ let globals =
     DEFAULT_TEMPLATE_BY_PLATFORM:
     {
         'darwin': 'xcodeMac',
-        'win32': 'vs2019',
+        'win32': 'vs',
         'linux': 'makefile'
     },
 
@@ -316,7 +331,7 @@ let globals =
     DEFAULT_ASSET_DIR: 'assets',
     ASSET_DIRS_BY_TEMPLATE:
     {
-        'vs2019': '../../assets',
+        'vs': '../../assets',
         'xcodeMac': {generic: 'assets', app: '../Resources/assets', framework: '../Resources/assets'},
         'makefile': '../../../assets',
     },

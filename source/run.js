@@ -11,7 +11,7 @@ async function run(options, runAsync)
     let res = false;
     if (options.build.template == 'xcodeMac')
         res = await runXcodeMac(options, runAsync);
-    else if (options.build.template == 'vs2019')
+    else if (options.build.template == 'vs')
         res = await runVisualStudio(options, runAsync);
     else if (options.build.template == 'makefile')
         res = await runMakefile(options, runAsync);

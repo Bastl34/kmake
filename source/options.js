@@ -54,6 +54,7 @@ async function getAndApplyOptions(args)
 
 
     // ******************** find template ********************
+    args.templateRaw = args.template;
     args.template = args.template.toLocaleLowerCase();
     if (!(args.template in Globals.TEMPLATES))
     {

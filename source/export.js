@@ -16,7 +16,7 @@ async function exp(options)
     let paths = [];
     if (options.build.template == 'xcodeMac')
         paths = await getXcodeMacPaths(options);
-    else if (options.build.template == 'vs2019')
+    else if (options.build.template == 'vs')
         paths = await getVisualStudioPaths(options);
     else if (options.build.template == 'makefile')
         paths = await getMakefilePaths(options);

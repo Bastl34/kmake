@@ -14,7 +14,7 @@ async function build(options)
     let res = false;
     if (options.build.template == 'xcodeMac')
         res = await buildXcodeMac(options);
-    else if (options.build.template == 'vs2019')
+    else if (options.build.template == 'vs')
         res = await buildVisualStudio(options);
     else if (options.build.template == 'makefile')
         res = await buildMakefile(options);

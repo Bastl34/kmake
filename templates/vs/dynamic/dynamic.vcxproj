@@ -27,28 +27,28 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>#PLATFORM_TOOLSET#</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>#PLATFORM_TOOLSET#</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>#PLATFORM_TOOLSET#</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>#PLATFORM_TOOLSET#</PlatformToolset>
     <WholeProgramOptimization>false</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -71,21 +71,25 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <TargetName>#PROJECT_NAME#</TargetName>
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <TargetName>#PROJECT_NAME#</TargetName>
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <TargetName>#PROJECT_NAME#</TargetName>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <TargetName>#PROJECT_NAME#</TargetName>
     <LinkIncremental>false</LinkIncremental>
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
@@ -95,7 +99,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions><!--DEFINES_win32_Debug-->WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions><!--DEFINES_win32_Debug-->WIN32;_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories><!--INCLUDES_win32_Debug--></AdditionalIncludeDirectories>
       <AdditionalOptions><!--BUILD_FLAGS_win32_Debug--> %(AdditionalOptions)</AdditionalOptions>
@@ -105,6 +109,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
       <AdditionalDependencies><!--LIBS_win32_Debug-->%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions><!--LINKER_FLAGS_win32_Debug--> %(AdditionalOptions)</AdditionalOptions>
       <AdditionalLibraryDirectories><!--LIB_PATHS_win32_Debug-->..\$(Platform)\$(Configuration);</AdditionalLibraryDirectories>
@@ -131,7 +136,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions><!--DEFINES_x64_Debug-->_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions><!--DEFINES_x64_Debug-->_DEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories><!--INCLUDES_x64_Debug--></AdditionalIncludeDirectories>
       <AdditionalOptions><!--BUILD_FLAGS_x64_Debug--> %(AdditionalOptions)</AdditionalOptions>
@@ -141,9 +146,10 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
       <AdditionalDependencies><!--LIBS_x64_Debug-->%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions><!--LINKER_FLAGS_x64_Debug--> %(AdditionalOptions)</AdditionalOptions>
-      <AdditionalLibraryDirectories><!--LIB_PATHS_64_Debug-->..\$(Platform)\$(Configuration);</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories><!--LIB_PATHS_x64_Debug-->..\$(Platform)\$(Configuration);</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>
@@ -169,7 +175,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions><!--DEFINES_win32_Release-->WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions><!--DEFINES_win32_Release-->WIN32;NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories><!--INCLUDES_win32_Release--></AdditionalIncludeDirectories>
       <AdditionalOptions><!--BUILD_FLAGS_win32_Release--> %(AdditionalOptions)</AdditionalOptions>
@@ -181,6 +187,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
       <AdditionalDependencies><!--LIBS_win32_Release-->%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions><!--LINKER_FLAGS_win32_Release--> %(AdditionalOptions)</AdditionalOptions>
       <AdditionalLibraryDirectories><!--LIB_PATHS_win32_Release-->..\$(Platform)\$(Configuration);</AdditionalLibraryDirectories>
@@ -209,7 +216,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions><!--DEFINES_x64_Release-->NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions><!--DEFINES_x64_Release-->NDEBUG;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories><!--INCLUDES_x64_Release--></AdditionalIncludeDirectories>
       <AdditionalOptions><!--BUILD_FLAGS_x64_Release--> %(AdditionalOptions)</AdditionalOptions>
@@ -221,6 +228,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableUAC>false</EnableUAC>
       <AdditionalDependencies><!--LIBS_x64_Release-->%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalOptions><!--LINKER_FLAGS_x64_Release--> %(AdditionalOptions)</AdditionalOptions>
       <AdditionalLibraryDirectories><!--LIB_PATHS_x64_Release-->..\$(Platform)\$(Configuration);</AdditionalLibraryDirectories>

@@ -76,7 +76,10 @@ function getDefineEntry(item)
 
 async function makeVisualStudio(options)
 {
-    const vsVersion = 'vs2019';
+    let vsVersion = options.build.templateRaw;
+
+    if (vsVersion == 'vs')
+        vsVersion = Object.keys(Globals.VISUAL_STUDIO_PLATFORM_TOOLSET_MAP)[0];
 
     // ******************** copy projects ********************
     for(let i in options.workspace.content)
@@ -155,7 +158,7 @@ async function makeVisualStudio(options)
         projectDef += `	EndProjectSection\n`;
         projectDef += `EndProject\n`;
 
-        Globals.ARCHS[vsVersion].forEach(platform =>
+        Globals.ARCHS['vs'].forEach(platform =>
         {
             Globals.CONFIGURATIONS.forEach(config =>
             {
@@ -165,6 +168,8 @@ async function makeVisualStudio(options)
             });
         });
     }
+
+    await replace({files: destPath, from: '#SOLUTION_VERSION#', to: Globals.VISUAL_STUDIO_SOLUTION_VERSION_MAP[vsVersion]});
 
     await replace({files: destPath, from: '#PROJECT_DEF#', to: projectDef.trim()});
     await replace({files: destPath, from: '#PLATFORM_DEF#', to: platformDef.trim()});
@@ -338,6 +343,8 @@ async function makeVisualStudio(options)
         // ********** replacements
         let projectFilePath = options.build.outputPath + '/' + projectName + '/' + projectName + '.vcxproj';
         let projectFilePathFilters = projectFilePath + '.filters';
+
+        await replace({files: projectFilePath, from: /#PLATFORM_TOOLSET#/g, to: Globals.VISUAL_STUDIO_PLATFORM_TOOLSET_MAP[vsVersion]});
 
         await replace({files: projectFilePath, from: /#PROJECT_ID#/g, to: projectIds[projectName]});
         await replace({files: projectFilePath, from: /#PROJECT_NAME#/g, to: projectName});
