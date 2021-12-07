@@ -57,7 +57,7 @@ kmake is a build tool with live rebuild support for c++ projects.
 ## Tips and tricks
 
 * define strings via command line
-  * `kmake examples/full vs2019 examples/full/out --define TEST_DEFINE=\"test\"`
+  * `kmake --define TEST_DEFINE=\"test\"`
 
 * makefile: building for archs which are not on your system.
   * use: install: `gcc-multilib` and `g++-multilib`
