@@ -94,7 +94,7 @@ const tests =
         {
             // prepare data dir
             if (fs.existsSync(tempDir))
-                await fs.promises.rmdir(tempDir, {recursive: true});
+                await fs.promises.rm(tempDir, { recursive: true });
             await fs.promises.mkdir(tempDir);
 
             if ('platform' in tests[testName] && !tests[testName].platform.includes(os.platform()))
@@ -133,7 +133,7 @@ const tests =
 
         // cleanup
         if (fs.existsSync(tempDir))
-            await fs.promises.rmdir(tempDir, {recursive: true});
+            await fs.promises.rm(tempDir, { recursive: true });
 
         process.exit(successful == testAmount ? 0 : 1);
     }

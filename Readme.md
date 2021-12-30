@@ -23,7 +23,7 @@ kmake is a build tool with live rebuild support for c++ projects.
  * Makefile (GCC, Clang, MinGW)
 
 ## Requrements
-* node.js >=12
+* node.js >=14.14.0
 * Windows:
   * Visual Studio 2019+
   * or MinGW (add it to your env-path)

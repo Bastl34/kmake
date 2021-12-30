@@ -45,7 +45,7 @@ async function createOutputDir(options)
     if (options.build.cleanOutputDir && fs.existsSync(path.normalize(options.build.outputPath)))
     {
         Logging.info('clearing output dir...');
-        await fs.promises.rmdir(path.normalize(options.build.outputPath), {recursive: true});
+        await fs.promises.rm(path.normalize(options.build.outputPath), { recursive: true });
 
         // wait some tome -> otherwise mkdir will fail on windows
         await Helper.sleep(100);

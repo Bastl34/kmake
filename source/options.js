@@ -824,7 +824,7 @@ async function runChecks(options)
             {
                 // prepare data dir
                 if (fs.existsSync(tempDir))
-                    await fs.promises.rmdir(tempDir, {recursive: true});
+                    await fs.promises.rm(tempDir, { recursive: true });
                 await fs.promises.mkdir(tempDir);
 
                 // copy content
