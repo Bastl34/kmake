@@ -47,7 +47,7 @@ kmake is a build tool with live rebuild support for c++ projects.
 * `kmake your_kmake.yml your_project_template output_dir`
 
 ## Dev
-* `npm run dev-mac` (Xcode)
+* `npm run dev-mac` (Xcode - Intel and Apple Silicon)
 * `npm run dev-vs` (Visual Studio 2019+)
 * `npm run dev-mk` (Makefile - GCC, Clang, MinGW)
 
