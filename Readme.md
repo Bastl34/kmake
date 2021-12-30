@@ -66,3 +66,6 @@ kmake is a build tool with live rebuild support for c++ projects.
 * Inspect executable
   * on Mac: `otool -l BINARY`
   * on Linux: `ldd BINARY`
+
+* create synlink to kmake.js
+  * `sudo ln -s PATH_TO_KMAKE/kmake.js /usr/local/bin/kmake`
